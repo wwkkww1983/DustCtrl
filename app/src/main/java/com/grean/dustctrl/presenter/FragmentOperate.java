@@ -1,0 +1,221 @@
+package com.grean.dustctrl.presenter;
+
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
+import android.app.Fragment;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.support.annotation.Nullable;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.DatePicker;
+import android.widget.EditText;
+import android.widget.Switch;
+import android.widget.TextView;
+import android.widget.TimePicker;
+
+import com.grean.dustctrl.R;
+import com.grean.dustctrl.model.OperateDustMeter;
+import com.grean.dustctrl.model.OperateSystem;
+
+import java.util.Calendar;
+
+/**
+ * Created by Administrator on 2017/8/25.
+ */
+
+public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View.OnClickListener , DialogTimeSelected{
+    private static final int CancelDialog = 1;
+    private static final int ShowDustMeterInfo = 2;
+
+    private ProcessDialogFragment dialogFragment;
+    private String dustMeterInfo;
+    private String autoCalTime;
+   // private DialogFragment df;
+    private Button btnDustMeterManCal,btnDustMeterInquire,btnMotorSet,btnSaveAutoCal;
+    private TextView tvDustMeterInfo,tvNextAutoCalTime;
+    private EditText etMotorRounds,etMotorTime,etAutoCalInterval;
+    private Switch swDustMeterRun,swValve,swFan,swExt1,swExt2,swBackup,swAutoCalibrationEnable;
+
+    private OperateDustMeter dustMeter;
+    private OperateSystem system;
+
+    private Handler handler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            //super.handleMessage(msg);
+            switch (msg.what){
+                case CancelDialog:
+                    dialogFragment.dismiss();
+                    break;
+                case ShowDustMeterInfo:
+                    tvDustMeterInfo.setText(dustMeterInfo);
+                    break;
+                default:
+
+                    break;
+            }
+        }
+    };
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
+        View messageLayout = inflater.inflate(R.layout.fragment_operate,container,false);
+        initView(messageLayout);
+        dustMeter = new OperateDustMeter(this);
+        system = new OperateSystem();
+        onShow();
+        return messageLayout;
+    }
+
+    private void onShow(){
+
+        swDustMeterRun.setChecked(dustMeter.isDustMeterRun());
+        etMotorRounds.setText(String.valueOf(system.getMotorRounds()));
+        float time = system.getMotorTime() / 10.0f;
+        etMotorTime.setText(String.valueOf(time));
+        etAutoCalInterval.setText(system.getAutoCalInterval());
+        autoCalTime = system.getAutoCalNextTime();
+        tvNextAutoCalTime.setText(autoCalTime);
+        if (system.getAutoCalibrationEnable()){
+            swAutoCalibrationEnable.setChecked(true);
+        }else {
+            swAutoCalibrationEnable.setChecked(false);
+            tvNextAutoCalTime.setVisibility(View.INVISIBLE);
+            etAutoCalInterval.setVisibility(View.INVISIBLE);
+            btnSaveAutoCal.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    private void initView(View v){
+        btnDustMeterInquire = v.findViewById(R.id.btnOperateInquireDuster);
+        btnDustMeterManCal = v.findViewById(R.id.btnOperateManCal);
+        tvDustMeterInfo = v.findViewById(R.id.tvOperateDusterInfo);
+        swDustMeterRun = v.findViewById(R.id.swOperateDusterSwitch);
+        swValve = v.findViewById(R.id.swOperateSystemDo1);
+        swFan = v.findViewById(R.id.swOperateSystemDo2);
+        swExt1 = v.findViewById(R.id.swOperateSystemDo3);
+        swExt2 = v.findViewById(R.id.swOperateSystemDo4);
+        swBackup = v.findViewById(R.id.swOperateSystemDo5);
+        btnMotorSet = v.findViewById(R.id.btnOperateMotorSet);
+        etMotorRounds = v.findViewById(R.id.etOperateMotorRounds);
+        etMotorTime = v.findViewById(R.id.etOperateMotorTime);
+        tvNextAutoCalTime = v.findViewById(R.id.tvOperateNextAutoCal);
+        etAutoCalInterval = v.findViewById(R.id.etOperateAutoCalInterval);
+        btnSaveAutoCal = v.findViewById(R.id.btnOperateSaveAutoCal);
+        swAutoCalibrationEnable = v.findViewById(R.id.swAutoCaliration);
+        swAutoCalibrationEnable.setOnClickListener(this);
+        tvNextAutoCalTime.setOnClickListener(this);
+        btnSaveAutoCal.setOnClickListener(this);
+        btnDustMeterManCal.setOnClickListener(this);
+        btnDustMeterInquire.setOnClickListener(this);
+        swDustMeterRun.setOnClickListener(this);
+        swBackup.setOnClickListener(this);
+        swFan.setOnClickListener(this);
+        swValve.setOnClickListener(this);
+        swExt2.setOnClickListener(this);
+        swExt1.setOnClickListener(this);
+        btnMotorSet.setOnClickListener(this);
+    }
+
+
+    @Override
+    public void showDustMeterInfo(String info) {
+        dustMeterInfo = info;
+        handler.sendEmptyMessage(ShowDustMeterInfo);
+    }
+
+    @Override
+    public void cancelDialog() {
+        handler.sendEmptyMessage(CancelDialog);
+    }
+
+    @Override
+    public void onClick(View view) {
+        Intent intent;
+        switch (view.getId()){
+            case R.id.btnOperateManCal:
+                dialogFragment = new ProcessDialogFragment();
+                dialogFragment.setCancelable(false);
+                dialogFragment.show(getFragmentManager(),"Calibration");
+                dustMeter.calibrationDustMeter(dialogFragment);
+                break;
+            case R.id.btnOperateInquireDuster:
+                dialogFragment = new ProcessDialogFragment();
+                dialogFragment.setCancelable(false);
+                dialogFragment.show(getFragmentManager(),"InquireDustMeterInfo");
+                dustMeter.inquireDustMeter(dialogFragment);
+                break;
+            case R.id.swOperateDusterSwitch:
+                dustMeter.switchDustMeter(swDustMeterRun.isChecked());
+                break;
+            case R.id.btnOperateMotorSet:
+                int rounds = Integer.valueOf(etMotorRounds.getText().toString());
+                final int time = (int) (Float.valueOf(etMotorTime.getText().toString())*10f);
+                system.setMotorSetting(rounds,time);
+                break;
+            case R.id.swOperateSystemDo1:
+                system.ctrlDo(1,swValve.isChecked());
+                break;
+            case R.id.swOperateSystemDo2:
+                system.ctrlDo(2,swFan.isChecked());
+                break;
+            case R.id.swOperateSystemDo3:
+                system.ctrlDo(3,swExt1.isChecked());
+                break;
+            case R.id.swOperateSystemDo4:
+                system.ctrlDo(4,swExt2.isChecked());
+                break;
+            case R.id.swOperateSystemDo5:
+                system.ctrlDo(5,swBackup.isChecked());
+                break;
+            case R.id.tvOperateNextAutoCal:
+                Calendar calendar = Calendar.getInstance();
+                DialogTimeChoose choose = new DialogTimeChoose(getActivity(),"设置下次自动校准时间");
+                choose.showDialog(calendar.get(Calendar.YEAR),calendar.get(Calendar.MONTH),calendar.get(Calendar.DAY_OF_MONTH),0,0,this);
+                break;
+            case R.id.btnOperateSaveAutoCal:
+                system.setAutoCalInterval(etAutoCalInterval.getText().toString());
+                system.setAutoTime(autoCalTime);
+                intent = new Intent();
+                intent.setAction("autoCalibration");
+                intent.putExtra("enable",true);
+                intent.putExtra("date",system.getAutoTimeDate());
+                getActivity().sendBroadcast(intent);
+                break;
+            case R.id.swAutoCaliration:
+                system.setAutoCalibrationEnable(swAutoCalibrationEnable.isChecked());
+                intent = new Intent();
+                intent.setAction("autoCalibration");
+                if (swAutoCalibrationEnable.isChecked()){
+                    tvNextAutoCalTime.setVisibility(View.VISIBLE);
+                    etAutoCalInterval.setVisibility(View.VISIBLE);
+                    btnSaveAutoCal.setVisibility(View.VISIBLE);
+                    intent.putExtra("enable",true);
+                }else{
+                    intent.putExtra("enable",false);
+                    tvNextAutoCalTime.setVisibility(View.INVISIBLE);
+                    etAutoCalInterval.setVisibility(View.INVISIBLE);
+                    btnSaveAutoCal.setVisibility(View.INVISIBLE);
+                }
+                intent.putExtra("date",system.getAutoTimeDate());
+                getActivity().sendBroadcast(intent);
+                break;
+            default:
+                break;
+        }
+    }
+
+    @Override
+    public void onComplete(String string) {
+        autoCalTime = system.calNexTime(string);
+        tvNextAutoCalTime.setText(autoCalTime);
+    }
+}
