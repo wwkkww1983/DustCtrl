@@ -57,14 +57,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         @Override
         public void onReceive(Context context, Intent intent) {//定时自动校准
             if(intent.getAction().equals("autoCalibration")){
+                Intent mainFragmentIntent = new Intent();
+                mainFragmentIntent.setAction("autoCalNextString");
                 if (intent.getBooleanExtra("enable",true)){
                     cancelAutoCalibrationTimer();
                     autoCalibrationTimer = new Timer();
                     Date when = new Date(intent.getLongExtra("date",0l));
+                    mainFragmentIntent.putExtra("content",tools.timestamp2string(intent.getLongExtra("date",0l)));
                     autoCalibrationTimer.schedule(new AutoCalibrationTimerTask(),when);
                 }else {
                     cancelAutoCalibrationTimer();
+                    mainFragmentIntent.putExtra("content","-");
                 }
+                sendBroadcast(mainFragmentIntent);
             }
 
         }
@@ -81,7 +86,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         autoCalibrationTimer = new Timer();
         Date when = new Date(next);
         autoCalibrationTimer.schedule(new AutoCalibrationTimerTask(),when);
-
+        Intent intent = new Intent();
+        intent.setAction("autoCalNextString");
+        intent.putExtra("content",tools.timestamp2string(next));
+        sendBroadcast(intent);
     }
 
     class AutoCalibrationTimerTask extends TimerTask{

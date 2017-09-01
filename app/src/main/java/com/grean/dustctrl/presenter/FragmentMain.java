@@ -1,6 +1,10 @@
 package com.grean.dustctrl.presenter;
 
 import android.app.Fragment;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -27,10 +31,23 @@ public class FragmentMain extends Fragment implements NotifyScanSensor{
     private TextView tvPressure;
     private TextView tvWindForce;
     private TextView tvWindDirection;
-    private TextView tvNoise;
+    private TextView tvNoise,tvNextCal;
     private SensorData data;
 
+    private String nextCalString;
     private static final int msgUpdateSensor = 1;
+    private static final int msgUpdateNextCal =2;
+
+    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(intent.getAction().equals("autoCalNextString")){
+                nextCalString = intent.getStringExtra("content");
+                handler.sendEmptyMessage(msgUpdateNextCal);
+            }
+
+        }
+    };
 
     private Handler handler = new Handler(){
         @Override
@@ -46,6 +63,9 @@ public class FragmentMain extends Fragment implements NotifyScanSensor{
                     tvWindDirection.setText(tools.float2String3(data.getWindDirection()));
                     tvNoise.setText(tools.float2String3(data.getValue()));
                     break;
+                case msgUpdateNextCal:
+                    tvNextCal.setText("下次自动校准时间:"+nextCalString);
+                    break;
 
                 default:
 
@@ -60,6 +80,10 @@ public class FragmentMain extends Fragment implements NotifyScanSensor{
         View messageLayout = inflater.inflate(R.layout.fragment_main,container,false);
         initView(messageLayout);
         ScanSensor.getInstance().setNotifyScanSensor(this);
+
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction("autoCalNextString");
+        getActivity().registerReceiver(broadcastReceiver,intentFilter);
         return messageLayout;
     }
 
@@ -71,6 +95,13 @@ public class FragmentMain extends Fragment implements NotifyScanSensor{
         tvWindForce = v.findViewById(R.id.tvMainWindForce);
         tvWindDirection = v.findViewById(R.id.tvMainWindDirection);
         tvNoise = v.findViewById(R.id.tvMainNoise);
+        tvNextCal = v.findViewById(R.id.tvMainNextCal);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        getActivity().unregisterReceiver(broadcastReceiver);
     }
 
     @Override
