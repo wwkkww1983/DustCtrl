@@ -29,7 +29,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener,CalcNextAutoCalibration {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener,CalcNextAutoCalibration ,SocketClientCtrl{
     private final static  String tag = "MainActivity";
     private View layoutMain;
     private View layoutOperate;
@@ -95,6 +95,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Log.d(tag,"计算下次测量时间"+tools.timestamp2string(next));
     }
 
+    @Override
+    public void endHeartThread() {
+        Log.d(tag,"结束心跳");
+    }
+
     class AutoCalibrationTimerTask extends TimerTask{
 
         @Override
@@ -139,6 +144,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         ScanSensor.getInstance().addObserver(SystemLog.getInstance(this));
         ScanSensor.getInstance().startScan(this);
+        SocketTask.getInstance().startSocketHeart("192.168.168.134",12803,this,this);
+        //SocketTask.getInstance().setContext(this);
 
     }
 

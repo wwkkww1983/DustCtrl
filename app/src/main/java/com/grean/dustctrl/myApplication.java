@@ -5,6 +5,9 @@ import android.content.SharedPreferences;
 import android.util.Log;
 import android.util.StringBuilderPrinter;
 
+import java.util.HashMap;
+import java.util.Objects;
+
 /**
  * Created by Administrator on 2017/8/24.
  */
@@ -12,11 +15,20 @@ import android.util.StringBuilderPrinter;
 public class myApplication extends Application {
     private static  final String tag = "myApplication";
     private static myApplication instance;
+    private HashMap<String,Object> config = new HashMap<String,Object>();
 
     public myApplication(){
         CtrlCommunication.getInstance();//.setDustParaK(getConfigFloat("DustParaK"));
         NoiseCommunication.getInstance();
         Log.d(tag,"开机");
+    }
+
+    public HashMap<String, Object> getConfig() {
+        return config;
+    }
+
+    public void setConfig(HashMap<String, Object> config) {
+        this.config = config;
     }
 
     public static myApplication getInstance() {
@@ -58,6 +70,13 @@ public class myApplication extends Application {
         SharedPreferences sp = getSharedPreferences("config",MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.putInt(key,data);
+        editor.commit();
+    }
+
+    public void saveConfig(String key,String data){
+        SharedPreferences sp = getSharedPreferences("config",MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putString(key,data);
         editor.commit();
     }
 

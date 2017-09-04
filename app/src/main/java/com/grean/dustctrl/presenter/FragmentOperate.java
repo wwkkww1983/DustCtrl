@@ -19,10 +19,12 @@ import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.grean.dustctrl.R;
 import com.grean.dustctrl.model.OperateDustMeter;
 import com.grean.dustctrl.model.OperateSystem;
+import com.grean.dustctrl.model.OperateTcp;
 
 import java.util.Calendar;
 
@@ -33,18 +35,19 @@ import java.util.Calendar;
 public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View.OnClickListener , DialogTimeSelected{
     private static final int CancelDialog = 1;
     private static final int ShowDustMeterInfo = 2;
+    private static final int CancelDialogWithToast = 3;
 
     private ProcessDialogFragment dialogFragment;
-    private String dustMeterInfo;
-    private String autoCalTime;
+    private String dustMeterInfo,autoCalTime,toastString;
    // private DialogFragment df;
-    private Button btnDustMeterManCal,btnDustMeterInquire,btnMotorSet,btnSaveAutoCal;
+    private Button btnDustMeterManCal,btnDustMeterInquire,btnMotorSet,btnSaveAutoCal,btnSaveServer,btnUpdateSoftware;
     private TextView tvDustMeterInfo,tvNextAutoCalTime;
-    private EditText etMotorRounds,etMotorTime,etAutoCalInterval;
+    private EditText etMotorRounds,etMotorTime,etAutoCalInterval,etServerIp,etServerPort,etUpdateSoftwareUrl;
     private Switch swDustMeterRun,swValve,swFan,swExt1,swExt2,swBackup,swAutoCalibrationEnable;
 
     private OperateDustMeter dustMeter;
     private OperateSystem system;
+    private OperateTcp operateTcp;
 
     private Handler handler = new Handler(){
         @Override
@@ -56,6 +59,10 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
                     break;
                 case ShowDustMeterInfo:
                     tvDustMeterInfo.setText(dustMeterInfo);
+                    break;
+                case CancelDialogWithToast:
+                    dialogFragment.dismiss();
+                    Toast.makeText(getActivity(),toastString,Toast.LENGTH_SHORT).show();
                     break;
                 default:
 
@@ -71,6 +78,7 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
         initView(messageLayout);
         dustMeter = new OperateDustMeter(this);
         system = new OperateSystem();
+        operateTcp = new OperateTcp(this);
         onShow();
         return messageLayout;
     }
@@ -111,6 +119,13 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
         etAutoCalInterval = v.findViewById(R.id.etOperateAutoCalInterval);
         btnSaveAutoCal = v.findViewById(R.id.btnOperateSaveAutoCal);
         swAutoCalibrationEnable = v.findViewById(R.id.swAutoCaliration);
+        etServerIp = v.findViewById(R.id.etOperateServerIP);
+        etServerPort = v.findViewById(R.id.etOperateServerPort);
+        etUpdateSoftwareUrl = v.findViewById(R.id.etOperateUpdateUrl);
+        btnSaveServer = v.findViewById(R.id.btnOperateSaveServer);
+        btnUpdateSoftware = v.findViewById(R.id.btnOperateUpdateSoftware);
+        btnSaveServer.setOnClickListener(this);
+        btnUpdateSoftware.setOnClickListener(this);
         swAutoCalibrationEnable.setOnClickListener(this);
         tvNextAutoCalTime.setOnClickListener(this);
         btnSaveAutoCal.setOnClickListener(this);
@@ -135,6 +150,12 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
     @Override
     public void cancelDialog() {
         handler.sendEmptyMessage(CancelDialog);
+    }
+
+    @Override
+    public void cancelDialogWithToast(String string) {
+        toastString = string;
+        handler.sendEmptyMessage(CancelDialogWithToast);
     }
 
     @Override
@@ -208,6 +229,18 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
                 }
                 intent.putExtra("date",system.getAutoTimeDate());
                 getActivity().sendBroadcast(intent);
+                break;
+            case R.id.btnOperateSaveServer:
+                dialogFragment = new ProcessDialogFragment();
+                dialogFragment.setCancelable(true);
+                dialogFragment.show(getFragmentManager(),"TcpSocket");
+                operateTcp.setTcpSocketClient(etServerIp.getText().toString(),Integer.valueOf(etServerPort.getText().toString()),dialogFragment);
+                break;
+            case R.id.btnOperateUpdateSoftware:
+                dialogFragment = new ProcessDialogFragment();
+                dialogFragment.setCancelable(true);
+                dialogFragment.show(getFragmentManager(),"DownLoadSoftware");
+                system.startDownLoadSoftware(getActivity(),etUpdateSoftwareUrl.getText().toString(),dialogFragment,this);
                 break;
             default:
                 break;

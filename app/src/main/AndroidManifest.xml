@@ -29,6 +29,11 @@
                 <category android:name="android.intent.category.MONKEY"/>
             </intent-filter>
         </activity>
+        <receiver android:name="com.download.InstallApkBroadcast">
+            <intent-filter>
+                <action android:name="android.intent.action.DOWNLOAD_COMPLETE"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

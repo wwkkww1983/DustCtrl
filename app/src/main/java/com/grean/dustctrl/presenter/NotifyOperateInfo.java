@@ -9,4 +9,5 @@ public interface NotifyOperateInfo {
 
     void showDustMeterInfo(String info);
     void cancelDialog();
+    void cancelDialogWithToast(String string);
 }
