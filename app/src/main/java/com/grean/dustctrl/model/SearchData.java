@@ -95,7 +95,7 @@ public class SearchData {
     public void searchLog(String startString,String endString){
         long start = tools.string2timestamp(startString),end = tools.string2timestamp(endString);
         insert.clearContent();
-        searchData(start,end);
+        searchLog(start,end);
     }
 
 }

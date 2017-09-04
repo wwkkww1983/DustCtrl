@@ -15,6 +15,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.grean.dustctrl.R;
+import com.grean.dustctrl.model.OperateInit;
+import com.grean.dustctrl.myApplication;
 import com.grean.dustctrl.process.NotifyScanSensor;
 import com.grean.dustctrl.process.ScanSensor;
 import com.grean.dustctrl.process.SensorData;
@@ -33,6 +35,7 @@ public class FragmentMain extends Fragment implements NotifyScanSensor{
     private TextView tvWindDirection;
     private TextView tvNoise,tvNextCal;
     private SensorData data;
+    private OperateInit operateInit;
 
     private String nextCalString;
     private static final int msgUpdateSensor = 1;
@@ -81,9 +84,13 @@ public class FragmentMain extends Fragment implements NotifyScanSensor{
         initView(messageLayout);
         ScanSensor.getInstance().setNotifyScanSensor(this);
 
+
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction("autoCalNextString");
         getActivity().registerReceiver(broadcastReceiver,intentFilter);
+        operateInit = new OperateInit(getActivity());
+        tvNextCal.setText(operateInit.getAutoNextTime());
+        operateInit.setAutoCalTime();
         return messageLayout;
     }
 

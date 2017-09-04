@@ -11,6 +11,7 @@ import android.os.Message;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
@@ -47,7 +48,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         public void handleMessage(Message msg) {
             switch (msg.what){
                 case msgAutoCalibration:
-
                     ScanSensor.getInstance().calibrationDustMeterWithAuto(MainActivity.this);
                     break;
             }
@@ -78,9 +78,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onComplete() {
+        Log.d(tag,"计算下次测量时间");
         long now = tools.nowtime2timestamp();
         long plan = myApplication.getInstance().getConfigLong("AutoCalTime");
-        long interval = myApplication.getInstance().getConfigInt("AutoCalInterval");
+        long interval = myApplication.getInstance().getConfigLong("AutoCalInterval");
         long next = tools.calcNextTime(now,plan,interval);
         myApplication.getInstance().saveConfig("AutoCalTime",next);
         cancelAutoCalibrationTimer();
@@ -91,6 +92,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         intent.setAction("autoCalNextString");
         intent.putExtra("content",tools.timestamp2string(next));
         sendBroadcast(intent);
+        Log.d(tag,"计算下次测量时间"+tools.timestamp2string(next));
     }
 
     class AutoCalibrationTimerTask extends TimerTask{

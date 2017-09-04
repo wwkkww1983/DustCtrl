@@ -126,7 +126,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="自动校准" />
+                    android:text="自动校准"
+                    android:textSize="24sp" />
 
                 <TextView
                     android:id="@+id/textView30"

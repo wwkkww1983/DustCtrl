@@ -100,6 +100,15 @@ public class ScanSensor extends Observable{
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+            DustMeterInfo dustMeterInfo = com.getInfo();
+
+            setChanged();
+            if (dustMeterInfo.isBgOk()){
+                notifyObservers(new LogFormat("校零成功"));
+            }else{
+                notifyObservers(new LogFormat("校零失败"));
+            }
+
             com.SendFrame(CtrlCommunication.DustMeterBgEnd);
             try {
                 Thread.sleep(1000);
@@ -120,6 +129,12 @@ public class ScanSensor extends Observable{
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
+            }
+            setChanged();
+            if (dustMeterInfo.isSpanOk()){
+                notifyObservers(new LogFormat("校跨成功"));
+            }else{
+                notifyObservers(new LogFormat("校跨失败"));
             }
             com.SendFrame(CtrlCommunication.DustMeterSpanEnd);
             try {

@@ -35,7 +35,7 @@ public class OperateSystem {
     }
 
     public void setAutoCalibrationEnable(boolean key){
-        myApplication.getInstance().saveConfig("AutoCalibration",key);
+        myApplication.getInstance().saveConfig("AutoCalibrationEnable",key);
     }
 
     public void setAutoTime(String string){
