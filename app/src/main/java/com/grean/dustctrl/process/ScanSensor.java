@@ -2,6 +2,7 @@ package com.grean.dustctrl.process;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
@@ -66,6 +67,7 @@ public class ScanSensor extends Observable{
             Log.d(tag,"开始校准");
             setChanged();
             notifyObservers(new LogFormat("开始校准"));
+            sendMainFragmentString("停止测量,开始校准");
             CtrlCommunication com;
             com = CtrlCommunication.getInstance();
             try {
@@ -88,6 +90,7 @@ public class ScanSensor extends Observable{
             if (dialogInfo!=null) {
                 dialogInfo.showInfo("本底校准...");
             }
+            sendMainFragmentString("正在校零");
             com.SendFrame(CtrlCommunication.DustMeterBgStart);
             try {
                 Thread.sleep(100000);
@@ -105,8 +108,10 @@ public class ScanSensor extends Observable{
             setChanged();
             if (dustMeterInfo.isBgOk()){
                 notifyObservers(new LogFormat("校零成功"));
+                sendMainFragmentString("校零成功");
             }else{
                 notifyObservers(new LogFormat("校零失败"));
+                sendMainFragmentString("校零失败");
             }
 
             com.SendFrame(CtrlCommunication.DustMeterBgEnd);
@@ -118,6 +123,7 @@ public class ScanSensor extends Observable{
             if (dialogInfo!=null) {
                 dialogInfo.showInfo("量程校准...");
             }
+            sendMainFragmentString("正在校跨");
             com.SendFrame(CtrlCommunication.DustMeterSpanStart);
             try {
                 Thread.sleep(80000);
@@ -133,8 +139,10 @@ public class ScanSensor extends Observable{
             setChanged();
             if (dustMeterInfo.isSpanOk()){
                 notifyObservers(new LogFormat("校跨成功"));
+                sendMainFragmentString("校跨成功");
             }else{
                 notifyObservers(new LogFormat("校跨失败"));
+                sendMainFragmentString("校跨失败");
             }
             com.SendFrame(CtrlCommunication.DustMeterSpanEnd);
             try {
@@ -145,6 +153,7 @@ public class ScanSensor extends Observable{
             if(dialogInfo!=null) {
                 dialogInfo.showInfo("结束校准...");
             }
+           // sendMainFragmentString("结束校准");
             com.ctrlDo(1,false);
             try {
                 Thread.sleep(10000);
@@ -177,6 +186,14 @@ public class ScanSensor extends Observable{
             scanSensorThread = new ScanSensorThread();
             scanSensorThread.start();
         }
+    }
+
+    private void sendMainFragmentString(String string){
+        Intent intent = new Intent();
+        intent.setAction("autoCalNextString");
+        intent.putExtra("content",string);
+        context.sendBroadcast(intent);
+
     }
 
     public boolean restartScanSensor(){

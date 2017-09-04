@@ -67,7 +67,7 @@ public class FragmentMain extends Fragment implements NotifyScanSensor{
                     tvNoise.setText(tools.float2String3(data.getValue()));
                     break;
                 case msgUpdateNextCal:
-                    tvNextCal.setText("下次自动校准时间:"+nextCalString);
+                    tvNextCal.setText("自动校准:"+nextCalString);
                     break;
 
                 default:

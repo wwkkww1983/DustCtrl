@@ -208,5 +208,14 @@
             android:layout_weight="1"
             android:text="下次自动校准时间:"
             android:textSize="30sp" />
+
+        <TextClock
+            android:id="@+id/textClock"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:layout_weight="1"
+            android:textSize="30sp" />
+
     </LinearLayout>
 </LinearLayout>

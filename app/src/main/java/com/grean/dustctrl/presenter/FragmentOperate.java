@@ -183,6 +183,7 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
                 break;
             case R.id.btnOperateSaveAutoCal:
                 system.setAutoCalInterval(etAutoCalInterval.getText().toString());
+                autoCalTime = system.calNexTime(tvNextAutoCalTime.getText().toString());
                 system.setAutoTime(autoCalTime);
                 intent = new Intent();
                 intent.setAction("autoCalibration");
