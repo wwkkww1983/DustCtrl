@@ -7,4 +7,6 @@ package com.grean.dustctrl.presenter;
 public interface InsertString {
     void insertStrings(String [] strings);
     void clearAll();
+    void insertLog(String string);
+    void clearContent();
 }

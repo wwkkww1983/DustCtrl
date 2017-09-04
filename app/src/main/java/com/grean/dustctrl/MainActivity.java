@@ -47,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         public void handleMessage(Message msg) {
             switch (msg.what){
                 case msgAutoCalibration:
+
                     ScanSensor.getInstance().calibrationDustMeterWithAuto(MainActivity.this);
                     break;
             }

@@ -89,6 +89,21 @@ public class FragmentData extends Fragment implements View.OnClickListener , Ins
         data.initTitle();
     }
 
+    @Override
+    public void insertLog(String string) {
+        if(string!=null){
+            relativeLayout = (RelativeLayout) LayoutInflater.from(getActivity()).inflate(R.layout.table_text,null);
+            TextView text = relativeLayout.findViewById(R.id.logText);
+            text.setText(string);
+            mainLinearLayout.addView(relativeLayout);
+        }
+    }
+
+
+    public void clearContent() {
+        mainLinearLayout.removeAllViews();
+    }
+
     private class SetSearchStartTime implements DialogTimeSelected{
 
         @Override

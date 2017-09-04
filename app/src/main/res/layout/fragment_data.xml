@@ -47,7 +47,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="查询"
+            android:text="数据查询"
+            android:textSize="18sp" />
+
+        <Button
+            android:id="@+id/btnLogInquire"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="日志查询"
             android:textSize="18sp" />
     </LinearLayout>
 

@@ -27,6 +27,29 @@ public class SearchData {
         insert.insertStrings(name);
     }
 
+    public void searchLog(long start,long end){
+        String  string;
+        String statement;
+        if (start > end){
+            statement = "date <"+ String.valueOf(start)+" and date >"+String.valueOf(end);
+        }else{
+            statement = "date >"+ String.valueOf(start)+" and date <"+String.valueOf(end);
+        }
+
+        DbTask helperDbTask = new DbTask(context,1);
+        SQLiteDatabase db = helperDbTask.getReadableDatabase();
+        Cursor cursor;
+        cursor = db.rawQuery("SELECT * FROM log WHERE "+statement+" ORDER BY date desc",new String[]{});
+        int index=0;
+        while ((cursor.moveToNext())&&(index < 100)){
+            string = cursor.getString(2);
+            insert.insertLog(string);
+            index++;
+        }
+        db.close();
+        helperDbTask.close();
+    }
+
     /**
      * 搜索数据
      * @param start 起始时间戳
@@ -45,7 +68,8 @@ public class SearchData {
         SQLiteDatabase db = helperDbTask.getReadableDatabase();
         Cursor cursor;
         cursor = db.rawQuery("SELECT * FROM result WHERE "+statement+" ORDER BY date desc",new String[]{});
-        while (cursor.moveToNext()){
+        int index = 0;
+        while ((cursor.moveToNext())&&index < 100){
             data[0] = tools.timestamp2string(cursor.getLong(0));
             data[1] = String.valueOf(cursor.getFloat(1));
             data[2] = String.valueOf(cursor.getFloat(3));
@@ -55,6 +79,7 @@ public class SearchData {
             data[6] = String.valueOf(cursor.getFloat(7));
             data[7] = String.valueOf(cursor.getFloat(2));
             insert.insertStrings(data);
+            index++;
         }
         db.close();
         helperDbTask.close();
@@ -64,6 +89,12 @@ public class SearchData {
     public void searchData(String startString,String endString){
         long start = tools.string2timestamp(startString),end = tools.string2timestamp(endString);
         insert.clearAll();
+        searchData(start,end);
+    }
+
+    public void searchLog(String startString,String endString){
+        long start = tools.string2timestamp(startString),end = tools.string2timestamp(endString);
+        insert.clearContent();
         searchData(start,end);
     }
 
