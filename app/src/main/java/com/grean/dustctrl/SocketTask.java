@@ -7,12 +7,18 @@ import android.util.Log;
 
 import com.grean.dustctrl.presenter.NotifyOperateInfo;
 import com.grean.dustctrl.presenter.NotifyProcessDialogInfo;
+import com.tools;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.Inet4Address;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.NetworkInterface;
 import java.net.Socket;
+import java.net.SocketException;
+import java.util.Enumeration;
 
 /**
  * TCP客户端任务类，单例化
@@ -111,6 +117,7 @@ public class SocketTask {
                 if(notifyOperateInfo!=null){
                     notifyOperateInfo.cancelDialog();
                 }
+
                 while (connected){
                     if (socketClient.isConnected()){
                         while ((count = receive.read(readBuff))!=-1 && connected){
@@ -136,6 +143,63 @@ public class SocketTask {
             }
 
         }
+    }
+
+    public static String getIpAddressString() {
+        try {
+            for (Enumeration<NetworkInterface> enNetI = NetworkInterface
+                    .getNetworkInterfaces(); enNetI.hasMoreElements(); ) {
+                NetworkInterface netI = enNetI.nextElement();
+                for (Enumeration<InetAddress> enumIpAddr = netI
+                        .getInetAddresses(); enumIpAddr.hasMoreElements(); ) {
+                    InetAddress inetAddress = enumIpAddr.nextElement();
+                    if (inetAddress instanceof Inet4Address && !inetAddress.isLoopbackAddress()) {
+                        return inetAddress.getHostAddress();
+                    }
+                }
+            }
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+    /*作者：A_客
+    链接：http://www.jianshu.com/p/be244fb85a4e
+    來源：简书
+    著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。*/
+
+    /**
+     * 得到无线网关的IP地址
+     *
+     * @return
+     */
+    private void getAllIp() {
+
+        try {
+            // 获取本地设备的所有网络接口
+            Enumeration<NetworkInterface> enumerationNi = NetworkInterface
+                    .getNetworkInterfaces();
+            while (enumerationNi.hasMoreElements()) {
+                NetworkInterface networkInterface = enumerationNi.nextElement();
+                String interfaceName = networkInterface.getDisplayName();
+                Log.i("tag", "网络名字" + interfaceName);
+
+                Enumeration<InetAddress> enumIpAddr = networkInterface
+                        .getInetAddresses();
+
+                while (enumIpAddr.hasMoreElements()) {
+                    // 返回枚举集合中的下一个IP地址信息
+                    InetAddress inetAddress = enumIpAddr.nextElement();
+                    Log.i("tag", inetAddress.getHostAddress() + "哪个类型的   "+inetAddress.getClass().toString());
+
+                }
+            }
+
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
+
     }
 
     private class HeartThread extends Thread{
@@ -170,11 +234,9 @@ public class SocketTask {
                 }else{
                     times++;
                 }
-
-
-
             }
-
+            Log.d(tag,"IP=V"+getIpAddressString());
+            //getAllIp();
             while ((!interrupted())&&(heartRun)){
                 if (connected){//已连接服务器
                     try {
