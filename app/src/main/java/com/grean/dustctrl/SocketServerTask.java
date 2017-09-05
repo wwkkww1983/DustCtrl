@@ -2,10 +2,12 @@ package com.grean.dustctrl;
 
 import android.util.Log;
 
+import com.grean.dustctrl.protocol.GeneralServerProtocol;
 import com.tools;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -22,6 +24,7 @@ public class SocketServerTask {
     private boolean serverRun = true;
     private ReceiveThread receiveThread;
     private AcceptThread acceptThread;
+    private GeneralServerProtocol serverProtocol;
 
     private SocketServerTask(){
 
@@ -31,7 +34,8 @@ public class SocketServerTask {
         return instance;
     }
 
-    public void startSocketServer(){
+    public void startSocketServer(GeneralServerProtocol serverProtocol){
+        this.serverProtocol = serverProtocol;
         acceptThread = new AcceptThread();
         acceptThread.start();
     }
@@ -64,17 +68,25 @@ public class SocketServerTask {
     private class ReceiveThread extends Thread{
 
         private InputStream inputStream;
+        private OutputStream outputStream;
         private byte[] buf = new byte[512];;
         private Socket s;
         ReceiveThread (Socket s){
 
             try {
                 this.s = s;
+                this.outputStream = s.getOutputStream();
                 this.inputStream = s.getInputStream();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+
+        public OutputStream getOutputStream(){
+            return outputStream;
+        }
+
+
 
         @Override
         public void run() {

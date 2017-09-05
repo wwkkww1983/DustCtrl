@@ -7,6 +7,7 @@ import android.util.Log;
 
 import com.grean.dustctrl.presenter.NotifyOperateInfo;
 import com.grean.dustctrl.presenter.NotifyProcessDialogInfo;
+import com.grean.dustctrl.protocol.GeneralClientProtocol;
 import com.tools;
 
 import java.io.IOException;
@@ -41,6 +42,7 @@ public class SocketTask {
     private String heartString = "Grean.com.cn";
     NotifyProcessDialogInfo notifyProcessDialogInfo;
     NotifyOperateInfo notifyOperateInfo;
+    private GeneralClientProtocol clientProtocol;
 
     public static SocketTask getInstance() {
         return instance;
@@ -80,7 +82,8 @@ public class SocketTask {
         this.context = context;
     }
 
-    public void startSocketHeart(String ip, int port, Context context, SocketClientCtrl clientCtrl){
+    public void startSocketHeart(String ip, int port, Context context, SocketClientCtrl clientCtrl, GeneralClientProtocol clientProtocol){
+        this.clientProtocol = clientProtocol;
         this.context = context;
         this.clientCtrl = clientCtrl;
         this.serverIp = ip;

@@ -5,6 +5,11 @@ import android.content.SharedPreferences;
 import android.util.Log;
 import android.util.StringBuilderPrinter;
 
+import com.grean.dustctrl.protocol.GeneralClientProtocol;
+import com.grean.dustctrl.protocol.GeneralServerProtocol;
+import com.grean.dustctrl.protocol.TcpClient;
+import com.grean.dustctrl.protocol.TcpServer;
+
 import java.util.HashMap;
 import java.util.Objects;
 
@@ -16,11 +21,27 @@ public class myApplication extends Application {
     private static  final String tag = "myApplication";
     private static myApplication instance;
     private HashMap<String,Object> config = new HashMap<String,Object>();
+    private GeneralServerProtocol serverProtocol;
+    private GeneralClientProtocol clientProtocol;
 
     public myApplication(){
         CtrlCommunication.getInstance();//.setDustParaK(getConfigFloat("DustParaK"));
         NoiseCommunication.getInstance();
         Log.d(tag,"开机");
+    }
+
+    public GeneralServerProtocol getServerProtocol() {
+        if(serverProtocol == null){
+            serverProtocol = new TcpServer();
+        }
+        return serverProtocol;
+    }
+
+    public GeneralClientProtocol getClientProtocol() {
+        if(clientProtocol == null){
+            clientProtocol = new TcpClient();
+        }
+        return clientProtocol;
     }
 
     public HashMap<String, Object> getConfig() {
