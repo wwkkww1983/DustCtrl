@@ -310,7 +310,7 @@
                     android:layout_weight="1"
                     android:ems="10"
                     android:inputType="textPersonName"
-                    android:text="http://192.168.168.164:8080/DustCtrl.apk"
+                    android:text="http://192.168.168.134:8080/app-debug.apk"
                     android:textSize="24sp" />
 
                 <Button

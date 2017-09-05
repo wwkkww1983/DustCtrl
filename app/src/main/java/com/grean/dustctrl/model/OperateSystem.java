@@ -105,9 +105,11 @@ public class OperateSystem {
         }
 
         private DownloadManager.Request CreateRequest(String url){
-            Log.d(tag,url);
+
             DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
             request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_HIDDEN);
+            Log.d(tag,url);
+           // Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).mkdir() ;
             request.setDestinationInExternalFilesDir(context, Environment.DIRECTORY_DOWNLOADS,"123.apk");
             request.setDescription("杭州绿洁扬尘在线监测系统");
             return request;
