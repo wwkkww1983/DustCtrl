@@ -5,7 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
-import android.os.Handler;
 import android.os.Process;
 import android.util.Log;
 import com.grean.dustctrl.CtrlCommunication;
