@@ -41,7 +41,7 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
     private String dustMeterInfo,autoCalTime,toastString;
    // private DialogFragment df;
     private Button btnDustMeterManCal,btnDustMeterInquire,btnMotorSet,btnSaveAutoCal,btnSaveServer,btnUpdateSoftware;
-    private TextView tvDustMeterInfo,tvNextAutoCalTime;
+    private TextView tvDustMeterInfo,tvNextAutoCalTime,tvLocalIp;
     private EditText etMotorRounds,etMotorTime,etAutoCalInterval,etServerIp,etServerPort,etUpdateSoftwareUrl;
     private Switch swDustMeterRun,swValve,swFan,swExt1,swExt2,swBackup,swAutoCalibrationEnable;
 
@@ -92,6 +92,7 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
         etAutoCalInterval.setText(system.getAutoCalInterval());
         autoCalTime = system.getAutoCalNextTime();
         tvNextAutoCalTime.setText(autoCalTime);
+        tvLocalIp.setText(operateTcp.getLocalIpAddress()+":8888");
         if (system.getAutoCalibrationEnable()){
             swAutoCalibrationEnable.setChecked(true);
         }else {
@@ -124,6 +125,7 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
         etUpdateSoftwareUrl = v.findViewById(R.id.etOperateUpdateUrl);
         btnSaveServer = v.findViewById(R.id.btnOperateSaveServer);
         btnUpdateSoftware = v.findViewById(R.id.btnOperateUpdateSoftware);
+        tvLocalIp = v.findViewById(R.id.tvOperateLocalIp);
         btnSaveServer.setOnClickListener(this);
         btnUpdateSoftware.setOnClickListener(this);
         swAutoCalibrationEnable.setOnClickListener(this);

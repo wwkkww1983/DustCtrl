@@ -18,6 +18,10 @@ public class OperateTcp {
         this.info= info;
     }
 
+    public String getLocalIpAddress(){
+        return SocketTask.getIpAddressString();
+    }
+
     public void setTcpSocketClient(String ip,int port,NotifyProcessDialogInfo notifyProcessDialogInfo){
         myApplication.getInstance().saveConfig("ServerIp",ip);
         myApplication.getInstance().saveConfig("ServerPort",port);

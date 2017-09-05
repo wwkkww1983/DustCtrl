@@ -8,6 +8,7 @@ import android.os.Environment;
 import android.os.Process;
 import android.util.Log;
 import com.grean.dustctrl.CtrlCommunication;
+import com.grean.dustctrl.SocketTask;
 import com.grean.dustctrl.myApplication;
 import com.grean.dustctrl.presenter.NotifyOperateInfo;
 import com.grean.dustctrl.presenter.NotifyProcessDialogInfo;
@@ -188,4 +189,6 @@ public class OperateSystem {
         myApplication.getInstance().saveConfig("MotorRounds",rounds);
         myApplication.getInstance().saveConfig("MotorTime",time);
     }
+
+
 }

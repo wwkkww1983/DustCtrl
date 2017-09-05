@@ -19,6 +19,7 @@ public class SocketServerTask {
     private ServerSocket serverSocket;
     private Socket clientSocket;
     private boolean stop = true;
+    private boolean serverRun = true;
     private ReceiveThread receiveThread;
     private AcceptThread acceptThread;
 
@@ -38,21 +39,24 @@ public class SocketServerTask {
     private class AcceptThread extends Thread{
         @Override
         public void run() {
-            try {
-                serverSocket = new ServerSocket(8888);
+            serverRun = true;
 
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+                try {
+                    serverSocket = new ServerSocket(8888);
 
-            try {
-                clientSocket = serverSocket.accept();
-            } catch (IOException e) {
-                e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            while (serverRun){
+                try {
+                    clientSocket = serverSocket.accept();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                receiveThread = new ReceiveThread(clientSocket);
+                stop = false;
+                receiveThread.start();
             }
-            receiveThread = new ReceiveThread(clientSocket);
-            stop = false;
-            receiveThread.start();
 
         }
     }
@@ -60,7 +64,7 @@ public class SocketServerTask {
     private class ReceiveThread extends Thread{
 
         private InputStream inputStream;
-        private byte[] buf;
+        private byte[] buf = new byte[512];;
         private Socket s;
         ReceiveThread (Socket s){
 
@@ -74,11 +78,16 @@ public class SocketServerTask {
 
         @Override
         public void run() {
-            while (!stop&&s.isConnected()&&!s.isInputShutdown()&&!s.isClosed()){
-                buf = new byte[512];
+            Log.d(tag,"建立链接");
+            while (!stop){
                 try {
                     int count = inputStream.read(buf);
-                    Log.d(tag, "receive:"+tools.bytesToHexString(buf,count)+";sizeof"+String.valueOf(count));
+                    if(count!=-1){
+                        Log.d(tag, "receive:"+tools.bytesToHexString(buf,count)+";sizeof"+String.valueOf(count));
+                    }else {
+                        break;
+                    }
+
                 } catch (IOException e) {
                     e.printStackTrace();
                     stop = true;
@@ -87,6 +96,13 @@ public class SocketServerTask {
 
             }
             stop = true;
+            try {
+                s.shutdownInput();
+                s.shutdownOutput();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
             Log.d(tag,"结束链接");
         }
     }
