@@ -82,11 +82,6 @@ public class SocketServerTask {
             }
         }
 
-        public OutputStream getOutputStream(){
-            return outputStream;
-        }
-
-
 
         @Override
         public void run() {
@@ -95,7 +90,10 @@ public class SocketServerTask {
                 try {
                     int count = inputStream.read(buf);
                     if(count!=-1){
-                        Log.d(tag, "receive:"+tools.bytesToHexString(buf,count)+";sizeof"+String.valueOf(count));
+
+                        byte [] data = serverProtocol.handleProtocol(buf,count);
+                        outputStream.write(data);
+                        outputStream.flush();
                     }else {
                         break;
                     }

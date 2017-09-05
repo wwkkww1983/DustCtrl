@@ -5,4 +5,5 @@ package com.grean.dustctrl.protocol;
  */
 
 public interface GeneralServerProtocol {
+    byte[] handleProtocol(byte[] rec,int count);
 }
