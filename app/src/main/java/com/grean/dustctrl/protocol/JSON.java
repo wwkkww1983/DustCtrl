@@ -36,6 +36,7 @@ import java.util.Stack;
  */
 
 public class JSON {
+    //private static final String tag="JSON";
 
     public static byte[] createJsonObject(int total,boolean success, List<Map<String,Object>> list) throws JSONException {
         Map<String,Object> map;
