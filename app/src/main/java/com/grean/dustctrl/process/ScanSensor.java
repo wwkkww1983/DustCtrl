@@ -13,6 +13,7 @@ import com.grean.dustctrl.myApplication;
 import com.grean.dustctrl.presenter.CalcNextAutoCalibration;
 import com.grean.dustctrl.presenter.NotifyOperateInfo;
 import com.grean.dustctrl.presenter.NotifyProcessDialogInfo;
+import com.grean.dustctrl.protocol.GeneralRealTimeDataProtocol;
 import com.tools;
 
 import java.util.Observable;
@@ -22,7 +23,7 @@ import java.util.Observable;
  * Created by Administrator on 2017/8/25.
  */
 
-public class ScanSensor extends Observable{
+public class ScanSensor extends Observable implements GeneralRealTimeDataProtocol{
     private static final String tag = "ScanSensor";
     private static ScanSensor instance = new ScanSensor();
     private boolean run = false;
@@ -33,6 +34,7 @@ public class ScanSensor extends Observable{
     private NotifyOperateInfo info;
     private NotifyProcessDialogInfo dialogInfo;
     private CalcNextAutoCalibration calcNextAutoCalibration;
+    SensorData data;
     public boolean isRun() {
         return run;
     }
@@ -58,6 +60,11 @@ public class ScanSensor extends Observable{
         run = false;
         CalibrationDustMeterThread thread = new CalibrationDustMeterThread();
         thread.start();
+    }
+
+    @Override
+    public SensorData getRealTimeData() {
+        return data;
     }
 
     private class CalibrationDustMeterThread extends Thread{
@@ -224,7 +231,6 @@ public class ScanSensor extends Observable{
             super.run();
             CtrlCommunication com;
             com = CtrlCommunication.getInstance();
-            SensorData data;
             com.setDustParaK(myApplication.getInstance().getConfigFloat("DustParaK"));
             com.setMotorRounds(myApplication.getInstance().getConfigInt("MotorRounds"));
             com.setMotorTime(myApplication.getInstance().getConfigInt("MotorTime"));

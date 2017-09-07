@@ -14,6 +14,7 @@ public class SensorData {
     private float airPressure;
     private float windForce;
     private float windDirection;
+    private float noise;
     private boolean acIn;
     private boolean batteryLow;
     private boolean[] ctrlDo = new boolean[5];
@@ -28,6 +29,14 @@ public class SensorData {
 
     public SensorData(){
 
+    }
+
+    public float getNoise() {
+        return noise;
+    }
+
+    public void setNoise(float noise) {
+        this.noise = noise;
     }
 
     public float getValue() {
