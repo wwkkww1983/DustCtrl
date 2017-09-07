@@ -36,9 +36,10 @@ public class TcpServer implements GeneralServerProtocol{
     }
     @Override
     public byte[] handleProtocol(byte[] rec, int count) {
-        Log.d(tag, "receive:"+ tools.bytesToHexString(rec,count)+";sizeof"+String.valueOf(count));
         try {
-            return JSON.createJsonObject(2,true,list);
+            String string = new String(rec,0,count);
+            Log.d(tag, "server receive="+ string);
+            return JSON.handleJsonString(string);
         } catch (JSONException e) {
             e.printStackTrace();
         }

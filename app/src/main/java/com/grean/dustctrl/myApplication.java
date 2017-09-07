@@ -75,6 +75,8 @@ public class myApplication extends Application {
             editor.putLong("AutoCalTime",1483200000000l);
             editor.putLong("AutoCalInterval",86400000l);
             editor.putBoolean("AutoCalibrationEnable",true);
+            editor.putString("ServerIp","192.168.168.134");
+            editor.putInt("ServerPort",12803);
             editor.commit();
         }
 
@@ -126,5 +128,10 @@ public class myApplication extends Application {
     public long getConfigLong(String key){
         SharedPreferences sp = getSharedPreferences("config",MODE_PRIVATE);
         return sp.getLong(key,10);
+    }
+
+    public String getConfigString(String key){
+        SharedPreferences sp = getSharedPreferences("config",MODE_PRIVATE);
+        return sp.getString(key," ");
     }
 }

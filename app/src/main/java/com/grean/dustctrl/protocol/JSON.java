@@ -1,5 +1,6 @@
 package com.grean.dustctrl.protocol;
 
+import com.grean.dustctrl.myApplication;
 import com.grean.dustctrl.process.ScanSensor;
 import com.grean.dustctrl.process.SensorData;
 
@@ -17,7 +18,7 @@ import java.util.Stack;
  * 处理JSON数据数据格式
  * 实时数据
  * 收到{"protocolType":"realTimeData"，}
- * 返回{"protocolType":"realTimeData","realTimeData"[{"name":"dust","value":"1.0"},{"name":"temperature","value":"1.0"},{"name":"humidity","value":"1.0"},
+ * 返回{"protocolType":"realTimeData","state":"string","realTimeData"[{"name":"dust","value":"1.0"},{"name":"temperature","value":"1.0"},{"name":"humidity","value":"1.0"},
  * {"name":"pressure","value":"1.0"},{"name":"windForce","value":"1.0"},{"name":"windDirection","value":"1.0"},{"name":"noise","value":"1.0"},
  * {"name":"value","value":"1.0"}] }
  * 下载设置，从控制器下载当前设置
@@ -60,10 +61,31 @@ public class JSON {
         return item;
     }
 
+    private static byte[] handleUploadSetting() throws JSONException {
+        myApplication app = myApplication.getInstance();
+        JSONObject object = new JSONObject();
+        object.put("protocolType","uploadSetting");
+        object.put("success",true);
+        return object.toString().getBytes();
+    }
+
+    private static byte[] handleDownloadSetting() throws JSONException {
+        myApplication app = myApplication.getInstance();
+        JSONObject object = new JSONObject();
+        object.put("protocolType","downloadSetting");
+        object.put("autoCalibrationEnable",app.getConfigBoolean("AutoCalibrationEnable"));
+        object.put("autoCalibrationTime",app.getConfigLong("AutoCalTime"));
+        object.put("autoCalibrationInterval",app.getConfigLong("AutoCalInterval"));
+        object.put("serverIp",app.getConfigString("ServerIp"));
+        object.put("serverPort",app.getConfigInt("ServerPort"));
+        return object.toString().getBytes();
+    }
+
     private static byte[] handleRealTimeData(GeneralRealTimeDataProtocol realTimeDataProtocol) throws JSONException {
         SensorData data = realTimeDataProtocol.getRealTimeData();
         JSONObject object = new JSONObject();
         object.put("protocolType","realTimeData");
+        object.put("state","下次测量时间:-");
         JSONArray array = new JSONArray();
         array.put(putItem("dust",data.getDust()));
         array.put(putItem("temperature",data.getAirTemperature()));
@@ -82,15 +104,15 @@ public class JSON {
      * @param string
      * @return
      */
-    public byte[] handleJsonString(String string) throws JSONException {
+    public static byte[] handleJsonString(String string) throws JSONException {
         JSONObject jsonObject = new JSONObject(string);
         if (jsonObject.getString("protocolType").equals("realTimeData")){
             return handleRealTimeData(ScanSensor.getInstance());
         }else if(jsonObject.getString("protocolType").equals("downloadSetting")){
-            return handleRealTimeData(ScanSensor.getInstance());
+            return handleDownloadSetting();
 
         }else if(jsonObject.getString("protocolType").equals("uploadSetting")){
-            return handleRealTimeData(ScanSensor.getInstance());
+            return handleUploadSetting();
 
         }else if(jsonObject.getString("protocolType").equals("downloadSetting")){
             return handleRealTimeData(ScanSensor.getInstance());
