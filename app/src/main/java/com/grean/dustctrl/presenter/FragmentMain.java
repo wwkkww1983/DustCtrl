@@ -58,7 +58,7 @@ public class FragmentMain extends Fragment implements NotifyScanSensor{
             //super.handleMessage(msg);
             switch (msg.what){
                 case msgUpdateSensor:
-                    tvDust.setText(tools.float2String0(data.getDust()));
+                    tvDust.setText(tools.float2String3(data.getDust()));
                     tvTemperature.setText(tools.float2String3(data.getAirTemperature()));
                     tvHumidity.setText(tools.float2String3(data.getAirTemperature()));
                     tvPressure.setText(tools.float2String3(data.getAirPressure()));

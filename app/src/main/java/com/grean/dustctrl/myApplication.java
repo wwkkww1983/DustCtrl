@@ -82,6 +82,13 @@ public class myApplication extends Application {
 
     }
 
+    public void saveConfig(String key,float data){
+        SharedPreferences sp = getSharedPreferences("config",MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putFloat(key,data);
+        editor.commit();
+    }
+
     public void saveConfig(String key,long data){
         SharedPreferences sp = getSharedPreferences("config",MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();

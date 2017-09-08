@@ -3,6 +3,7 @@ package com.grean.dustctrl.model;
 import android.util.Log;
 
 import com.grean.dustctrl.CtrlCommunication;
+import com.grean.dustctrl.myApplication;
 import com.grean.dustctrl.presenter.NotifyOperateInfo;
 import com.grean.dustctrl.presenter.NotifyProcessDialogInfo;
 import com.grean.dustctrl.process.DustMeterInfo;
@@ -62,7 +63,18 @@ public class OperateDustMeter implements NotifyScanEnd{
         }
     }
 
+    public String calcParaK (String target){
+        float t = Float.valueOf(target);
+        float k = t / com.getData().getValue();
+        com.getData().setParaK(k);
+        myApplication.getInstance().saveConfig("DustParaK",k);
+        return String.valueOf(k);
+    }
 
+    public String getParaKString(){
+        float k = com.getData().getParaK();
+        return String.valueOf(k);
+    }
 
 
 }
