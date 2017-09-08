@@ -39,7 +39,7 @@ public class TcpServer implements GeneralServerProtocol{
         try {
             String string = new String(rec,0,count);
             Log.d(tag, "server receive="+ string);
-            return JSON.handleJsonString(string);
+            return JSON.handleJsonString(string,GetProtocols.getInstance().getInfoProtocol());
         } catch (JSONException e) {
             e.printStackTrace();
         }

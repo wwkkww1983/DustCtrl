@@ -13,7 +13,9 @@ import com.grean.dustctrl.myApplication;
 import com.grean.dustctrl.presenter.CalcNextAutoCalibration;
 import com.grean.dustctrl.presenter.NotifyOperateInfo;
 import com.grean.dustctrl.presenter.NotifyProcessDialogInfo;
+import com.grean.dustctrl.protocol.GeneralInfoProtocol;
 import com.grean.dustctrl.protocol.GeneralRealTimeDataProtocol;
+import com.grean.dustctrl.protocol.GetProtocols;
 import com.tools;
 
 import java.util.Observable;
@@ -23,7 +25,7 @@ import java.util.Observable;
  * Created by Administrator on 2017/8/25.
  */
 
-public class ScanSensor extends Observable implements GeneralRealTimeDataProtocol{
+public class ScanSensor extends Observable{
     private static final String tag = "ScanSensor";
     private static ScanSensor instance = new ScanSensor();
     private boolean run = false;
@@ -62,10 +64,6 @@ public class ScanSensor extends Observable implements GeneralRealTimeDataProtoco
         thread.start();
     }
 
-    @Override
-    public SensorData getRealTimeData() {
-        return data;
-    }
 
     private class CalibrationDustMeterThread extends Thread{
         @Override
@@ -77,6 +75,8 @@ public class ScanSensor extends Observable implements GeneralRealTimeDataProtoco
             sendMainFragmentString("停止测量,开始校准");
             CtrlCommunication com;
             com = CtrlCommunication.getInstance();
+            GeneralInfoProtocol infoProtocol = GetProtocols.getInstance().getInfoProtocol();
+            infoProtocol.notifySystemState("停止测量，开始校准");
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
@@ -98,6 +98,7 @@ public class ScanSensor extends Observable implements GeneralRealTimeDataProtoco
                 dialogInfo.showInfo("本底校准...");
             }
             sendMainFragmentString("正在校零");
+            infoProtocol.notifySystemState("正在校零");
             com.SendFrame(CtrlCommunication.DustMeterBgStart);
             try {
                 Thread.sleep(100000);
@@ -116,9 +117,11 @@ public class ScanSensor extends Observable implements GeneralRealTimeDataProtoco
             if (dustMeterInfo.isBgOk()){
                 notifyObservers(new LogFormat("校零成功"));
                 sendMainFragmentString("校零成功");
+                infoProtocol.notifySystemState("校零成功");
             }else{
                 notifyObservers(new LogFormat("校零失败"));
                 sendMainFragmentString("校零失败");
+                infoProtocol.notifySystemState("校零失败");
             }
 
             com.SendFrame(CtrlCommunication.DustMeterBgEnd);
@@ -131,6 +134,7 @@ public class ScanSensor extends Observable implements GeneralRealTimeDataProtoco
                 dialogInfo.showInfo("量程校准...");
             }
             sendMainFragmentString("正在校跨");
+            infoProtocol.notifySystemState("正在校跨");
             com.SendFrame(CtrlCommunication.DustMeterSpanStart);
             try {
                 Thread.sleep(80000);
@@ -147,9 +151,11 @@ public class ScanSensor extends Observable implements GeneralRealTimeDataProtoco
             if (dustMeterInfo.isSpanOk()){
                 notifyObservers(new LogFormat("校跨成功"));
                 sendMainFragmentString("校跨成功");
+                infoProtocol.notifySystemState("校跨成功");
             }else{
                 notifyObservers(new LogFormat("校跨失败"));
                 sendMainFragmentString("校跨失败");
+                infoProtocol.notifySystemState("校跨失败");
             }
             com.SendFrame(CtrlCommunication.DustMeterSpanEnd);
             try {
@@ -169,7 +175,7 @@ public class ScanSensor extends Observable implements GeneralRealTimeDataProtoco
             }
             setChanged();
             notifyObservers(new LogFormat("结束校准"));
-
+            infoProtocol.notifySystemState("校准结束");
             com.SendFrame(CtrlCommunication.DustMeterRun);
             if(info!=null) {
                 info.cancelDialog();
@@ -234,9 +240,11 @@ public class ScanSensor extends Observable implements GeneralRealTimeDataProtoco
             com.setDustParaK(myApplication.getInstance().getConfigFloat("DustParaK"));
             com.setMotorRounds(myApplication.getInstance().getConfigInt("MotorRounds"));
             com.setMotorTime(myApplication.getInstance().getConfigInt("MotorTime"));
+            GeneralInfoProtocol infoProtocol = GetProtocols.getInstance().getInfoProtocol();
             int i=0;
             setChanged();
             notifyObservers(new LogFormat("开始测量"));
+            infoProtocol.notifySystemState("正在测量");
             while (run){
                 com.SendFrame(CtrlCommunication.Inquire);
                 com.SendFrame(CtrlCommunication.Dust);
@@ -246,6 +254,7 @@ public class ScanSensor extends Observable implements GeneralRealTimeDataProtoco
                     e.printStackTrace();
                 }
                 data = com.getData();
+                infoProtocol.notifySenorData(data);
                 if(i>299){
                     i=0;
                     DbTask helper = new DbTask(context,1);

@@ -23,6 +23,7 @@ import com.grean.dustctrl.presenter.FragmentMain;
 import com.grean.dustctrl.presenter.FragmentOperate;
 import com.grean.dustctrl.presenter.FragmentVideo;
 import com.grean.dustctrl.process.ScanSensor;
+import com.grean.dustctrl.protocol.GetProtocols;
 import com.tools;
 import java.util.Date;
 import java.util.Timer;
@@ -144,8 +145,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         ScanSensor.getInstance().addObserver(SystemLog.getInstance(this));
         ScanSensor.getInstance().startScan(this);
-        SocketTask.getInstance().startSocketHeart("192.168.168.134",12803,this,this,myApplication.getInstance().getClientProtocol());
-        SocketServerTask.getInstance().startSocketServer(myApplication.getInstance().getServerProtocol());
+        SocketTask.getInstance().startSocketHeart("192.168.168.134",12803,this,this,GetProtocols.getInstance().getClientProtocol());
+        SocketServerTask.getInstance().startSocketServer(GetProtocols.getInstance().getServerProtocol());
         //SocketTask.getInstance().setContext(this);
 
     }

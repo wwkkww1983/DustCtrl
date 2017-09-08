@@ -60,6 +60,11 @@ public class SocketServerTask {
                 receiveThread = new ReceiveThread(clientSocket);
                 stop = false;
                 receiveThread.start();
+                try {
+                    Thread.sleep(20000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
 
         }

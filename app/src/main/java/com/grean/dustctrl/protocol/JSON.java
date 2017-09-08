@@ -57,7 +57,7 @@ public class JSON {
 
     private static JSONObject putItem(String name,float data) throws JSONException {
         JSONObject item = new JSONObject();
-        item.put("name","dust");
+        item.put("name",name);
         item.put("value",data);
         return item;
     }
@@ -82,11 +82,11 @@ public class JSON {
         return object.toString().getBytes();
     }
 
-    private static byte[] handleRealTimeData(GeneralRealTimeDataProtocol realTimeDataProtocol) throws JSONException {
-        SensorData data = realTimeDataProtocol.getRealTimeData();
+    private static byte[] handleRealTimeData(GeneralInfoProtocol infoProtocol) throws JSONException {
+        SensorData data = infoProtocol.getSensorData();
         JSONObject object = new JSONObject();
         object.put("protocolType","realTimeData");
-        object.put("state","下次测量时间:-");
+        object.put("state",infoProtocol.getSystemState());
         JSONArray array = new JSONArray();
         array.put(putItem("dust",data.getDust()));
         array.put(putItem("temperature",data.getAirTemperature()));
@@ -105,10 +105,10 @@ public class JSON {
      * @param string
      * @return
      */
-    public static byte[] handleJsonString(String string) throws JSONException {
+    public static byte[] handleJsonString(String string,GeneralInfoProtocol infoProtocol) throws JSONException {
         JSONObject jsonObject = new JSONObject(string);
         if (jsonObject.getString("protocolType").equals("realTimeData")){
-            return handleRealTimeData(ScanSensor.getInstance());
+            return handleRealTimeData(infoProtocol);
         }else if(jsonObject.getString("protocolType").equals("downloadSetting")){
             return handleDownloadSetting();
 
@@ -116,10 +116,10 @@ public class JSON {
             return handleUploadSetting();
 
         }else if(jsonObject.getString("protocolType").equals("downloadSetting")){
-            return handleRealTimeData(ScanSensor.getInstance());
+            return handleRealTimeData(infoProtocol);
 
         }else if(jsonObject.getString("protocolType").equals("downloadSetting")){
-            return handleRealTimeData(ScanSensor.getInstance());
+            return handleRealTimeData(infoProtocol);
 
         }else {
             JSONObject object = new JSONObject();

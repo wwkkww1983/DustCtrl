@@ -17,12 +17,10 @@ import java.util.Objects;
  * Created by Administrator on 2017/8/24.
  */
 
-public class myApplication extends Application {
+public class myApplication extends Application implements ReadWriteConfig{
     private static  final String tag = "myApplication";
     private static myApplication instance;
     private HashMap<String,Object> config = new HashMap<String,Object>();
-    private GeneralServerProtocol serverProtocol;
-    private GeneralClientProtocol clientProtocol;
 
     public myApplication(){
         CtrlCommunication.getInstance();//.setDustParaK(getConfigFloat("DustParaK"));
@@ -30,19 +28,7 @@ public class myApplication extends Application {
         Log.d(tag,"开机");
     }
 
-    public GeneralServerProtocol getServerProtocol() {
-        if(serverProtocol == null){
-            serverProtocol = new TcpServer();
-        }
-        return serverProtocol;
-    }
 
-    public GeneralClientProtocol getClientProtocol() {
-        if(clientProtocol == null){
-            clientProtocol = new TcpClient();
-        }
-        return clientProtocol;
-    }
 
     public HashMap<String, Object> getConfig() {
         return config;

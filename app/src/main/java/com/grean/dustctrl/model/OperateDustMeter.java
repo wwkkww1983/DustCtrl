@@ -1,12 +1,9 @@
 package com.grean.dustctrl.model;
 
-import android.util.Log;
-
 import com.grean.dustctrl.CtrlCommunication;
 import com.grean.dustctrl.myApplication;
 import com.grean.dustctrl.presenter.NotifyOperateInfo;
 import com.grean.dustctrl.presenter.NotifyProcessDialogInfo;
-import com.grean.dustctrl.process.DustMeterInfo;
 import com.grean.dustctrl.process.NotifyScanEnd;
 import com.grean.dustctrl.process.ScanSensor;
 
