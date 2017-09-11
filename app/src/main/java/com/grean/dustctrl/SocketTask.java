@@ -52,6 +52,7 @@ public class SocketTask {
 
     }
 
+
     public void resetSocketClient(String ip,int port,NotifyOperateInfo notifyOperateInfo,NotifyProcessDialogInfo notifyProcessDialogInfo){
         this.notifyProcessDialogInfo = notifyProcessDialogInfo;
         this.notifyOperateInfo = notifyOperateInfo;

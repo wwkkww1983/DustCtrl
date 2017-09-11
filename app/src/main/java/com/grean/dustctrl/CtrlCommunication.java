@@ -29,6 +29,9 @@ public class CtrlCommunication extends SerialCommunication{
     private static final byte[] cmdDustMeterSpanStart={(byte) 0xdd,0x06,0x00,0x08,0x00,0x01, (byte) 0xda, (byte) 0x94};
     private static final byte[] cmdDustMeterSpanEnd={(byte) 0xdd,0x06,0x00,0x08,0x00,0x00,0x1b,0x54};
     private static final byte[] cmdDustMeterSpanResult={(byte) 0xdd,0x03,0x00,0x09,0x00,0x01,0x47,0x54};
+    private static final byte[] cmdAirData={(byte) 0xe3,0x03,0x00,0x00,0x00,0x03,0x12,0x49};
+    private static final byte[] cmdWindForce = {(byte) 0xe1,0x03,0x00,0x00,0x00,0x01, (byte) 0x92,0x6a};
+    private static final byte[] cmdWindDirection = {(byte) 0xe2,0x03,0x00,0x00,0x00,0x01, (byte) 0x92,0x59};
     private SensorData data = new SensorData();
     private DustMeterInfo info = new DustMeterInfo();
     private int motorRounds,motorTime;
@@ -48,6 +51,9 @@ public class CtrlCommunication extends SerialCommunication{
         MotorStop=13,
         MotorForward = 14,
         MotorBackward = 15,
+        AirParameter = 16,
+        WindForce = 17,
+        WindDirection=18,
         Other=0;
     private CtrlCommunication(){
         super(0,9600,0);
@@ -141,11 +147,11 @@ public class CtrlCommunication extends SerialCommunication{
                                 data.setCtrlDo(i, false);
                             }
                         }
-                        data.setAirTemperature(tools.getFloat(rec,11));
+                       /* data.setAirTemperature(tools.getFloat(rec,11));
                         data.setAirHumidity(tools.getFloat(rec,15));
                         data.setAirPressure(tools.getFloat(rec,23));
                         data.setWindForce(tools.getFloat(rec,27));
-                        data.setWindDirection(tools.getFloat(rec,31));
+                        data.setWindDirection(tools.getFloat(rec,31));*/
                         if(rec[32]==0x00){
                             data.setAcIn(false);
                         }else{
@@ -210,6 +216,45 @@ public class CtrlCommunication extends SerialCommunication{
                     break;
             }
 
+        }else if (checkFrameWithAddr(rec,size,(byte)0xe1)){//风速
+            switch (state){
+                case WindForce:
+                    int intDate = tools.byte2int(rec,3);
+                    float floatData = ((float)intDate)/10.0f;
+                    data.setWindForce(floatData);
+                    break;
+                default:
+                    break;
+            }
+
+        }else if(checkFrameWithAddr(rec,size,(byte)0xe2)){//风向
+            switch (state){
+                case WindDirection:
+                    int intDate = tools.byte2int(rec,3);
+                    float floatData = (float)intDate;
+                    data.setWindDirection(floatData);
+                    break;
+                default:
+                    break;
+            }
+
+        }else if(checkFrameWithAddr(rec,size,(byte)0xe3)){//温湿度大气压
+            switch (state){
+                case AirParameter:
+                    int intDate = tools.byte2int(rec,3);
+                    float floatData = ((float)intDate)/10.0f;
+                    data.setAirPressure(floatData);
+                    intDate = tools.byte2int(rec,5);
+                    floatData = ((float)intDate)/10.0f;
+                    data.setAirTemperature(floatData);
+                    intDate = tools.byte2int(rec,7);
+                    //Log.d(tag,"Humidity"+String.valueOf(intDate));
+                    floatData = ((float)intDate)/10.0f;
+                    data.setAirHumidity(floatData);
+                    break;
+                default:
+                    break;
+            }
         }else{
             Log.d(tag,"sync wrong check");
         }
@@ -287,6 +332,15 @@ public class CtrlCommunication extends SerialCommunication{
                 break;
             case DustMeterSpanResult:
                 addSendBuff(cmdDustMeterSpanResult,cmd);
+                break;
+            case AirParameter:
+                addSendBuff(cmdAirData,cmd);
+                break;
+            case WindDirection:
+                addSendBuff(cmdWindDirection,cmd);
+                break;
+            case WindForce:
+                addSendBuff(cmdWindForce,cmd);
                 break;
             case Other:
             default:

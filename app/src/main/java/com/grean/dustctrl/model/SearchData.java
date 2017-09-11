@@ -14,7 +14,7 @@ import com.tools;
  */
 
 public class SearchData {
-    private static final String[] name ={"时间","扬尘 mg/L","温度 ℃","湿度 %","大气压 hPa","风力 级","风向 °","噪声 db"};
+    private static final String[] name ={"时间","扬尘 mg/L","温度 ℃","湿度 %","大气压 hPa","风速 m/s","风向 °","噪声 db"};
     private InsertString insert;
     private Context context;
 
@@ -77,7 +77,7 @@ public class SearchData {
             data[4] = String.valueOf(cursor.getFloat(5));
             data[5] = String.valueOf(cursor.getFloat(6));
             data[6] = String.valueOf(cursor.getFloat(7));
-            data[7] = String.valueOf(cursor.getFloat(2));
+            data[7] = String.valueOf(cursor.getFloat(8));
             insert.insertStrings(data);
             index++;
         }

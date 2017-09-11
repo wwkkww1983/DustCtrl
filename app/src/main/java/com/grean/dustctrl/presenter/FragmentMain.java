@@ -33,7 +33,7 @@ public class FragmentMain extends Fragment implements NotifyScanSensor{
     private TextView tvPressure;
     private TextView tvWindForce;
     private TextView tvWindDirection;
-    private TextView tvNoise,tvNextCal;
+    private TextView tvNoise,tvNextCal,tvValue;
     private SensorData data;
     private OperateInit operateInit;
 
@@ -60,11 +60,12 @@ public class FragmentMain extends Fragment implements NotifyScanSensor{
                 case msgUpdateSensor:
                     tvDust.setText(tools.float2String3(data.getDust()));
                     tvTemperature.setText(tools.float2String3(data.getAirTemperature()));
-                    tvHumidity.setText(tools.float2String3(data.getAirTemperature()));
+                    tvHumidity.setText(tools.float2String3(data.getAirHumidity()));
                     tvPressure.setText(tools.float2String3(data.getAirPressure()));
                     tvWindForce.setText(tools.float2String3(data.getWindForce()));
                     tvWindDirection.setText(tools.float2String3(data.getWindDirection()));
-                    tvNoise.setText(tools.float2String3(data.getValue()));
+                    tvNoise.setText(tools.float2String3(data.getNoise()));
+                    tvValue.setText(tools.float2String3(data.getValue()));
                     break;
                 case msgUpdateNextCal:
                     tvNextCal.setText("自动校准:"+nextCalString);
@@ -103,6 +104,7 @@ public class FragmentMain extends Fragment implements NotifyScanSensor{
         tvWindDirection = v.findViewById(R.id.tvMainWindDirection);
         tvNoise = v.findViewById(R.id.tvMainNoise);
         tvNextCal = v.findViewById(R.id.tvMainNextCal);
+        tvValue = v.findViewById(R.id.tvMainValue);
     }
 
     @Override

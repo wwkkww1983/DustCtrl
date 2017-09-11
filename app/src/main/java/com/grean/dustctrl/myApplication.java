@@ -7,6 +7,8 @@ import android.util.StringBuilderPrinter;
 
 import com.grean.dustctrl.protocol.GeneralClientProtocol;
 import com.grean.dustctrl.protocol.GeneralServerProtocol;
+import com.grean.dustctrl.protocol.GetProtocols;
+import com.grean.dustctrl.protocol.InformationProtocol;
 import com.grean.dustctrl.protocol.TcpClient;
 import com.grean.dustctrl.protocol.TcpServer;
 
@@ -47,6 +49,7 @@ public class myApplication extends Application implements ReadWriteConfig{
         super.onCreate();
         this.instance = this;
         loadConfig();
+
         Log.d(tag,"start");
     }
 

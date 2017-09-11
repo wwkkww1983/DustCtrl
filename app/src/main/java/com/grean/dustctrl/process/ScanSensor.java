@@ -9,12 +9,12 @@ import android.util.Log;
 import com.grean.dustctrl.CtrlCommunication;
 import com.grean.dustctrl.DbTask;
 import com.grean.dustctrl.LogFormat;
+import com.grean.dustctrl.NoiseCommunication;
 import com.grean.dustctrl.myApplication;
 import com.grean.dustctrl.presenter.CalcNextAutoCalibration;
 import com.grean.dustctrl.presenter.NotifyOperateInfo;
 import com.grean.dustctrl.presenter.NotifyProcessDialogInfo;
 import com.grean.dustctrl.protocol.GeneralInfoProtocol;
-import com.grean.dustctrl.protocol.GeneralRealTimeDataProtocol;
 import com.grean.dustctrl.protocol.GetProtocols;
 import com.tools;
 
@@ -237,6 +237,8 @@ public class ScanSensor extends Observable{
             super.run();
             CtrlCommunication com;
             com = CtrlCommunication.getInstance();
+            NoiseCommunication noiseCom;
+            noiseCom = NoiseCommunication.getInstance();
             com.setDustParaK(myApplication.getInstance().getConfigFloat("DustParaK"));
             com.setMotorRounds(myApplication.getInstance().getConfigInt("MotorRounds"));
             com.setMotorTime(myApplication.getInstance().getConfigInt("MotorTime"));
@@ -248,12 +250,17 @@ public class ScanSensor extends Observable{
             while (run){
                 com.SendFrame(CtrlCommunication.Inquire);
                 com.SendFrame(CtrlCommunication.Dust);
+                com.SendFrame(CtrlCommunication.WindForce);
+                com.SendFrame(CtrlCommunication.WindDirection);
+                com.SendFrame(CtrlCommunication.AirParameter);
+                noiseCom.sendFrame(NoiseCommunication.NoiseRealTimeData);
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
                 data = com.getData();
+                data.setNoise(noiseCom.getNoiseData());
                 infoProtocol.notifySenorData(data);
                 if(i>299){
                     i=0;
@@ -270,6 +277,7 @@ public class ScanSensor extends Observable{
                     values.put("pressure",data.getAirPressure());
                     values.put("windforce",data.getWindForce());
                     values.put("winddirection",data.getWindDirection());
+                    values.put("noise",data.getNoise());
                     db.insert("result",null,values);
                     values = new ContentValues();
                     values.put("date",l);

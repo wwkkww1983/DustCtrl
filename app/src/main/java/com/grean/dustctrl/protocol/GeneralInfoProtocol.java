@@ -1,5 +1,7 @@
 package com.grean.dustctrl.protocol;
 
+import android.content.Context;
+
 import com.grean.dustctrl.ReadWriteConfig;
 import com.grean.dustctrl.process.SensorData;
 
@@ -39,6 +41,24 @@ public interface GeneralInfoProtocol {
      */
     void loadSetting(ReadWriteConfig config);
 
+    void setContext(Context context);
+
+    void setServer(String ip ,int port);
+
+    boolean setAutoCal(boolean enable,long date,long interval);
+
+    void calDust(float target);
+
+    void calDustMeter();
+
+    void setDustMeterResult(boolean bg,boolean span);
+
+    boolean getDustMeterBg();
+    boolean getDustMeterSpan();
+    int getDustMeterPumpTime();
+    int getDustMeterLaserTime();
+
+    float getParaK();
     String getServerIp();
     int getServerPort();
     boolean getAutoCalEnable();

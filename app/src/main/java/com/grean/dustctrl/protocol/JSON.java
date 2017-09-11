@@ -62,23 +62,50 @@ public class JSON {
         return item;
     }
 
-    private static byte[] handleUploadSetting() throws JSONException {
-        myApplication app = myApplication.getInstance();
+    private static byte[] handleUploadSetting(JSONObject jsonObject,GeneralInfoProtocol infoProtocol) throws JSONException {
+
         JSONObject object = new JSONObject();
         object.put("protocolType","uploadSetting");
-        object.put("success",true);
+
+        boolean enable = jsonObject.getBoolean("autoCalEnable");
+        long date = jsonObject.getLong("autoCalTime");
+        long interval = jsonObject.getLong("autoCalInterval");
+        object.put("success",infoProtocol.setAutoCal(enable,date,interval));
+        infoProtocol.setServer(jsonObject.getString("serverIp"),jsonObject.getInt("serverPort"));
         return object.toString().getBytes();
     }
 
-    private static byte[] handleDownloadSetting() throws JSONException {
-        myApplication app = myApplication.getInstance();
+    private static byte[] handleDownloadSetting(GeneralInfoProtocol infoProtocol) throws JSONException {
         JSONObject object = new JSONObject();
         object.put("protocolType","downloadSetting");
-        object.put("autoCalibrationEnable",app.getConfigBoolean("AutoCalibrationEnable"));
-        object.put("autoCalibrationTime",app.getConfigLong("AutoCalTime"));
-        object.put("autoCalibrationInterval",app.getConfigLong("AutoCalInterval"));
-        object.put("serverIp",app.getConfigString("ServerIp"));
-        object.put("serverPort",app.getConfigInt("ServerPort"));
+        object.put("autoCalEnable",infoProtocol.getAutoCalEnable());
+        object.put("autoCalTime",infoProtocol.getAutoCalTime());
+        object.put("autoCalInterval",infoProtocol.getAutoCalInterval());
+        object.put("serverIp",infoProtocol.getServerIp());
+        object.put("serverPort",infoProtocol.getServerPort());
+        object.put("dustParaK",infoProtocol.getParaK());
+        return object.toString().getBytes();
+    }
+
+    private static byte[] handleOperate(JSONObject jsonObject,GeneralInfoProtocol infoProtocol) throws JSONException {
+        if(jsonObject.getBoolean("DustCal")){
+
+        }
+
+        if(jsonObject.getBoolean("DustMeterCal")){
+
+        }
+
+        if(jsonObject.getBoolean("DustMeterCalResult")){
+
+        }
+
+        if(jsonObject.getBoolean("DustMeterInfo")){//获取粉尘仪信息
+
+        }
+
+        JSONObject object = new JSONObject();
+        object.put("protocolType","operate");
         return object.toString().getBytes();
     }
 
@@ -110,10 +137,10 @@ public class JSON {
         if (jsonObject.getString("protocolType").equals("realTimeData")){
             return handleRealTimeData(infoProtocol);
         }else if(jsonObject.getString("protocolType").equals("downloadSetting")){
-            return handleDownloadSetting();
+            return handleDownloadSetting(infoProtocol);
 
         }else if(jsonObject.getString("protocolType").equals("uploadSetting")){
-            return handleUploadSetting();
+            return handleUploadSetting(jsonObject,infoProtocol);
 
         }else if(jsonObject.getString("protocolType").equals("downloadSetting")){
             return handleRealTimeData(infoProtocol);
