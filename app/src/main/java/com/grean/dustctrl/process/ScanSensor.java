@@ -249,20 +249,20 @@ public class ScanSensor extends Observable{
             infoProtocol.notifySystemState("正在测量");
             while (run){
                 com.SendFrame(CtrlCommunication.Inquire);
-                com.SendFrame(CtrlCommunication.Dust);
                 com.SendFrame(CtrlCommunication.WindForce);
                 com.SendFrame(CtrlCommunication.WindDirection);
                 com.SendFrame(CtrlCommunication.AirParameter);
+                com.SendFrame(CtrlCommunication.Dust);
                 noiseCom.sendFrame(NoiseCommunication.NoiseRealTimeData);
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(2000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
                 data = com.getData();
                 data.setNoise(noiseCom.getNoiseData());
                 infoProtocol.notifySenorData(data);
-                if(i>299){
+                if(i>149){
                     i=0;
                     DbTask helper = new DbTask(context,1);
                     SQLiteDatabase db = helper.getReadableDatabase();
