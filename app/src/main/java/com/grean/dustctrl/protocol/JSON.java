@@ -88,28 +88,32 @@ public class JSON {
     }
 
     private static byte[] handleOperate(JSONObject jsonObject,GeneralInfoProtocol infoProtocol) throws JSONException {
-        if(jsonObject.getBoolean("DustCal")){
-
-        }
-
-        if(jsonObject.getBoolean("DustMeterCal")){
-
-        }
-
-        if(jsonObject.getBoolean("DustMeterCalResult")){
-
-        }
-
-        if(jsonObject.getBoolean("DustMeterInfo")){//获取粉尘仪信息
-
-        }
-
-        if(jsonObject.getBoolean("DustMeterCalProcess")){
-
-        }
-
         JSONObject object = new JSONObject();
         object.put("protocolType","operate");
+
+        if(jsonObject.has("DustCal")){//校准斜率
+            infoProtocol.calDust((float) jsonObject.getDouble("target"));
+            object.put("DustCal",true);
+            object.put("ParaK",infoProtocol.getParaK());
+        }else if(jsonObject.has("DustMeterCal")){//粉尘仪校零，校跨
+            object.put("DustMeterCal",true);
+            infoProtocol.calDustMeter();
+        }else if(jsonObject.has("DustMeterCalResult")){//查询校零校跨结果
+            object.put("DustMeterCalResult",true);
+            object.put("DustMeterCalBg",infoProtocol.getDustMeterBg());
+            object.put("DustMeterCalSpan",infoProtocol.getDustMeterSpan());
+        }else if(jsonObject.has("DustMeterInfo")){//获取粉尘仪信息
+            infoProtocol.inquireDustMeterInfo();
+            object.put("DustMeterInfo",true);
+            object.put("DustMeterPumpTime",infoProtocol.getDustMeterPumpTime());
+            object.put("DustMeterLaserTime",infoProtocol.getDustMeterLaserTime());
+        }else if(jsonObject.has("DustMeterCalProcess")){//查询校零校跨进度
+            object.put("DustMeterCalProcess",true);
+            object.put("DustMeterCalProcessInt",infoProtocol.getDustMeterCalProcess());
+            object.put("DustMeterCalInfo",infoProtocol.getSystemState());
+        }else{
+            object.put("ErrorCommand",true);
+        }
         return object.toString().getBytes();
     }
 
@@ -131,6 +135,45 @@ public class JSON {
         return object.toString().getBytes();
     }
 
+    private static byte[] handleLog(JSONObject jsonObject,GeneralInfoProtocol infoProtocol) throws JSONException {
+        JSONObject object = new JSONObject();
+        object.put("protocolType","log");
+        ArrayList<String> list = infoProtocol.getLog(jsonObject.getLong("Date"));
+        JSONArray array = new JSONArray();
+        for(int i=0;i<list.size();i++){
+            String string = list.get(i);
+            array.put(string);
+        }
+        object.put("ArrayData",array);
+        return object.toString().getBytes();
+    }
+
+    private static byte[] handleHistoryData(JSONObject jsonObject,GeneralInfoProtocol infoProtocol) throws JSONException {
+        JSONObject object = new JSONObject();
+        object.put("protocolType","historyData");
+        GeneralHistoryDataFormat format = infoProtocol.getHistoryData(jsonObject.getLong("Date"));
+        int size = format.getSize();
+        object.put("DateSize",size);
+        JSONArray array = new JSONArray();
+        ArrayList<Float> itemData;
+        for(int i=0;i<size;i++){
+            itemData = format.getItem(i);
+            long date = format.getDate(i);
+            JSONObject item = new JSONObject();
+            item.put("date",date);
+            item.put("dust",itemData.get(0));
+            item.put("temperature",itemData.get(1));
+            item.put("humidity",itemData.get(2));
+            item.put("pressure",itemData.get(3));
+            item.put("windForce",itemData.get(4));
+            item.put("windDirection",itemData.get(5));
+            item.put("noise",itemData.get(6));
+            array.put(item);
+        }
+        object.put("ArrayData",array);
+        return object.toString().getBytes();
+    }
+
     /**
      * 处理接收的JSO数组
      * @param string
@@ -146,12 +189,14 @@ public class JSON {
         }else if(jsonObject.getString("protocolType").equals("uploadSetting")){
             return handleUploadSetting(jsonObject,infoProtocol);
 
-        }else if(jsonObject.getString("protocolType").equals("downloadSetting")){
-            return handleRealTimeData(infoProtocol);
+        }else if(jsonObject.getString("protocolType").equals("operate")){
+            return handleOperate(jsonObject,infoProtocol);
 
-        }else if(jsonObject.getString("protocolType").equals("downloadSetting")){
-            return handleRealTimeData(infoProtocol);
+        }else if(jsonObject.getString("protocolType").equals("historyData")){
+            return handleHistoryData(jsonObject,infoProtocol);
 
+        }else if(jsonObject.getString("protocolType").equals("log")){
+            return handleLog(jsonObject,infoProtocol);
         }else {
             JSONObject object = new JSONObject();
             object.put("protocolType","error");

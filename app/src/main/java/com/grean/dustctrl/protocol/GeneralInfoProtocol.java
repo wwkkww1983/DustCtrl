@@ -5,6 +5,9 @@ import android.content.Context;
 import com.grean.dustctrl.ReadWriteConfig;
 import com.grean.dustctrl.process.SensorData;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * 一般系统系统数据、状态、设置查询
  * Created by weifeng on 2017/9/7.
@@ -55,8 +58,18 @@ public interface GeneralInfoProtocol {
 
     boolean getDustMeterBg();
     boolean getDustMeterSpan();
+    void inquireDustMeterInfo();
+    void setDustMeterPumpTime(int pumpTime);
+    void setDustMeterLaserTime(int laserTime);
     int getDustMeterPumpTime();
     int getDustMeterLaserTime();
+
+    void setDustCalMeterProcess(int process);
+    int getDustMeterCalProcess();
+
+    GeneralHistoryDataFormat getHistoryData(long endDate);
+
+    ArrayList<String> getLog(long endDate);
 
     float getParaK();
     String getServerIp();

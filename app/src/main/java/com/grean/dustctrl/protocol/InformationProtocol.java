@@ -3,14 +3,21 @@ package com.grean.dustctrl.protocol;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 
+import com.grean.dustctrl.CtrlCommunication;
+import com.grean.dustctrl.DbTask;
 import com.grean.dustctrl.MainActivity;
 import com.grean.dustctrl.ReadWriteConfig;
 import com.grean.dustctrl.SocketTask;
 import com.grean.dustctrl.myApplication;
+import com.grean.dustctrl.process.ScanSensor;
 import com.grean.dustctrl.process.SensorData;
+import com.tools;
 
 import java.net.Socket;
+import java.util.ArrayList;
 
 /**
  * Created by weifeng on 2017/9/8.
@@ -19,10 +26,10 @@ import java.net.Socket;
 public class InformationProtocol implements GeneralInfoProtocol{
     private String stateString;
     private SensorData data = new SensorData();
-    private boolean autoCalEnable;
+    private boolean autoCalEnable,dustMeterCalBgOk,dustMeterCalSpanOk;
     private long autoCalTime,autoCalInterval;
     private String serverIp;
-    private int serverPort;
+    private int serverPort,pumpTime,laserTime,dustMeterCalProcess;
     private float paraK;
     private Context context;
     ReadWriteConfig config;
@@ -114,37 +121,118 @@ public class InformationProtocol implements GeneralInfoProtocol{
 
     @Override
     public void calDust(float target) {
-
+        float value = CtrlCommunication.getInstance().getData().getValue();
+        paraK = target / value;
+        CtrlCommunication.getInstance().getData().setParaK(paraK);
+        config.saveConfig("ParaK",paraK);
     }
 
     @Override
     public void calDustMeter() {
-
+        dustMeterCalProcess = 0;
+        ScanSensor.getInstance().stopScan(null);
+        ScanSensor.getInstance().calibrationDustMeterWithMan(null,null);
     }
 
     @Override
     public void setDustMeterResult(boolean bg, boolean span) {
-
+        this.dustMeterCalBgOk = bg;
+        this.dustMeterCalSpanOk = span;
     }
 
     @Override
     public boolean getDustMeterBg() {
-        return false;
+        return dustMeterCalBgOk;
     }
 
     @Override
     public boolean getDustMeterSpan() {
-        return false;
+        return dustMeterCalSpanOk;
+    }
+
+    @Override
+    public void inquireDustMeterInfo() {
+        ScanSensor.getInstance().stopScan(null);
+        ScanSensor.getInstance().inquireDustMeterInfo(null);
+    }
+
+    @Override
+    public void setDustMeterPumpTime(int pumpTime) {
+        this.pumpTime = pumpTime;
+    }
+
+    @Override
+    public void setDustMeterLaserTime(int laserTime) {
+        this.laserTime = laserTime;
     }
 
     @Override
     public int getDustMeterPumpTime() {
-        return 0;
+        return pumpTime;
     }
 
     @Override
     public int getDustMeterLaserTime() {
-        return 0;
+        return laserTime;
+    }
+
+    @Override
+    public void setDustCalMeterProcess(int process) {
+        this.dustMeterCalProcess = process;
+    }
+
+    @Override
+    public int getDustMeterCalProcess() {
+        return dustMeterCalProcess;
+    }
+
+    @Override
+    public GeneralHistoryDataFormat getHistoryData(long endDate) {
+        GeneralHistoryDataFormat format = new GeneralHistoryDataFormat();
+        String statement;
+        statement = "date >"+ String.valueOf(endDate - 3600*1000l)+" and date <"+String.valueOf(endDate);
+        DbTask helperDbTask = new DbTask(context,1);
+        SQLiteDatabase db = helperDbTask.getReadableDatabase();
+        Cursor cursor;
+        cursor = db.rawQuery("SELECT * FROM result WHERE "+statement+" ORDER BY date desc",new String[]{});
+        int index = 0;
+        ArrayList<Float> item;
+        while ((cursor.moveToNext())&&index < 100){
+            format.addDate(cursor.getLong(0));
+            item = new ArrayList<Float>();
+            item.add(cursor.getFloat(1));
+            item.add(cursor.getFloat(3));
+            item.add(cursor.getFloat(4));
+            item.add(cursor.getFloat(5));
+            item.add(cursor.getFloat(6));
+            item.add(cursor.getFloat(7));
+            item.add(cursor.getFloat(8));
+            format.addItem(item);
+            index++;
+        }
+        db.close();
+        helperDbTask.close();
+        return format;
+    }
+
+    @Override
+    public ArrayList<String> getLog(long endDate) {
+        ArrayList<String> list = new ArrayList<String>();
+        String statement;
+        statement = "date >"+ String.valueOf(endDate - 3600000l*24)+" and date <"+String.valueOf(endDate);
+
+        DbTask helperDbTask = new DbTask(context,1);
+        SQLiteDatabase db = helperDbTask.getReadableDatabase();
+        Cursor cursor;
+        cursor = db.rawQuery("SELECT * FROM log WHERE "+statement+" ORDER BY date desc",new String[]{});
+        int index=0;
+        while ((cursor.moveToNext())&&(index < 100)){
+            list.add(cursor.getString(2));
+            index++;
+        }
+        db.close();
+        helperDbTask.close();
+        return list;
     }
 
     @Override

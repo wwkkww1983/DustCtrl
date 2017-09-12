@@ -16,6 +16,7 @@ import com.grean.dustctrl.presenter.NotifyOperateInfo;
 import com.grean.dustctrl.presenter.NotifyProcessDialogInfo;
 import com.grean.dustctrl.protocol.GeneralInfoProtocol;
 import com.grean.dustctrl.protocol.GetProtocols;
+import com.grean.dustctrl.protocol.InformationProtocol;
 import com.tools;
 
 import java.util.Observable;
@@ -77,6 +78,7 @@ public class ScanSensor extends Observable{
             com = CtrlCommunication.getInstance();
             GeneralInfoProtocol infoProtocol = GetProtocols.getInstance().getInfoProtocol();
             infoProtocol.notifySystemState("停止测量，开始校准");
+            infoProtocol.setDustCalMeterProcess(2);
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
@@ -99,6 +101,7 @@ public class ScanSensor extends Observable{
             }
             sendMainFragmentString("正在校零");
             infoProtocol.notifySystemState("正在校零");
+            infoProtocol.setDustCalMeterProcess(15);
             com.SendFrame(CtrlCommunication.DustMeterBgStart);
             try {
                 Thread.sleep(100000);
@@ -123,6 +126,7 @@ public class ScanSensor extends Observable{
                 sendMainFragmentString("校零失败");
                 infoProtocol.notifySystemState("校零失败");
             }
+            infoProtocol.setDustCalMeterProcess(50);
 
             com.SendFrame(CtrlCommunication.DustMeterBgEnd);
             try {
@@ -157,6 +161,8 @@ public class ScanSensor extends Observable{
                 sendMainFragmentString("校跨失败");
                 infoProtocol.notifySystemState("校跨失败");
             }
+            infoProtocol.setDustMeterResult(dustMeterInfo.isBgOk(),dustMeterInfo.isSpanOk());
+            infoProtocol.setDustCalMeterProcess(90);
             com.SendFrame(CtrlCommunication.DustMeterSpanEnd);
             try {
                 Thread.sleep(1000);
@@ -175,6 +181,7 @@ public class ScanSensor extends Observable{
             }
             setChanged();
             notifyObservers(new LogFormat("结束校准"));
+            infoProtocol.setDustCalMeterProcess(100);
             infoProtocol.notifySystemState("校准结束");
             com.SendFrame(CtrlCommunication.DustMeterRun);
             if(info!=null) {
@@ -318,6 +325,7 @@ public class ScanSensor extends Observable{
         public void run() {
             CtrlCommunication com;
             com = CtrlCommunication.getInstance();
+            GeneralInfoProtocol infoProtocol = GetProtocols.getInstance().getInfoProtocol();
             super.run();
             Log.d(tag,"开始查询");
             try {
@@ -334,8 +342,12 @@ public class ScanSensor extends Observable{
             }
             DustMeterInfo dustMeterInfo = com.getInfo();
             String string = "泵运行累计时间:"+String.valueOf(dustMeterInfo.getPumpTime())+"h;激光运行累计时间:"+String.valueOf(dustMeterInfo.getLaserTime())+"h;";
-            info.showDustMeterInfo(string);
-            info.cancelDialog();
+            if(info!=null) {
+                info.showDustMeterInfo(string);
+                info.cancelDialog();
+            }
+            infoProtocol.setDustMeterPumpTime(dustMeterInfo.getPumpTime());
+            infoProtocol.setDustMeterLaserTime(dustMeterInfo.getLaserTime());
             ScanSensor.getInstance().restartScanSensor();
             Log.d(tag,"结束查询");
             setChanged();
