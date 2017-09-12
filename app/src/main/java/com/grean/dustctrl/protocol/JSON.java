@@ -104,6 +104,10 @@ public class JSON {
 
         }
 
+        if(jsonObject.getBoolean("DustMeterCalProcess")){
+
+        }
+
         JSONObject object = new JSONObject();
         object.put("protocolType","operate");
         return object.toString().getBytes();

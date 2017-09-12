@@ -1,6 +1,8 @@
 package com.grean.dustctrl.presenter;
 
 import android.app.Fragment;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -8,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.widget.Button;
 
 import com.grean.dustctrl.R;
 
@@ -16,16 +19,36 @@ import com.grean.dustctrl.R;
  */
 
 public class FragmentVideo extends Fragment {
-    private WebView webView;
-    private WebSettings webSettings;
+    /*private WebView webView;
+    private WebSettings webSettings;*/
+    private Button btnVideo,btnSetting;
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         View messageLayout = inflater.inflate(R.layout.fragment_video,container,false);
-        webView = messageLayout.findViewById(R.id.webView);
-        webSettings = webView.getSettings();
-        webView.loadUrl("http://192.168.168.84:189/login");
+        //webView = messageLayout.findViewById(R.id.webView);
+        btnVideo = messageLayout.findViewById(R.id.btnVideoCtrl);
+        btnSetting = messageLayout.findViewById(R.id.btnVideoSetting);
+        btnVideo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getActivity().startActivity(getActivity().getPackageManager().getLaunchIntentForPackage("com.mcu.iVMSHD"));
+            }
+        });
+        btnSetting.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Uri uri = Uri.parse("http://192.168.168.250");
+                Intent intent = new Intent(Intent.ACTION_VIEW,uri);
+                startActivity(intent);
+            }
+        });
+        /*webSettings = webView.getSettings();
+
+        webView.loadUrl("http://192.168.168.84:189/login");*/
+
+
         return messageLayout;
     }
 }
