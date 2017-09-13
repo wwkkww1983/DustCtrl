@@ -77,4 +77,8 @@ public interface GeneralInfoProtocol {
     boolean getAutoCalEnable();
     long getAutoCalTime();
     long getAutoCalInterval();
+
+    int getExportDataProcess();
+    boolean getExportDataResult();
+    void exportData(long start,long end);
 }

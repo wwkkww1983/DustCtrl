@@ -1,7 +1,10 @@
 package com.grean.dustctrl.presenter;
 
+import android.app.DialogFragment;
 import android.app.Fragment;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +13,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.grean.dustctrl.R;
 import com.grean.dustctrl.model.SearchData;
@@ -21,7 +25,7 @@ import java.util.Calendar;
  * Created by Administrator on 2017/8/25.
  */
 
-public class FragmentData extends Fragment implements View.OnClickListener , InsertString{
+public class FragmentData extends Fragment implements View.OnClickListener , InsertString , NotifyDataInfo{
     private LinearLayout mainLinearLayout;
     private RelativeLayout relativeLayout;
     private TextView tvStartTime,tvEndTime;
@@ -30,6 +34,24 @@ public class FragmentData extends Fragment implements View.OnClickListener , Ins
     private SetSearchStartTime startTime;
     private SetSearchEndTime endTime;
     private SearchData data;
+    private ProcessDialogFragment dialogFragment;
+    private String exportDataResult;
+
+    private static final int msgCancelDialog = 1;
+    private Handler handler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what){
+                case msgCancelDialog:
+                    dialogFragment.dismiss();
+                    Toast.makeText(getActivity(),exportDataResult,Toast.LENGTH_SHORT).show();
+                    break;
+                default:
+
+                    break;
+            }
+        }
+    };
 
     @Nullable
     @Override
@@ -108,6 +130,16 @@ public class FragmentData extends Fragment implements View.OnClickListener , Ins
         mainLinearLayout.removeAllViews();
     }
 
+    @Override
+    public void exportDataResult(boolean success) {
+        if(success){
+            exportDataResult = "导出成功！";
+        }else{
+            exportDataResult = "导出失败，请检查外部存储器！";
+        }
+        handler.sendEmptyMessage(msgCancelDialog);
+    }
+
     private class SetSearchStartTime implements DialogTimeSelected{
 
         @Override
@@ -148,7 +180,10 @@ public class FragmentData extends Fragment implements View.OnClickListener , Ins
                 data.searchLog(start,end);
                 break;
             case R.id.btnDataExport:
-
+                dialogFragment = new ProcessDialogFragment();
+                dialogFragment.setCancelable(false);
+                dialogFragment.show(getFragmentManager(),"ExportData");
+                data.exportData(tools.string2timestamp(tvStartTime.getText().toString()),tools.string2timestamp(tvEndTime.getText().toString()),this);
                 break;
             default:
 

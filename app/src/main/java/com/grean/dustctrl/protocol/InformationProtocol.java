@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.grean.dustctrl.CtrlCommunication;
 import com.grean.dustctrl.DbTask;
@@ -12,10 +13,15 @@ import com.grean.dustctrl.MainActivity;
 import com.grean.dustctrl.ReadWriteConfig;
 import com.grean.dustctrl.SocketTask;
 import com.grean.dustctrl.myApplication;
+import com.grean.dustctrl.presenter.NotifyDataInfo;
 import com.grean.dustctrl.process.ScanSensor;
 import com.grean.dustctrl.process.SensorData;
 import com.tools;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
 
@@ -26,10 +32,10 @@ import java.util.ArrayList;
 public class InformationProtocol implements GeneralInfoProtocol{
     private String stateString;
     private SensorData data = new SensorData();
-    private boolean autoCalEnable,dustMeterCalBgOk,dustMeterCalSpanOk;
+    private boolean autoCalEnable,dustMeterCalBgOk,dustMeterCalSpanOk,exportDataResult;
     private long autoCalTime,autoCalInterval;
     private String serverIp;
-    private int serverPort,pumpTime,laserTime,dustMeterCalProcess;
+    private int serverPort,pumpTime,laserTime,dustMeterCalProcess,exportDataProcess;
     private float paraK;
     private Context context;
     ReadWriteConfig config;
@@ -263,5 +269,104 @@ public class InformationProtocol implements GeneralInfoProtocol{
     @Override
     public long getAutoCalInterval() {
         return autoCalInterval;
+    }
+
+    @Override
+    public int getExportDataProcess() {
+        return exportDataProcess;
+    }
+
+    @Override
+    public boolean getExportDataResult() {
+        return exportDataResult;
+    }
+
+    @Override
+    public void exportData(long start, long end) {
+        new ExportDataThread(start,end).start();
+    }
+
+    private ArrayList<String> exportDataBase(long start,long end){
+        ArrayList<String> list = new ArrayList<String>();
+        String statement;
+        if (start > end){
+            statement = "date <"+ String.valueOf(start)+" and date >"+String.valueOf(end);
+        }else{
+            statement = "date >"+ String.valueOf(start)+" and date <"+String.valueOf(end);
+        }
+
+        DbTask helperDbTask = new DbTask(context,1);
+        SQLiteDatabase db = helperDbTask.getReadableDatabase();
+        Cursor cursor;
+        cursor = db.rawQuery("SELECT * FROM result WHERE "+statement+" ORDER BY date desc",new String[]{});
+        list.add("时间  TSP mg/m³ 温度 ℃ 湿度 % 气压 hPa 风速 m/s 风向 ° 噪声 dB");
+        while (cursor.moveToNext()){
+            String string = tools.timestamp2string(cursor.getLong(0));
+            string+=tools.float2String3(cursor.getFloat(1))+"  ";
+            string+=tools.float2String3(cursor.getFloat(3))+"  ";
+            string+=tools.float2String3(cursor.getFloat(4))+"  ";
+            string+=tools.float2String3(cursor.getFloat(5))+"  ";
+            string+=tools.float2String3(cursor.getFloat(6))+"  ";
+            string+=tools.float2String3(cursor.getFloat(7))+"  ";
+            string+=tools.float2String3(cursor.getFloat(8))+"  ";
+            list.add(string);
+        }
+        db.close();
+        helperDbTask.close();
+        return list;
+
+    }
+
+    private class ExportDataThread extends Thread{
+        long start,end;
+        public ExportDataThread(long start, long  end){
+            this.start = start;
+            this.end = end;
+        }
+
+        @Override
+        public void run() {
+            exportDataResult=true;
+            String pathName = "/nmt/usbhost/Storage01/GREAN/"; // /storage/sdcard0/GREAN/
+            String fileName = "数据"+tools.nowtime2string()+"导出.txt";
+            File path = new File(pathName);
+            File file = new File(pathName + fileName);
+            try {
+                if (!path.exists()) {
+                    Log.d("TestFile", "Create the path:" + pathName);
+                    path.mkdir();
+                }
+                if (!file.exists()) {
+                    Log.d("TestFile", "Create the file:" + fileName);
+                    file.createNewFile();
+                }
+                exportDataProcess = 10;
+                // 导出日志
+                BufferedWriter bw = new BufferedWriter(new FileWriter(file,false)); // true// 是添加在后面// false// 是每次写新的
+                bw.write("历史数据 \r\n");
+
+
+                ArrayList<String> list = exportDataBase(start,end);
+                for (String tmp : list) {
+                    bw.write(tmp + "\r\n");
+                    //Log.d("写入SD", tmp);
+                }
+                bw.flush();
+                bw.close();
+                exportDataProcess = 80;
+
+            } catch (IOException e) {
+                e.printStackTrace();
+                exportDataResult = false;
+            }
+
+            try {
+                Thread.sleep(4000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            exportDataProcess = 100;
+
+        }
     }
 }
