@@ -136,6 +136,7 @@ public class SocketTask {
                     Log.d(tag,"one turn");
                 }
             } catch (IOException e) {
+                connected = false;
                 Log.d(tag,"找不到服务器");
                 if(notifyProcessDialogInfo!=null){
                     notifyProcessDialogInfo.showInfo("服务器未开启");

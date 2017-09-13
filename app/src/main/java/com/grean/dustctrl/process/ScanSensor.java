@@ -269,7 +269,7 @@ public class ScanSensor extends Observable{
                 data = com.getData();
                 data.setNoise(noiseCom.getNoiseData());
                 infoProtocol.notifySenorData(data);
-                if(i>149){
+                if(i>29){//1min一条数据
                     i=0;
                     DbTask helper = new DbTask(context,1);
                     SQLiteDatabase db = helper.getReadableDatabase();
