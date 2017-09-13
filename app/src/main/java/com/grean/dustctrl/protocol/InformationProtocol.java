@@ -67,7 +67,7 @@ public class InformationProtocol implements GeneralInfoProtocol{
         autoCalEnable = config.getConfigBoolean("AutoCalibrationEnable");
         autoCalTime = config.getConfigLong("AutoCalTime");
         autoCalInterval = config.getConfigLong("AutoCalInterval");
-        paraK = config.getConfigFloat("ParaK");
+        paraK = config.getConfigFloat("DustParaK");
     }
 
     private void getAvailableContext(){
@@ -124,7 +124,7 @@ public class InformationProtocol implements GeneralInfoProtocol{
         float value = CtrlCommunication.getInstance().getData().getValue();
         paraK = target / value;
         CtrlCommunication.getInstance().getData().setParaK(paraK);
-        config.saveConfig("ParaK",paraK);
+        config.saveConfig("DustParaK",paraK);
     }
 
     @Override

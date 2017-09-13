@@ -25,7 +25,7 @@ public class FragmentData extends Fragment implements View.OnClickListener , Ins
     private LinearLayout mainLinearLayout;
     private RelativeLayout relativeLayout;
     private TextView tvStartTime,tvEndTime;
-    private Button btnSearchData,btnSearchLog;
+    private Button btnSearchData,btnSearchLog,btnExportData;
     private String start,end;
     private SetSearchStartTime startTime;
     private SetSearchEndTime endTime;
@@ -55,10 +55,12 @@ public class FragmentData extends Fragment implements View.OnClickListener , Ins
         tvEndTime = v.findViewById(R.id.tvDataEndTime);
         btnSearchData = v.findViewById(R.id.btnDataInquire);
         btnSearchLog = v.findViewById(R.id.btnLogInquire);
+        btnExportData = v.findViewById(R.id.btnDataExport);
         tvEndTime.setOnClickListener(this);
         tvStartTime.setOnClickListener(this);
         btnSearchData.setOnClickListener(this);
         btnSearchLog.setOnClickListener(this);
+        btnExportData.setOnClickListener(this);
     }
 
     @Override
@@ -144,6 +146,9 @@ public class FragmentData extends Fragment implements View.OnClickListener , Ins
                 break;
             case R.id.btnLogInquire:
                 data.searchLog(start,end);
+                break;
+            case R.id.btnDataExport:
+
                 break;
             default:
 

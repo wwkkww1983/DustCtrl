@@ -246,10 +246,12 @@ public class ScanSensor extends Observable{
             com = CtrlCommunication.getInstance();
             NoiseCommunication noiseCom;
             noiseCom = NoiseCommunication.getInstance();
-            com.setDustParaK(myApplication.getInstance().getConfigFloat("DustParaK"));
+            float paraK = myApplication.getInstance().getConfigFloat("DustParaK");
+            com.setDustParaK(paraK);
             com.setMotorRounds(myApplication.getInstance().getConfigInt("MotorRounds"));
             com.setMotorTime(myApplication.getInstance().getConfigInt("MotorTime"));
             GeneralInfoProtocol infoProtocol = GetProtocols.getInstance().getInfoProtocol();
+            //infoProtocol.
             int i=0;
             setChanged();
             notifyObservers(new LogFormat("开始测量"));
