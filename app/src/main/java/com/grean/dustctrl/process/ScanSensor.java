@@ -141,7 +141,7 @@ public class ScanSensor extends Observable{
             infoProtocol.notifySystemState("正在校跨");
             com.SendFrame(CtrlCommunication.DustMeterSpanStart);
             try {
-                Thread.sleep(80000);
+                Thread.sleep(100000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
