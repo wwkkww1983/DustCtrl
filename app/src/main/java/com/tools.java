@@ -253,6 +253,14 @@ import android.annotation.SuppressLint;
 		String nowtimeString = sDateFormat.format(new java.util.Date());
 		return nowtimeString;
 	}
+
+	/*获取当前时间的字符串
+	 * */
+	public static String nowTime2FileString(){
+		SimpleDateFormat sDateFormat = new SimpleDateFormat("yyyyMMddHHmm");
+		String nowtimeString = sDateFormat.format(new java.util.Date());
+		return nowtimeString;
+	}
 	/**
 	 * 将计算结果 转成字符转串
 	 * @param data

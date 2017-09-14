@@ -121,7 +121,7 @@ public class SearchData {
         cursor = db.rawQuery("SELECT * FROM result WHERE "+statement+" ORDER BY date desc",new String[]{});
         list.add("时间  TSP mg/m³ 温度 ℃ 湿度 % 气压 hPa 风速 m/s 风向 ° 噪声 dB");
         while (cursor.moveToNext()){
-            String string = tools.timestamp2string(cursor.getLong(0));
+            String string = tools.timestamp2string(cursor.getLong(0))+"  ";
             string+=tools.float2String3(cursor.getFloat(1))+"  ";
             string+=tools.float2String3(cursor.getFloat(3))+"  ";
             string+=tools.float2String3(cursor.getFloat(4))+"  ";
@@ -153,8 +153,8 @@ public class SearchData {
         @Override
         public void run() {
             boolean success=true;
-            String pathName = "/nmt/usbhost/Storage01/GREAN/"; // /storage/sdcard0/GREAN/
-            String fileName = "数据"+tools.nowtime2string()+"导出.txt";
+            String pathName = "/mnt/usbhost/Storage01/GREAN/"; // /storage/sdcard0/GREAN/
+            String fileName = "数据"+tools.nowTime2FileString()+"导出.txt";
             File path = new File(pathName);
             File file = new File(pathName + fileName);
             try {
@@ -175,10 +175,11 @@ public class SearchData {
                 ArrayList<String> list = exportData(start,end);
                 for (String tmp : list) {
                     bw.write(tmp + "\r\n");
-                    //Log.d("写入SD", tmp);
+                   // Log.d("写入SD", tmp);
                 }
                 bw.flush();
                 bw.close();
+
 
 
             } catch (IOException e) {

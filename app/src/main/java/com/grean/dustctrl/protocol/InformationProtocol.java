@@ -301,7 +301,7 @@ public class InformationProtocol implements GeneralInfoProtocol{
         cursor = db.rawQuery("SELECT * FROM result WHERE "+statement+" ORDER BY date desc",new String[]{});
         list.add("时间  TSP mg/m³ 温度 ℃ 湿度 % 气压 hPa 风速 m/s 风向 ° 噪声 dB");
         while (cursor.moveToNext()){
-            String string = tools.timestamp2string(cursor.getLong(0));
+            String string = tools.timestamp2string(cursor.getLong(0))+"  ";
             string+=tools.float2String3(cursor.getFloat(1))+"  ";
             string+=tools.float2String3(cursor.getFloat(3))+"  ";
             string+=tools.float2String3(cursor.getFloat(4))+"  ";
@@ -327,17 +327,17 @@ public class InformationProtocol implements GeneralInfoProtocol{
         @Override
         public void run() {
             exportDataResult=true;
-            String pathName = "/nmt/usbhost/Storage01/GREAN/"; // /storage/sdcard0/GREAN/
-            String fileName = "数据"+tools.nowtime2string()+"导出.txt";
+            String pathName = "/mnt/usbhost/Storage01/GREAN/"; // /storage/sdcard0/GREAN/
+            String fileName = "数据"+tools.nowTime2FileString()+"导出.txt";
             File path = new File(pathName);
             File file = new File(pathName + fileName);
             try {
                 if (!path.exists()) {
-                    Log.d("TestFile", "Create the path:" + pathName);
+                    //Log.d("TestFile", "Create the path:" + pathName);
                     path.mkdir();
                 }
                 if (!file.exists()) {
-                    Log.d("TestFile", "Create the file:" + fileName);
+                   // Log.d("TestFile", "Create the file:" + fileName);
                     file.createNewFile();
                 }
                 exportDataProcess = 10;
