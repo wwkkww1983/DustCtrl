@@ -122,6 +122,13 @@ public class OperateSystem {
         }
     }
 
+    public String getServerIp(){
+        return myApplication.getInstance().getConfigString("ServerIp");
+    }
+
+    public String getServerPort(){
+        return String.valueOf(myApplication.getInstance().getConfigInt("ServerPort"));
+    }
 
     public String getAutoCalNextTime(){
         String string;

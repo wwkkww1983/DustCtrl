@@ -39,7 +39,7 @@ public class FragmentVideo extends Fragment {
         btnSetting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Uri uri = Uri.parse("http://192.168.168.250");
+                Uri uri = Uri.parse("http://192.168.1.64");
                 Intent intent = new Intent(Intent.ACTION_VIEW,uri);
                 startActivity(intent);
             }

@@ -79,7 +79,8 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
     }
 
     private void onShow(){
-
+        etServerIp.setText(system.getServerIp());
+        etServerPort.setText(system.getServerPort());
         swDustMeterRun.setChecked(dustMeter.isDustMeterRun());
         etMotorRounds.setText(String.valueOf(system.getMotorRounds()));
         float time = system.getMotorTime() / 10.0f;

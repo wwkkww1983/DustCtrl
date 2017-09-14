@@ -146,7 +146,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         GetProtocols.getInstance().getInfoProtocol().setContext(this);
         ScanSensor.getInstance().addObserver(SystemLog.getInstance(this));
         ScanSensor.getInstance().startScan(this);
-        SocketTask.getInstance().startSocketHeart("192.168.168.134",12803,this,this,GetProtocols.getInstance().getClientProtocol());
+        SocketTask.getInstance().startSocketHeart(myApplication.getInstance().getConfigString("ServerIp"),myApplication.getInstance().getConfigInt("ServerPort"),this,this,GetProtocols.getInstance().getClientProtocol());
         SocketServerTask.getInstance().startSocketServer(GetProtocols.getInstance().getServerProtocol());
         //SocketTask.getInstance().setContext(this);
 
