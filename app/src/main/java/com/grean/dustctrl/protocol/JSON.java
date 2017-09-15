@@ -31,7 +31,8 @@ import java.util.Stack;
  * {"protocolType":"historyData"}
  * 日志
  * {"protocolType":"log"}
- *
+ *导出数据
+ * {"protocolType","exportData"}
  * Created by weifeng on 2017/9/5.
  */
 
@@ -61,6 +62,7 @@ public class JSON {
         item.put("value",data);
         return item;
     }
+
 
     private static byte[] handleUploadSetting(JSONObject jsonObject,GeneralInfoProtocol infoProtocol) throws JSONException {
 

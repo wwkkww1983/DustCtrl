@@ -69,7 +69,7 @@ public interface GeneralInfoProtocol {
 
     GeneralHistoryDataFormat getHistoryData(long endDate);
 
-    ArrayList<String> getLog(long endDate);
+    ArrayList<String> getLog(long dateStart);
 
     float getParaK();
     String getServerIp();

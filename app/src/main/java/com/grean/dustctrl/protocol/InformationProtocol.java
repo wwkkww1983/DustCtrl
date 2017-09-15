@@ -193,14 +193,14 @@ public class InformationProtocol implements GeneralInfoProtocol{
     }
 
     @Override
-    public GeneralHistoryDataFormat getHistoryData(long endDate) {
+    public GeneralHistoryDataFormat getHistoryData(long dateStart) {
         GeneralHistoryDataFormat format = new GeneralHistoryDataFormat();
         String statement;
-        statement = "date >"+ String.valueOf(endDate - 3600*1000l)+" and date <"+String.valueOf(endDate);
+        statement = "date >"+ String.valueOf(dateStart)+" and date <"+String.valueOf(dateStart + 3600000l);
         DbTask helperDbTask = new DbTask(context,1);
         SQLiteDatabase db = helperDbTask.getReadableDatabase();
         Cursor cursor;
-        cursor = db.rawQuery("SELECT * FROM result WHERE "+statement+" ORDER BY date desc",new String[]{});
+        cursor = db.rawQuery("SELECT * FROM result WHERE "+statement+" ORDER BY date asc",new String[]{});
         int index = 0;
         ArrayList<Float> item;
         while ((cursor.moveToNext())&&index < 100){
@@ -283,6 +283,7 @@ public class InformationProtocol implements GeneralInfoProtocol{
 
     @Override
     public void exportData(long start, long end) {
+        exportDataProcess = 0;
         new ExportDataThread(start,end).start();
     }
 
@@ -318,7 +319,8 @@ public class InformationProtocol implements GeneralInfoProtocol{
     }
 
     private class ExportDataThread extends Thread{
-        long start,end;
+        private long start,end;
+
         public ExportDataThread(long start, long  end){
             this.start = start;
             this.end = end;
@@ -331,6 +333,7 @@ public class InformationProtocol implements GeneralInfoProtocol{
             String fileName = "数据"+tools.nowTime2FileString()+"导出.txt";
             File path = new File(pathName);
             File file = new File(pathName + fileName);
+            boolean success = true;
             try {
                 if (!path.exists()) {
                     //Log.d("TestFile", "Create the path:" + pathName);
