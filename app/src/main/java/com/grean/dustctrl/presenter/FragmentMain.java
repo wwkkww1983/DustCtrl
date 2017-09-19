@@ -34,6 +34,7 @@ public class FragmentMain extends Fragment implements NotifyScanSensor{
     private TextView tvWindForce;
     private TextView tvWindDirection;
     private TextView tvNoise,tvNextCal,tvValue;
+    private TextView tvHiTemperature,tvLoTemperature,tvHiHumidity,tvLoHumidity,tvPwm,tvBatteryOk,tvPowerIn;
     private SensorData data;
     private OperateInit operateInit;
 
@@ -66,6 +67,21 @@ public class FragmentMain extends Fragment implements NotifyScanSensor{
                     tvWindDirection.setText(tools.float2String3(data.getWindDirection()));
                     tvNoise.setText(tools.float2String3(data.getNoise()));
                     tvValue.setText(tools.float2String3(data.getValue()));
+                    tvHiHumidity.setText(tools.float2String3(data.getHiHumidity()));
+                    tvHiTemperature.setText(tools.float2String3(data.getHiTemp()));
+                    tvLoHumidity.setText(tools.float2String3(data.getLoHumidity()));
+                    tvLoTemperature.setText(tools.float2String3(data.getLoTemp()));
+                    tvPwm.setText(String.valueOf(data.getHeatPwm()));
+                    if(data.isAcIn()){
+                        tvPowerIn.setText("外接电源:正常");
+                    }else{
+                        tvPowerIn.setText("外接电源:异常");
+                    }
+                    if(data.isBatteryLow()){
+                        tvBatteryOk.setText("电池电压:低");
+                    }else{
+                        tvBatteryOk.setText("电池电压:正常");
+                    }
                     break;
                 case msgUpdateNextCal:
                     tvNextCal.setText("自动校准:"+nextCalString);
@@ -105,6 +121,13 @@ public class FragmentMain extends Fragment implements NotifyScanSensor{
         tvNoise = v.findViewById(R.id.tvMainNoise);
         tvNextCal = v.findViewById(R.id.tvMainNextCal);
         tvValue = v.findViewById(R.id.tvMainValue);
+        tvHiHumidity = v.findViewById(R.id.tvMainHiHumidity);
+        tvHiTemperature = v.findViewById(R.id.tvMainHitemperature);
+        tvLoHumidity = v.findViewById(R.id.tvMainLoHumidity);
+        tvLoTemperature = v.findViewById(R.id.tvMainLoTemperature);
+        tvPwm = v.findViewById(R.id.tvMainPwm);
+        tvBatteryOk = v.findViewById(R.id.tvMainBatteryOk);
+        tvPowerIn = v.findViewById(R.id.tvMainPowerIn);
     }
 
     @Override

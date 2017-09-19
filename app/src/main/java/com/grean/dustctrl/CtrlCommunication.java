@@ -141,10 +141,10 @@ public class CtrlCommunication extends SerialCommunication{
                 case Inquire:
                     if (rec[2]==0x3e) {
                         for(int i=0;i<5;i++) {
-                            if (rec[3+i] == 0x00) {
+                            if (rec[4+i*2] == 0x00) {
                                 data.setCtrlDo(i, false);
                             } else {
-                                data.setCtrlDo(i, false);
+                                data.setCtrlDo(i, true);
                             }
                         }
                        /* data.setAirTemperature(tools.getFloat(rec,11));
@@ -152,25 +152,25 @@ public class CtrlCommunication extends SerialCommunication{
                         data.setAirPressure(tools.getFloat(rec,23));
                         data.setWindForce(tools.getFloat(rec,27));
                         data.setWindDirection(tools.getFloat(rec,31));*/
-                        if(rec[32]==0x00){
+                        if(rec[38]==0x00){
                             data.setAcIn(false);
                         }else{
                             data.setAcIn(true);
                         }
 
-                        if(rec[33]==0x00){
-                            data.setBatteryLow(false);
-                        }else{
+                        if(rec[40]==0x00){
                             data.setBatteryLow(true);
+                        }else{
+                            data.setBatteryLow(false);
                         }
-                        data.setHiTemp(tools.getFloat(rec,37));
-                        data.setLoTemp(tools.getFloat(rec,41));
-                        data.setHiHumidity(tools.getFloat(rec,45));
-                        data.setLoHumidity(tools.getFloat(rec,49));
-                        data.setHeatPwm(tools.byte2int(rec,50));
-                        data.setMotorState(tools.byte2int(rec,51));
-                        data.setMotorRounds(tools.byte2int(rec,53));
-                        data.setMotorTime(tools.byte2int(rec,55));
+                        data.setHiTemp(tools.getFloat(rec,44));
+                        data.setLoTemp(tools.getFloat(rec,48));
+                        data.setHiHumidity(tools.getFloat(rec,52));
+                        data.setLoHumidity(tools.getFloat(rec,56));
+                        data.setHeatPwm(tools.byte2int(rec,57));
+                        data.setMotorState(tools.byte2int(rec,59));
+                        data.setMotorRounds(tools.byte2int(rec,61));
+                        data.setMotorTime(tools.byte2int(rec,63));
                     }
                     break;
                 default:

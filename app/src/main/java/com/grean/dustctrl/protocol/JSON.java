@@ -114,7 +114,7 @@ public class JSON {
             object.put("DustMeterCalProcessInt",infoProtocol.getDustMeterCalProcess());
             object.put("DustMeterCalInfo",infoProtocol.getSystemState());
         }else if(jsonObject.has("ExportData")){
-            object.put("ExportData",true);
+            object.put("ExportDataProcess",true);
             object.put("process",0);
             object.put("result",false);
             infoProtocol.exportData(jsonObject.getLong("start"),jsonObject.getLong("end"));

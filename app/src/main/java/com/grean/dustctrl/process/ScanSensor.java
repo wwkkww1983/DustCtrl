@@ -138,10 +138,15 @@ public class ScanSensor extends Observable{
                 dialogInfo.showInfo("量程校准...");
             }
             sendMainFragmentString("正在校跨");
+            try {
+                Thread.sleep(20000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             infoProtocol.notifySystemState("正在校跨");
             com.SendFrame(CtrlCommunication.DustMeterSpanStart);
             try {
-                Thread.sleep(100000);
+                Thread.sleep(80000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
