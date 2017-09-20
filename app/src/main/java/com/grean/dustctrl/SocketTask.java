@@ -8,6 +8,7 @@ import android.util.Log;
 import com.grean.dustctrl.presenter.NotifyOperateInfo;
 import com.grean.dustctrl.presenter.NotifyProcessDialogInfo;
 import com.grean.dustctrl.protocol.GeneralClientProtocol;
+import com.grean.dustctrl.protocol.TcpClientCallBack;
 import com.tools;
 
 import java.io.IOException;
@@ -20,13 +21,14 @@ import java.net.NetworkInterface;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.Enumeration;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * TCP客户端任务类，单例化
  * Created by Administrator on 2017/9/4.
  */
 
-public class SocketTask {
+public class SocketTask implements TcpClientCallBack{
     private static final String tag = "SocketTask";
     private static SocketTask instance = new SocketTask();
     private static boolean heartRun = false,connected = false;
@@ -43,6 +45,7 @@ public class SocketTask {
     NotifyProcessDialogInfo notifyProcessDialogInfo;
     NotifyOperateInfo notifyOperateInfo;
     private GeneralClientProtocol clientProtocol;
+    private ConcurrentLinkedQueue <byte[]> sendBuff = new ConcurrentLinkedQueue<>();
 
     public static SocketTask getInstance() {
         return instance;
@@ -95,6 +98,14 @@ public class SocketTask {
         }
     }
 
+    @Override
+    public boolean addOneFrame(byte[] data) {
+        if (connected){
+            sendBuff.add(data);
+        }
+        return connected;
+    }
+
     private class ReceiverThread extends Thread{
         @Override
         public void run() {
@@ -125,8 +136,7 @@ public class SocketTask {
                 while (connected){
                     if (socketClient.isConnected()){
                         while ((count = receive.read(readBuff))!=-1 && connected){
-                            String content = new String(readBuff,0,count);
-                            Log.d(tag,"TCP Content:"+content);
+                            clientProtocol.handleProtocol(readBuff,count);
                         }
                         connected = false;
                         break;
@@ -245,8 +255,12 @@ public class SocketTask {
             while ((!interrupted())&&(heartRun)){
                 if (connected){//已连接服务器
                     try {
-                        send.write(heartString.getBytes());
-                        send.flush();
+                        /*send.write(heartString.getBytes());
+                        send.flush();*/
+                        if(!sendBuff.isEmpty()){
+                            send.write(sendBuff.poll());
+                            send.flush();
+                        }
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -254,11 +268,16 @@ public class SocketTask {
                     socketClient = new Socket();
                     receiverThread = new ReceiverThread();
                     receiverThread.start();
+
+                    try {
+                        Thread.sleep(8000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
 
-
                 try {
-                    Thread.sleep(10000);
+                    Thread.sleep(2000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

@@ -74,6 +74,8 @@ public interface GeneralInfoProtocol {
     float getParaK();
     String getServerIp();
     int getServerPort();
+    String getMnCode();
+    void setMnCode(String code);
     boolean getAutoCalEnable();
     long getAutoCalTime();
     long getAutoCalInterval();

@@ -37,7 +37,7 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
     private String dustMeterInfo,autoCalTime,toastString;
     private Button btnDustMeterManCal,btnDustMeterInquire,btnMotorSet,btnSaveAutoCal,btnSaveServer,btnUpdateSoftware,btnCalcParaK;
     private TextView tvDustMeterInfo,tvNextAutoCalTime,tvLocalIp,tvParaK;
-    private EditText etMotorRounds,etMotorTime,etAutoCalInterval,etServerIp,etServerPort,etUpdateSoftwareUrl,etTargetValue;
+    private EditText etMotorRounds,etMotorTime,etAutoCalInterval,etServerIp,etServerPort,etUpdateSoftwareUrl,etTargetValue,etMnCode;
     private Switch swDustMeterRun,swValve,swFan,swExt1,swExt2,swBackup,swAutoCalibrationEnable;
 
     private OperateDustMeter dustMeter;
@@ -90,6 +90,7 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
         tvNextAutoCalTime.setText(autoCalTime);
         tvLocalIp.setText(operateTcp.getLocalIpAddress()+":8888");
         tvParaK.setText(dustMeter.getParaKString());
+        etMnCode.setText(operateTcp.getTcpMnCode());
         if (system.getAutoCalibrationEnable()){
             swAutoCalibrationEnable.setChecked(true);
         }else {
@@ -126,6 +127,7 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
         tvParaK = v.findViewById(R.id.tvOperateParaK);
         etTargetValue = v.findViewById(R.id.etOperateTargetValue);
         btnCalcParaK = v.findViewById(R.id.btnOperateCalcPraraK);
+        etMnCode = v.findViewById(R.id.etOperateMnCode);
         btnCalcParaK.setOnClickListener(this);
         btnSaveServer.setOnClickListener(this);
         btnUpdateSoftware.setOnClickListener(this);
@@ -237,7 +239,7 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
                 dialogFragment = new ProcessDialogFragment();
                 dialogFragment.setCancelable(true);
                 dialogFragment.show(getFragmentManager(),"TcpSocket");
-                operateTcp.setTcpSocketClient(etServerIp.getText().toString(),Integer.valueOf(etServerPort.getText().toString()),dialogFragment);
+                operateTcp.setTcpSocketClient(etServerIp.getText().toString(),Integer.valueOf(etServerPort.getText().toString()),etMnCode.getText().toString(),dialogFragment);
                 break;
             case R.id.btnOperateUpdateSoftware:
                 dialogFragment = new ProcessDialogFragment();

@@ -66,6 +66,7 @@ public class myApplication extends Application implements ReadWriteConfig{
             editor.putBoolean("AutoCalibrationEnable",true);
             editor.putString("ServerIp","192.168.168.134");
             editor.putInt("ServerPort",12803);
+            editor.putString("MnCode","888888");
             editor.commit();
         }
 

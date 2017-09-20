@@ -1,5 +1,7 @@
 package com.grean.dustctrl.protocol;
 
+import com.grean.dustctrl.SocketTask;
+
 /**
  * 获取各种协议的接口
  * Created by weifeng on 2017/9/8.
@@ -28,7 +30,7 @@ public class GetProtocols {
 
     public GeneralClientProtocol getClientProtocol() {
         if(clientProtocol==null){
-            clientProtocol = new TcpClient();
+            clientProtocol = new TcpClient(SocketTask.getInstance());
         }
         return clientProtocol;
     }

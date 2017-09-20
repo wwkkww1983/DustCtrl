@@ -197,5 +197,4 @@ public class OperateSystem {
         myApplication.getInstance().saveConfig("MotorTime",time);
     }
 
-
 }

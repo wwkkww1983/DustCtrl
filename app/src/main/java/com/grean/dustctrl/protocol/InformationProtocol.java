@@ -34,7 +34,7 @@ public class InformationProtocol implements GeneralInfoProtocol{
     private SensorData data = new SensorData();
     private boolean autoCalEnable,dustMeterCalBgOk,dustMeterCalSpanOk,exportDataResult;
     private long autoCalTime,autoCalInterval;
-    private String serverIp;
+    private String serverIp,mnCode;
     private int serverPort,pumpTime,laserTime,dustMeterCalProcess,exportDataProcess;
     private float paraK;
     private Context context;
@@ -74,6 +74,7 @@ public class InformationProtocol implements GeneralInfoProtocol{
         autoCalTime = config.getConfigLong("AutoCalTime");
         autoCalInterval = config.getConfigLong("AutoCalInterval");
         paraK = config.getConfigFloat("DustParaK");
+        mnCode = config.getConfigString("MnCode");
     }
 
     private void getAvailableContext(){
@@ -254,6 +255,17 @@ public class InformationProtocol implements GeneralInfoProtocol{
     @Override
     public int getServerPort() {
         return serverPort;
+    }
+
+    @Override
+    public String getMnCode() {
+        return mnCode;
+    }
+
+    @Override
+    public void setMnCode(String code) {
+        config.saveConfig("MnCode",code);
+        GetProtocols.getInstance().getClientProtocol().setMnCode(code);
     }
 
     @Override

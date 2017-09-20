@@ -328,6 +328,23 @@
                     android:inputType="number"
                     android:text="12803" />
 
+                <TextView
+                    android:id="@+id/textView41"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="地区码:"
+                    android:textSize="18sp" />
+
+                <EditText
+                    android:id="@+id/etOperateMnCode"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ems="10"
+                    android:inputType="textPersonName"
+                    android:text="Name" />
+
                 <Button
                     android:id="@+id/btnOperateSaveServer"
                     android:layout_width="wrap_content"

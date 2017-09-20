@@ -74,6 +74,7 @@ public class JSON {
         long interval = jsonObject.getLong("autoCalInterval");
         object.put("success",infoProtocol.setAutoCal(enable,date,interval));
         infoProtocol.setServer(jsonObject.getString("serverIp"),jsonObject.getInt("serverPort"));
+        infoProtocol.setMnCode(jsonObject.getString("mnCode"));
         return object.toString().getBytes();
     }
 
@@ -85,6 +86,7 @@ public class JSON {
         object.put("autoCalInterval",infoProtocol.getAutoCalInterval());
         object.put("serverIp",infoProtocol.getServerIp());
         object.put("serverPort",infoProtocol.getServerPort());
+        object.put("mnCode",infoProtocol.getMnCode());
         object.put("dustParaK",infoProtocol.getParaK());
         return object.toString().getBytes();
     }
