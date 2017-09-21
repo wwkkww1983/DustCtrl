@@ -14,6 +14,7 @@ import com.grean.dustctrl.myApplication;
 import com.grean.dustctrl.presenter.CalcNextAutoCalibration;
 import com.grean.dustctrl.presenter.NotifyOperateInfo;
 import com.grean.dustctrl.presenter.NotifyProcessDialogInfo;
+import com.grean.dustctrl.protocol.GeneralClientProtocol;
 import com.grean.dustctrl.protocol.GeneralInfoProtocol;
 import com.grean.dustctrl.protocol.GetProtocols;
 import com.grean.dustctrl.protocol.InformationProtocol;
@@ -256,6 +257,7 @@ public class ScanSensor extends Observable{
             com.setMotorRounds(myApplication.getInstance().getConfigInt("MotorRounds"));
             com.setMotorTime(myApplication.getInstance().getConfigInt("MotorTime"));
             GeneralInfoProtocol infoProtocol = GetProtocols.getInstance().getInfoProtocol();
+            GeneralClientProtocol clientProtocol = GetProtocols.getInstance().getClientProtocol();
             //infoProtocol.
             int i=0;
             setChanged();
@@ -276,6 +278,7 @@ public class ScanSensor extends Observable{
                 data = com.getData();
                 data.setNoise(noiseCom.getNoiseData());
                 infoProtocol.notifySenorData(data);
+                clientProtocol.setRealTimeData(data);
                 if(i>29){//1min一条数据
                     i=0;
                     DbTask helper = new DbTask(context,1);

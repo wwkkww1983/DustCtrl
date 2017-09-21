@@ -142,6 +142,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 CtrlCommunication.getInstance().SendFrame(CtrlCommunication.Cmd.Inquire);
             }
         });*/
+        GetProtocols.getInstance().setContext(this);
         GetProtocols.getInstance().getInfoProtocol().loadSetting(myApplication.getInstance());
         GetProtocols.getInstance().getInfoProtocol().setContext(this);
         ScanSensor.getInstance().addObserver(SystemLog.getInstance(this));

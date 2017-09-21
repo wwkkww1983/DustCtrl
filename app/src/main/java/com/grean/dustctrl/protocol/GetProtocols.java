@@ -1,5 +1,7 @@
 package com.grean.dustctrl.protocol;
 
+import android.content.Context;
+
 import com.grean.dustctrl.SocketTask;
 
 /**
@@ -12,9 +14,22 @@ public class GetProtocols {
     private GeneralClientProtocol clientProtocol;
     private GeneralServerProtocol serverProtocol;
     private GeneralInfoProtocol infoProtocol;
+    private GeneralDataBaseProtocol dataBaseProtocol;
+    private Context context;
 
     private GetProtocols(){
 
+    }
+
+    public GeneralDataBaseProtocol getDataBaseProtocol() {
+        if(dataBaseProtocol == null){
+            dataBaseProtocol = new TcpDataBase(context);
+        }
+        return dataBaseProtocol;
+    }
+
+    public void setContext(Context context) {
+        this.context = context;
     }
 
     public static GetProtocols getInstance() {

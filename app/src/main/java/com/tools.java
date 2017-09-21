@@ -224,6 +224,11 @@ import android.annotation.SuppressLint;
 		}
 		return l;
 	}
+
+	public static String timeStamp2TcpString(long l){
+		SimpleDateFormat sDateFormat = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+		return  sDateFormat.format(new Date(l));
+	}
 	
 	/*将时间戳转化为字符串
 	 * */
@@ -240,6 +245,8 @@ import android.annotation.SuppressLint;
 		long n = currentdate.getTime();
 		return n;
 	}
+
+
 	
 	public static String nowDate2string(){
 		SimpleDateFormat sDateFormat = new SimpleDateFormat("yyyy-MM-dd");

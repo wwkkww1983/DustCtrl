@@ -1,5 +1,7 @@
 package com.grean.dustctrl.protocol;
 
+import com.grean.dustctrl.process.SensorData;
+
 /**
  * Created by weifeng on 2017/9/5.
  */
@@ -34,4 +36,10 @@ public interface GeneralClientProtocol {
      * 停止心跳包
      */
     void stopHeartBeatPacket();
+
+    /**
+     * 写入实时数据
+     * @param data
+     */
+    void setRealTimeData(SensorData data);
 }
