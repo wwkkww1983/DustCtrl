@@ -32,7 +32,7 @@ public class DialogTimeChoose {
      * @param day 日
      * @param hour 时
      * @param min 分
-     * @param selected 存储接口
+     * @param selected 保存的回调的代码接口
      */
     public void showDialog(int year, int month, int day, int hour, int min , final DialogTimeSelected selected){
         AlertDialog.Builder builder = new AlertDialog.Builder(context);

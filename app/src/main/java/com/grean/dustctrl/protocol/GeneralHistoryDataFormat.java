@@ -7,6 +7,8 @@ import java.util.ArrayList;
  */
 
 public class GeneralHistoryDataFormat {
+    public static final int Dust=0,Temperature=1,Humidity=2,Pressure=3,WindForce=4,WindDirection=5,Noise=6;
+
     private ArrayList<Long> date = new ArrayList<Long>();
     private ArrayList<ArrayList<Float>> data = new ArrayList<ArrayList<Float>>();
     public GeneralHistoryDataFormat(){

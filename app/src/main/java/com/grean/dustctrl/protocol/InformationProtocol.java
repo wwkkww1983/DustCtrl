@@ -114,14 +114,14 @@ public class InformationProtocol implements GeneralInfoProtocol{
                 config.saveConfig("AutoCalInterval",interval);
 
             }
-            if(context!=null){
-                Intent intent = new Intent();
-                intent.setAction("autoCalibration");
-                intent.putExtra("enable",enable);
-                intent.putExtra("date",date);
-                context.sendBroadcast(intent);
-                success = true;
-            }
+            getAvailableContext();
+            Intent intent = new Intent();
+            intent.setAction("autoCalibration");
+            intent.putExtra("enable",enable);
+            intent.putExtra("date",date);
+            context.sendBroadcast(intent);
+            success = true;
+
             return success;
         }else {
             return true;

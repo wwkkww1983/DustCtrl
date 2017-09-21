@@ -3,6 +3,7 @@ package com.grean.dustctrl.protocol;
 import android.content.Context;
 
 import com.grean.dustctrl.SocketTask;
+import com.grean.dustctrl.myApplication;
 
 /**
  * 获取各种协议的接口
@@ -21,8 +22,11 @@ public class GetProtocols {
 
     }
 
-    public GeneralDataBaseProtocol getDataBaseProtocol() {
+    synchronized public GeneralDataBaseProtocol getDataBaseProtocol() {
         if(dataBaseProtocol == null){
+            if(context == null){
+                context = myApplication.getInstance().getApplicationContext();
+            }
             dataBaseProtocol = new TcpDataBase(context);
         }
         return dataBaseProtocol;
@@ -36,21 +40,21 @@ public class GetProtocols {
         return instance;
     }
 
-    public GeneralInfoProtocol getInfoProtocol() {
+    synchronized public GeneralInfoProtocol getInfoProtocol() {
         if(infoProtocol == null){
             infoProtocol = new InformationProtocol();
         }
         return infoProtocol;
     }
 
-    public GeneralClientProtocol getClientProtocol() {
+    synchronized public GeneralClientProtocol getClientProtocol() {
         if(clientProtocol==null){
             clientProtocol = new TcpClient(SocketTask.getInstance());
         }
         return clientProtocol;
     }
 
-    public GeneralServerProtocol getServerProtocol() {
+    synchronized public GeneralServerProtocol getServerProtocol() {
         if (serverProtocol == null){
             serverProtocol = new TcpServer();
         }

@@ -44,6 +44,7 @@ public class SensorData {
     }
 
     public void setValue(float value) {
+        dust = paraK * value;
         this.value = value;
     }
 
@@ -142,7 +143,7 @@ public class SensorData {
     }
 
     public float getDust() {
-        dust = paraK * value;
+
         return dust;
     }
 

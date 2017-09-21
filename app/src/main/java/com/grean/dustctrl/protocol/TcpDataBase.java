@@ -3,8 +3,10 @@ package com.grean.dustctrl.protocol;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.grean.dustctrl.DbTask;
+import com.grean.dustctrl.myApplication;
 import com.tools;
 
 import java.io.BufferedWriter;
@@ -18,7 +20,9 @@ import java.util.ArrayList;
  */
 
 public class TcpDataBase implements GeneralDataBaseProtocol{
+    private static final String tag = "TcpDataBase";
     private Context context;
+    long lastMinDate,minInterval=300000l,nextMinDate;
 
     public TcpDataBase (Context context){
         this.context = context;
@@ -140,5 +144,74 @@ public class TcpDataBase implements GeneralDataBaseProtocol{
         db.close();
         helperDbTask.close();
         return list;
+    }
+
+    @Override
+    public GeneralHistoryDataFormat getData(long start, long end) {
+        GeneralHistoryDataFormat format = new GeneralHistoryDataFormat();
+        String statement;
+        statement = "date >"+ String.valueOf(start)+" and date <"+String.valueOf(end);
+        DbTask helperDbTask = new DbTask(context,1);
+        SQLiteDatabase db = helperDbTask.getReadableDatabase();
+        Cursor cursor;
+        cursor = db.rawQuery("SELECT * FROM result WHERE "+statement+" ORDER BY date asc",new String[]{});
+        int index = 0;
+        ArrayList<Float> item;
+        while ((cursor.moveToNext())&&index < 100){
+            format.addDate(cursor.getLong(0));
+            item = new ArrayList<Float>();
+            item.add(cursor.getFloat(1));
+            item.add(cursor.getFloat(3));
+            item.add(cursor.getFloat(4));
+            item.add(cursor.getFloat(5));
+            item.add(cursor.getFloat(6));
+            item.add(cursor.getFloat(7));
+            item.add(cursor.getFloat(8));
+            format.addItem(item);
+            index++;
+        }
+        db.close();
+        helperDbTask.close();
+        return format;
+    }
+
+    @Override
+    public long getLastMinDate() {
+        return lastMinDate;
+    }
+
+    @Override
+    public long getNextMinDate() {
+        return  nextMinDate;
+    }
+
+    @Override
+    public void setMinDataInterval(long min) {
+        this.minInterval = min;
+        myApplication.getInstance().saveConfig("MinInterval",min);
+    }
+
+    @Override
+    public long calcNextMinDate(long now) {
+       // Log.d(tag,"now="+tools.timestamp2string(now)+";plan="+tools.timestamp2string(lastMinDate)+";interval = "+String.valueOf(minInterval/1000l));
+        lastMinDate = nextMinDate;
+        nextMinDate = tools.calcNextTime(now,lastMinDate,minInterval);
+        myApplication.getInstance().saveConfig("LastMinDate",lastMinDate);
+        return nextMinDate;
+    }
+
+    @Override
+    public void loadMinDate() {
+        lastMinDate = myApplication.getInstance().getConfigLong("LastMinDate");
+        minInterval = myApplication.getInstance().getConfigLong("MinInterval");
+        if(lastMinDate == 10l){
+            lastMinDate = 1505923200000l;
+        }
+        if(minInterval == 10l){
+            minInterval = 300000l;
+        }
+        nextMinDate = lastMinDate + minInterval;
+
+       // Log.d(tag,"next ="+tools.timestamp2string(nextMinDate)+";plan="+tools.timestamp2string(lastMinDate)+";interval = "+String.valueOf(minInterval/1000l));
     }
 }

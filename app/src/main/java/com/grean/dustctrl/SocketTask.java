@@ -100,6 +100,7 @@ public class SocketTask implements TcpClientCallBack{
 
     @Override
     public boolean addOneFrame(byte[] data) {
+        //Log.d(tag,"connected"+String.valueOf(connected));
         if (connected){
             sendBuff.add(data);
         }
@@ -123,7 +124,7 @@ public class SocketTask implements TcpClientCallBack{
                 receive = socketClient.getInputStream();
                 send = socketClient.getOutputStream();
                 socketClient.setOOBInline(true);
-                connected = true;
+
                 int count;
                 byte[] readBuff = new byte[4096];
                 if(notifyProcessDialogInfo!=null){
@@ -133,6 +134,7 @@ public class SocketTask implements TcpClientCallBack{
                     notifyOperateInfo.cancelDialog();
                 }
 
+                connected = true;
                 while (connected){
                     if (socketClient.isConnected()){
                         while ((count = receive.read(readBuff))!=-1 && connected){
