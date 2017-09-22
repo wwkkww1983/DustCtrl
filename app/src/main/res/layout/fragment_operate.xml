@@ -362,6 +362,14 @@
                 android:orientation="horizontal">
 
                 <TextView
+                    android:id="@+id/tvOperateSoftwareVerison"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="当前软件版本:"
+                    android:textSize="24sp" />
+
+                <TextView
                     android:id="@+id/textView35"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

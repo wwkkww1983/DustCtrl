@@ -36,7 +36,7 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
     private ProcessDialogFragment dialogFragment;
     private String dustMeterInfo,autoCalTime,toastString;
     private Button btnDustMeterManCal,btnDustMeterInquire,btnMotorSet,btnSaveAutoCal,btnSaveServer,btnUpdateSoftware,btnCalcParaK;
-    private TextView tvDustMeterInfo,tvNextAutoCalTime,tvLocalIp,tvParaK;
+    private TextView tvDustMeterInfo,tvNextAutoCalTime,tvLocalIp,tvParaK,tvSoftwareVersion;
     private EditText etMotorRounds,etMotorTime,etAutoCalInterval,etServerIp,etServerPort,etUpdateSoftwareUrl,etTargetValue,etMnCode;
     private Switch swDustMeterRun,swValve,swFan,swExt1,swExt2,swBackup,swAutoCalibrationEnable;
 
@@ -99,6 +99,7 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
             etAutoCalInterval.setVisibility(View.INVISIBLE);
             btnSaveAutoCal.setVisibility(View.INVISIBLE);
         }
+        tvSoftwareVersion.setText("当前软件版本:"+getString(R.string.software_version));
     }
 
     private void initView(View v){
@@ -128,6 +129,7 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
         etTargetValue = v.findViewById(R.id.etOperateTargetValue);
         btnCalcParaK = v.findViewById(R.id.btnOperateCalcPraraK);
         etMnCode = v.findViewById(R.id.etOperateMnCode);
+        tvSoftwareVersion = v.findViewById(R.id.tvOperateSoftwareVerison);
         btnCalcParaK.setOnClickListener(this);
         btnSaveServer.setOnClickListener(this);
         btnUpdateSoftware.setOnClickListener(this);
