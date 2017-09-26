@@ -88,6 +88,14 @@ public class JSON {
         object.put("serverPort",infoProtocol.getServerPort());
         object.put("mnCode",infoProtocol.getMnCode());
         object.put("dustParaK",infoProtocol.getParaK());
+        String [] names = infoProtocol.getClientProtocolNames();
+        JSONArray array = new JSONArray();
+        for(int i=0;i<names.length;i++){
+            array.put(names[i]);
+        }
+        object.put("clientProtocolNames",array);
+        object.put("clientProtocolName",infoProtocol.getClientProtocolName());
+        object.put("alarmDust",infoProtocol.getAlarmDust());
         return object.toString().getBytes();
     }
 
@@ -198,16 +206,12 @@ public class JSON {
             return handleRealTimeData(infoProtocol);
         }else if(jsonObject.getString("protocolType").equals("downloadSetting")){
             return handleDownloadSetting(infoProtocol);
-
         }else if(jsonObject.getString("protocolType").equals("uploadSetting")){
             return handleUploadSetting(jsonObject,infoProtocol);
-
         }else if(jsonObject.getString("protocolType").equals("operate")){
             return handleOperate(jsonObject,infoProtocol);
-
         }else if(jsonObject.getString("protocolType").equals("historyData")){
             return handleHistoryData(jsonObject,infoProtocol);
-
         }else if(jsonObject.getString("protocolType").equals("log")){
             return handleLog(jsonObject,infoProtocol);
         }else {

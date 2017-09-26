@@ -38,7 +38,10 @@ public class ScanSensor extends Observable{
     private NotifyOperateInfo info;
     private NotifyProcessDialogInfo dialogInfo;
     private CalcNextAutoCalibration calcNextAutoCalibration;
-    SensorData data;
+    private SensorData data;
+    private float alarmDust;
+
+
     public boolean isRun() {
         return run;
     }
@@ -51,7 +54,15 @@ public class ScanSensor extends Observable{
 
     }
 
-    public void calibrationDustMeterWithMan(NotifyOperateInfo info,NotifyProcessDialogInfo dialogInfo){
+    public float getAlarmDust() {
+        return alarmDust;
+    }
+
+    public void setAlarmDust(float alarmDust) {
+        this.alarmDust = alarmDust;
+    }
+
+    public void calibrationDustMeterWithMan(NotifyOperateInfo info, NotifyProcessDialogInfo dialogInfo){
         this.info = info;
         this.dialogInfo = dialogInfo;
         run = false;
@@ -253,6 +264,8 @@ public class ScanSensor extends Observable{
             NoiseCommunication noiseCom;
             noiseCom = NoiseCommunication.getInstance();
             float paraK = myApplication.getInstance().getConfigFloat("DustParaK");
+            alarmDust = myApplication.getInstance().getConfigFloat("AlarmDust");
+            boolean alarm;
             com.setDustParaK(paraK);
             com.setMotorRounds(myApplication.getInstance().getConfigInt("MotorRounds"));
             com.setMotorTime(myApplication.getInstance().getConfigInt("MotorTime"));
@@ -277,6 +290,11 @@ public class ScanSensor extends Observable{
                 }
                 data = com.getData();
                 data.setNoise(noiseCom.getNoiseData());
+                if(data.getDust()>=alarmDust){
+                    alarm = true;
+                }else{
+                    alarm = false;
+                }
                 infoProtocol.notifySenorData(data);
                 clientProtocol.setRealTimeData(data);
                 if(i>29){//1min一条数据
@@ -312,10 +330,10 @@ public class ScanSensor extends Observable{
 
                 if(notifyScanSensor!=null){
                     notifyScanSensor.onResult(data);
+                    notifyScanSensor.setAlarmDust(alarm);
                 }
 
             }
-
 
             if(notifyScanEnd!=null){
                 notifyScanEnd.onComplete();

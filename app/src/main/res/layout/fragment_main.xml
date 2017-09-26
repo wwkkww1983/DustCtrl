@@ -338,6 +338,14 @@
             android:text="下次自动校准时间:"
             android:textSize="30sp" />
 
+        <TextView
+            android:id="@+id/tvMainAlarm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="报警:无"
+            android:textSize="30sp" />
+
         <TextClock
             android:id="@+id/textClock"
             android:layout_width="wrap_content"

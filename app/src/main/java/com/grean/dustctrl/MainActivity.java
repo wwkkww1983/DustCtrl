@@ -143,6 +143,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });*/
         GetProtocols.getInstance().setContext(this);
+        GetProtocols.getInstance().setClientProtocol(myApplication.getInstance().getConfigInt("ClientProtocol"));
         GetProtocols.getInstance().getInfoProtocol().loadSetting(myApplication.getInstance());
         GetProtocols.getInstance().getInfoProtocol().setContext(this);
         ScanSensor.getInstance().addObserver(SystemLog.getInstance(this));

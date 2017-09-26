@@ -12,6 +12,8 @@ import com.grean.dustctrl.SocketTask;
 import com.grean.dustctrl.myApplication;
 import com.grean.dustctrl.presenter.NotifyOperateInfo;
 import com.grean.dustctrl.presenter.NotifyProcessDialogInfo;
+import com.grean.dustctrl.process.ScanSensor;
+import com.grean.dustctrl.protocol.GetProtocols;
 import com.tools;
 
 
@@ -35,6 +37,15 @@ public class OperateSystem {
         new Thread(new DownloadRunnable(context,url,processDialogInfo,operateInfo)).start();
     }
 
+
+    public String[] getClientProtocolNames(){
+        return GetProtocols.CLIENT_PROTOCOL_DEFAULT_NAMES;
+    }
+
+    public int getClientName(){
+        return GetProtocols.getInstance().getClientProtocolName();
+    }
+
     private class DownloadRunnable implements Runnable{
 
         private String url;
@@ -48,6 +59,7 @@ public class OperateSystem {
             this.info = info;
             this.operateInfo = operateInfo;
         }
+
 
         private void queryDownloadProcess(long requestId,DownloadManager downloadManager){
             DownloadManager.Query query= new DownloadManager.Query();
@@ -120,6 +132,16 @@ public class OperateSystem {
             android.os.Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
             startDownload();
         }
+    }
+
+    public String getAlarmDust(){
+        return tools.float2String3(ScanSensor.getInstance().getAlarmDust());
+    }
+
+    public void setAlarmDust(String alarmString){
+        float alarm = Float.valueOf(alarmString);
+        myApplication.getInstance().saveConfig("AlarmDust",alarm);
+        ScanSensor.getInstance().setAlarmDust(alarm);
     }
 
     public String getServerIp(){

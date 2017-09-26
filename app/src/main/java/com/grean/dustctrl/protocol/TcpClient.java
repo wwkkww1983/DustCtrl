@@ -68,34 +68,50 @@ public class TcpClient implements GeneralClientProtocol{
 
     private String getRealTimeDataString(long now){
         String timeString = tools.timeStamp2TcpString(now)+";";
-        return  "QN="+timeString+"ST=21;CN=9011;PW=123456;MN="+mnCode+";CP=&DataTime="+timeString+insertSensorData(realTimeData)+"&&";
+        return  "QN="+timeString+"ST=32;CN=2011;PW=123456;MN="+mnCode+";CP=&DataTime="+timeString+insertSensorData(realTimeData)+"&&";
     }
 
     private String getMinDataString(long now,long lastMinDate,long nexMinDate){
-        return "QN="+tools.timeStamp2TcpString(now)+"ST=21;CN=9012;PW=123456;MN="+mnCode+";CP=&DataTime="+tools.timeStamp2TcpString(lastMinDate)+";"+
+        return "QN="+tools.timeStamp2TcpString(now)+"ST=32;CN=2051;PW=123456;MN="+mnCode+";CP=&DataTime="+tools.timeStamp2TcpString(lastMinDate)+";"+
                 insertMinData(getMeanData(GetProtocols.getInstance().getDataBaseProtocol().getData(lastMinDate ,nexMinDate)))+"&&";
     }
 
+    /**
+     * 插入报警数据
+     * @param data
+     * @param alarmData
+     * @return
+     */
+    private String insetRealTimeDataAlarmData(float[] data,float[] alarmData){
+        String string;
+        if(data[GeneralHistoryDataFormat.Dust] >= alarmData[GeneralHistoryDataFormat.Dust]){
+            string = "01-Ala="+tools.float2String3(data[GeneralHistoryDataFormat.Dust])+",AlarmType =1";
+        }else {
+            string = "01-Ala=" + tools.float2String3(data[GeneralHistoryDataFormat.Dust]) + ",AlarmType =0";
+        }
+        return string;
+    };
+
     private String insertSensorData (float[] data){
         //Log.d(tag,"paste data"+String.valueOf(data[GeneralHistoryDataFormat.Noise]));
-        String string = "Dust-Rtd="+tools.float2String3(data[GeneralHistoryDataFormat.Dust])+";Dust-Flag=N;";
-        string += "Noise-Rtd="+tools.float2String3(data[GeneralHistoryDataFormat.Noise])+";Noise-Flag=N;";
-        string += "Humidity-Rtd="+tools.float2String3(data[GeneralHistoryDataFormat.Humidity])+";Humidity-Flag=N;";
-        string += "Temperature-Rtd="+tools.float2String3(data[GeneralHistoryDataFormat.Temperature])+";Temperature-Flag=N;";
-        string += "Pressure-Rtd="+tools.float2String3(data[GeneralHistoryDataFormat.Pressure])+";Pressure-Flag=N;";
-        string += "WindSpeed-Rtd="+tools.float2String3(data[GeneralHistoryDataFormat.WindForce])+";WindSpeed-Flag=N;";
-        string += "WindDirection-Rtd="+tools.float2String3(data[GeneralHistoryDataFormat.WindDirection])+";WindDirection-Flag=N;";
+        String string = "01-Rtd="+tools.float2String3(data[GeneralHistoryDataFormat.Dust])+";01-Flag=3;";
+        string += "Noise-Rtd="+tools.float2String3(data[GeneralHistoryDataFormat.Noise])+";Noise-Flag=3;";
+        string += "Humidity-Rtd="+tools.float2String3(data[GeneralHistoryDataFormat.Humidity])+";Humidity-Flag=3;";
+        string += "Temperature-Rtd="+tools.float2String3(data[GeneralHistoryDataFormat.Temperature])+";Temperature-Flag=3;";
+        string += "Pressure-Rtd="+tools.float2String3(data[GeneralHistoryDataFormat.Pressure])+";Pressure-Flag=3;";
+        string += "WindSpeed-Rtd="+tools.float2String3(data[GeneralHistoryDataFormat.WindForce])+";WindSpeed-Flag=3;";
+        string += "WindDirection-Rtd="+tools.float2String3(data[GeneralHistoryDataFormat.WindDirection])+";WindDirection-Flag=3;";
         return string;
     }
 
     private String insertMinData(float[] data){
-        String string = "Dust-Cou="+tools.float2String3(data[GeneralHistoryDataFormat.Dust])+";Dust-Flag=N;";
-        string += "Noise-Cou="+tools.float2String3(data[GeneralHistoryDataFormat.Noise])+";Noise-Flag=N;";
-        string += "Humidity-Cou="+tools.float2String3(data[GeneralHistoryDataFormat.Humidity])+";Humidity-Flag=N;";
-        string += "Temperature-Cou="+tools.float2String3(data[GeneralHistoryDataFormat.Temperature])+";Temperature-Flag=N;";
-        string += "Pressure-Cou="+tools.float2String3(data[GeneralHistoryDataFormat.Pressure])+";Pressure-Flag=N;";
-        string += "WindSpeed-Cou="+tools.float2String3(data[GeneralHistoryDataFormat.WindForce])+";WindSpeed-Flag=N;";
-        string += "WindDirection-Cou="+tools.float2String3(data[GeneralHistoryDataFormat.WindDirection])+";WindDirection-Flag=N;";
+        String string = "01-Cou="+tools.float2String3(data[GeneralHistoryDataFormat.Dust])+";01-Flag=3;";//=2
+        string += "Noise-Cou="+tools.float2String3(data[GeneralHistoryDataFormat.Noise])+";Noise-Flag=3;";
+        string += "Humidity-Cou="+tools.float2String3(data[GeneralHistoryDataFormat.Humidity])+";Humidity-Flag=3;";
+        string += "Temperature-Cou="+tools.float2String3(data[GeneralHistoryDataFormat.Temperature])+";Temperature-Flag=3;";
+        string += "Pressure-Cou="+tools.float2String3(data[GeneralHistoryDataFormat.Pressure])+";Pressure-Flag=3;";
+        string += "WindSpeed-Cou="+tools.float2String3(data[GeneralHistoryDataFormat.WindForce])+";WindSpeed-Flag=3;";
+        string += "WindDirection-Cou="+tools.float2String3(data[GeneralHistoryDataFormat.WindDirection])+";WindDirection-Flag=3;";
         return string;
     }
 

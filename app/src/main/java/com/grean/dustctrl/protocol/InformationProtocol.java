@@ -263,6 +263,33 @@ public class InformationProtocol implements GeneralInfoProtocol{
         new ExportDataThread(start,end).start();
     }
 
+    @Override
+    public String[] getClientProtocolNames() {
+        return GetProtocols.CLIENT_PROTOCOL_DEFAULT_NAMES;
+    }
+
+    @Override
+    public int getClientProtocolName() {
+        return GetProtocols.getInstance().getClientProtocolName();
+    }
+
+    @Override
+    public float getAlarmDust() {
+        return ScanSensor.getInstance().getAlarmDust();
+    }
+
+    @Override
+    public void setAlarmDust(float alarm) {
+        config.saveConfig("AlarmDust",alarm);
+        ScanSensor.getInstance().setAlarmDust(alarm);
+    }
+
+    @Override
+    public void setClientProtocol(int name) {
+        config.saveConfig("ClianeProtocolName",name);
+        GetProtocols.getInstance().setClientProtocol(name);
+    }
+
     private class ExportDataThread extends Thread implements ExportDataProcessListener{
         private long start,end;
 

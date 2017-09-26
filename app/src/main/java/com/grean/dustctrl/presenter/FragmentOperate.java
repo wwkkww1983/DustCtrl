@@ -9,9 +9,12 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -28,17 +31,19 @@ import java.util.Calendar;
  * Created by Administrator on 2017/8/25.
  */
 
-public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View.OnClickListener , DialogTimeSelected{
+public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View.OnClickListener , DialogTimeSelected, AdapterView.OnItemSelectedListener {
     private static final int CancelDialog = 1;
     private static final int ShowDustMeterInfo = 2;
     private static final int CancelDialogWithToast = 3;
 
     private ProcessDialogFragment dialogFragment;
     private String dustMeterInfo,autoCalTime,toastString;
-    private Button btnDustMeterManCal,btnDustMeterInquire,btnMotorSet,btnSaveAutoCal,btnSaveServer,btnUpdateSoftware,btnCalcParaK;
+    private Button btnDustMeterManCal,btnDustMeterInquire,btnMotorSet,btnSaveAutoCal,btnSaveServer,btnUpdateSoftware,btnCalcParaK,btnSetAlarm;
     private TextView tvDustMeterInfo,tvNextAutoCalTime,tvLocalIp,tvParaK,tvSoftwareVersion;
-    private EditText etMotorRounds,etMotorTime,etAutoCalInterval,etServerIp,etServerPort,etUpdateSoftwareUrl,etTargetValue,etMnCode;
+    private EditText etMotorRounds,etMotorTime,etAutoCalInterval,etServerIp,etServerPort,etUpdateSoftwareUrl,etTargetValue,etMnCode,etAlarm;
     private Switch swDustMeterRun,swValve,swFan,swExt1,swExt2,swBackup,swAutoCalibrationEnable;
+    private Spinner spProtocol;
+    private int clientProtocolName;
 
     private OperateDustMeter dustMeter;
     private OperateSystem system;
@@ -100,6 +105,12 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
             btnSaveAutoCal.setVisibility(View.INVISIBLE);
         }
         tvSoftwareVersion.setText("当前软件版本:"+getString(R.string.software_version));
+        ArrayAdapter<String> clientProtocolNames = new ArrayAdapter<String>(getActivity(),R.layout.my_spnner,system.getClientProtocolNames());
+        spProtocol.setOnItemSelectedListener(this);
+        spProtocol.setAdapter(clientProtocolNames);
+        clientProtocolName = system.getClientName();
+        spProtocol.setSelection(clientProtocolName);
+        etAlarm.setText(system.getAlarmDust());
     }
 
     private void initView(View v){
@@ -130,6 +141,11 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
         btnCalcParaK = v.findViewById(R.id.btnOperateCalcPraraK);
         etMnCode = v.findViewById(R.id.etOperateMnCode);
         tvSoftwareVersion = v.findViewById(R.id.tvOperateSoftwareVerison);
+        btnSetAlarm = v.findViewById(R.id.btnOperateSaveAlarm);
+        spProtocol = v.findViewById(R.id.spOperateProtocol);
+
+        etAlarm = v.findViewById(R.id.etOperateAlarm);
+        btnSetAlarm.setOnClickListener(this);
         btnCalcParaK.setOnClickListener(this);
         btnSaveServer.setOnClickListener(this);
         btnUpdateSoftware.setOnClickListener(this);
@@ -241,7 +257,7 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
                 dialogFragment = new ProcessDialogFragment();
                 dialogFragment.setCancelable(true);
                 dialogFragment.show(getFragmentManager(),"TcpSocket");
-                operateTcp.setTcpSocketClient(etServerIp.getText().toString(),Integer.valueOf(etServerPort.getText().toString()),etMnCode.getText().toString(),dialogFragment);
+                operateTcp.setTcpSocketClient(etServerIp.getText().toString(),Integer.valueOf(etServerPort.getText().toString()),etMnCode.getText().toString(),dialogFragment,clientProtocolName);
                 break;
             case R.id.btnOperateUpdateSoftware:
                 dialogFragment = new ProcessDialogFragment();
@@ -253,6 +269,9 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
                 String string = dustMeter.calcParaK(etTargetValue.getText().toString());
                 tvParaK.setText(string);
                 break;
+            case R.id.btnOperateSaveAlarm:
+                system.setAlarmDust(etAlarm.getText().toString());
+                break;
             default:
                 break;
         }
@@ -262,5 +281,23 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
     public void onComplete(String string) {
         autoCalTime = system.calNexTime(string);
         tvNextAutoCalTime.setText(autoCalTime);
+    }
+
+
+    @Override
+    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+        switch (adapterView.getId()){
+            case R.id.spOperateProtocol:
+                clientProtocolName = i;
+                break;
+            default:
+
+                break;
+        }
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> adapterView) {
+
     }
 }

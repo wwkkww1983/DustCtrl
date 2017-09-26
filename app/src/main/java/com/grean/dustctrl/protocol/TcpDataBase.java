@@ -204,10 +204,10 @@ public class TcpDataBase implements GeneralDataBaseProtocol{
     public void loadMinDate() {
         lastMinDate = myApplication.getInstance().getConfigLong("LastMinDate");
         minInterval = myApplication.getInstance().getConfigLong("MinInterval");
-        if(lastMinDate == 10l){
+        if(lastMinDate == 0l){
             lastMinDate = 1505923200000l;
         }
-        if(minInterval == 10l){
+        if(minInterval == 0l){
             minInterval = 300000l;
         }
         nextMinDate = lastMinDate + minInterval;

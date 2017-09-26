@@ -83,4 +83,21 @@ public interface GeneralInfoProtocol {
     int getExportDataProcess();
     boolean getExportDataResult();
     void exportData(long start,long end);
+
+    /**
+     * 获取协议名称
+     * @return
+     */
+    String[] getClientProtocolNames();
+
+    /**
+     * 获取当前协议编号 0~
+     * @return
+     */
+    int getClientProtocolName();
+
+    float getAlarmDust();
+
+    void setAlarmDust(float alarm);
+    void setClientProtocol(int name);
 }

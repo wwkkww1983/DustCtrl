@@ -16,6 +16,9 @@ public class GetProtocols {
     private GeneralServerProtocol serverProtocol;
     private GeneralInfoProtocol infoProtocol;
     private GeneralDataBaseProtocol dataBaseProtocol;
+    private int clientProtocolName =0;
+    public static final int CLIENT_PROTOCOL_DEFAULT=0,CLIENT_PROTOCOL_HJT212 = 1,CLIENT_PROTOCOL_MAX = 2;
+    public static final String[] CLIENT_PROTOCOL_DEFAULT_NAMES ={"Default","HJ/T-212"};
     private Context context;
 
     private GetProtocols(){
@@ -47,9 +50,27 @@ public class GetProtocols {
         return infoProtocol;
     }
 
+    public void setClientProtocol (int name){
+        clientProtocolName = name;
+    }
+
+    /**
+     * 获取当前协议编号
+     * @return
+     */
+    public int getClientProtocolName(){
+        return clientProtocolName;
+    }
+
     synchronized public GeneralClientProtocol getClientProtocol() {
         if(clientProtocol==null){
-            clientProtocol = new TcpClient(SocketTask.getInstance());
+            if(clientProtocolName == CLIENT_PROTOCOL_DEFAULT) {
+                clientProtocol = new TcpClient(SocketTask.getInstance());
+            }else if(clientProtocolName == CLIENT_PROTOCOL_HJT212){
+                clientProtocol = new TcpClient(SocketTask.getInstance());
+            }else{
+                clientProtocol = new TcpClient(SocketTask.getInstance());
+            }
         }
         return clientProtocol;
     }

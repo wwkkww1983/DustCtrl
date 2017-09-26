@@ -34,13 +34,15 @@ public class FragmentMain extends Fragment implements NotifyScanSensor{
     private TextView tvWindForce;
     private TextView tvWindDirection;
     private TextView tvNoise,tvNextCal,tvValue;
-    private TextView tvHiTemperature,tvLoTemperature,tvHiHumidity,tvLoHumidity,tvPwm,tvBatteryOk,tvPowerIn;
+    private TextView tvHiTemperature,tvLoTemperature,tvHiHumidity,tvLoHumidity,tvPwm,tvBatteryOk,tvPowerIn,tvAlarm;
     private SensorData data;
     private OperateInit operateInit;
+    private boolean alarm = false;
 
     private String nextCalString;
     private static final int msgUpdateSensor = 1;
     private static final int msgUpdateNextCal =2;
+    private static final int msgUpdateAlarm=3;
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -86,6 +88,13 @@ public class FragmentMain extends Fragment implements NotifyScanSensor{
                 case msgUpdateNextCal:
                     tvNextCal.setText("自动校准:"+nextCalString);
                     break;
+                case msgUpdateAlarm:
+                    if(alarm) {
+                        tvAlarm.setText("报警:颗粒物浓度高");
+                    }else{
+                        tvAlarm.setText("报警:无");
+                    }
+                    break;
 
                 default:
 
@@ -128,6 +137,7 @@ public class FragmentMain extends Fragment implements NotifyScanSensor{
         tvPwm = v.findViewById(R.id.tvMainPwm);
         tvBatteryOk = v.findViewById(R.id.tvMainBatteryOk);
         tvPowerIn = v.findViewById(R.id.tvMainPowerIn);
+        tvAlarm = v.findViewById(R.id.tvMainAlarm);
     }
 
     @Override
@@ -140,5 +150,13 @@ public class FragmentMain extends Fragment implements NotifyScanSensor{
     public void onResult(SensorData data) {
         this.data = data;
         handler.sendEmptyMessage(msgUpdateSensor);
+    }
+
+    @Override
+    public void setAlarmDust(boolean alarm) {
+        if(alarm!=this.alarm){
+            this.alarm = alarm;
+            handler.sendEmptyMessage(msgUpdateAlarm);
+        }
     }
 }

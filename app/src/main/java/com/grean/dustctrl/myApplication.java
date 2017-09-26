@@ -67,6 +67,8 @@ public class myApplication extends Application implements ReadWriteConfig{
             editor.putString("ServerIp","192.168.168.134");
             editor.putInt("ServerPort",12803);
             editor.putString("MnCode","888888");
+            editor.putInt("ClientProtocolName",0);
+            editor.putFloat("AlarmDust",50f);
             editor.commit();
         }
 
@@ -119,12 +121,12 @@ public class myApplication extends Application implements ReadWriteConfig{
 
     public int getConfigInt(String key){
         SharedPreferences sp = getSharedPreferences("config",MODE_PRIVATE);
-        return sp.getInt(key,10);
+        return sp.getInt(key,0);
     }
 
     public long getConfigLong(String key){
         SharedPreferences sp = getSharedPreferences("config",MODE_PRIVATE);
-        return sp.getLong(key,10);
+        return sp.getLong(key,0);
     }
 
     public String getConfigString(String key){
