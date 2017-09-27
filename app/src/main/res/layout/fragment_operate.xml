@@ -294,6 +294,22 @@
                     android:layout_weight="1"
                     android:text="确定"
                     android:textSize="24sp" />
+
+                <Button
+                    android:id="@+id/btnOperateTestUp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="正传测试"
+                    android:textSize="18sp" />
+
+                <Button
+                    android:id="@+id/btnOperateTestDown"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="反转测试"
+                    android:textSize="18sp" />
             </LinearLayout>
 
             <LinearLayout

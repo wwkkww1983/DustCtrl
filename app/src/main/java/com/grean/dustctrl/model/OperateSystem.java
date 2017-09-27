@@ -219,4 +219,12 @@ public class OperateSystem {
         myApplication.getInstance().saveConfig("MotorTime",time);
     }
 
+    public void testMotor(boolean forward){
+        if(forward) {
+            com.setMotorSetting(CtrlCommunication.MotorForward);
+        }else{
+            com.setMotorSetting(CtrlCommunication.MotorBackward);
+        }
+    }
+
 }

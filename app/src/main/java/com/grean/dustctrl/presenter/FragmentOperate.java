@@ -38,7 +38,8 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
 
     private ProcessDialogFragment dialogFragment;
     private String dustMeterInfo,autoCalTime,toastString;
-    private Button btnDustMeterManCal,btnDustMeterInquire,btnMotorSet,btnSaveAutoCal,btnSaveServer,btnUpdateSoftware,btnCalcParaK,btnSetAlarm,btnDustMeterManCalZero;
+    private Button btnDustMeterManCal,btnDustMeterInquire,btnMotorSet,btnSaveAutoCal,btnSaveServer,btnUpdateSoftware,btnCalcParaK,btnSetAlarm
+            ,btnDustMeterManCalZero,btnMotorTestUp,btnMotorTestDown;
     private TextView tvDustMeterInfo,tvNextAutoCalTime,tvLocalIp,tvParaK,tvSoftwareVersion;
     private EditText etMotorRounds,etMotorTime,etAutoCalInterval,etServerIp,etServerPort,etUpdateSoftwareUrl,etTargetValue,etMnCode,etAlarm;
     private Switch swDustMeterRun,swValve,swFan,swExt1,swExt2,swBackup,swAutoCalibrationEnable;
@@ -88,7 +89,7 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
         etServerPort.setText(system.getServerPort());
         swDustMeterRun.setChecked(dustMeter.isDustMeterRun());
         etMotorRounds.setText(String.valueOf(system.getMotorRounds()));
-        float time = system.getMotorTime() / 10.0f;
+        float time = system.getMotorTime() / 100.0f;
         etMotorTime.setText(String.valueOf(time));
         etAutoCalInterval.setText(system.getAutoCalInterval());
         autoCalTime = system.getAutoCalNextTime();
@@ -145,6 +146,10 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
         spProtocol = v.findViewById(R.id.spOperateProtocol);
         btnDustMeterManCalZero = v.findViewById(R.id.btnOperateCalZero);
         etAlarm = v.findViewById(R.id.etOperateAlarm);
+        btnMotorTestDown = v.findViewById(R.id.btnOperateTestDown);
+        btnMotorTestUp = v.findViewById(R.id.btnOperateTestUp);
+        btnMotorTestDown.setOnClickListener(this);
+        btnMotorTestUp.setOnClickListener(this);
         btnDustMeterManCalZero.setOnClickListener(this);
         btnSetAlarm.setOnClickListener(this);
         btnCalcParaK.setOnClickListener(this);
@@ -203,7 +208,7 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
                 break;
             case R.id.btnOperateMotorSet:
                 int rounds = Integer.valueOf(etMotorRounds.getText().toString());
-                final int time = (int) (Float.valueOf(etMotorTime.getText().toString())*10f);
+                final int time = (int) (Float.valueOf(etMotorTime.getText().toString())*100f);
                 system.setMotorSetting(rounds,time);
                 break;
             case R.id.swOperateSystemDo1:
@@ -278,6 +283,12 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
                 dialogFragment.setCancelable(false);
                 dialogFragment.show(getFragmentManager(),"Calibration");
                 dustMeter.calibrationDustMeterZero(dialogFragment);
+                break;
+            case R.id.btnOperateTestDown:
+                system.testMotor(false);
+                break;
+            case R.id.btnOperateTestUp:
+                system.testMotor(true);
                 break;
             default:
                 break;

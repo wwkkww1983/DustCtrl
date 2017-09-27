@@ -102,4 +102,8 @@ public interface GeneralInfoProtocol {
     void setClientProtocol(int name);
 
     void calDustMeterZero();
+
+    void setAlarmMark(boolean alarm);
+
+    boolean getAlarmMark();
 }

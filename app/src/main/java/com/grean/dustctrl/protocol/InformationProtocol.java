@@ -30,9 +30,10 @@ import java.util.ArrayList;
  */
 
 public class InformationProtocol implements GeneralInfoProtocol{
+    private static final String tag = "InformationProtocol";
     private String stateString;
     private SensorData data = new SensorData();
-    private boolean autoCalEnable,dustMeterCalBgOk,dustMeterCalSpanOk,exportDataResult;
+    private boolean autoCalEnable,dustMeterCalBgOk,dustMeterCalSpanOk,exportDataResult,alarm;
     private long autoCalTime,autoCalInterval;
     private String serverIp,mnCode;
     private int serverPort,pumpTime,laserTime,dustMeterCalProcess,exportDataProcess;
@@ -280,6 +281,7 @@ public class InformationProtocol implements GeneralInfoProtocol{
 
     @Override
     public void setAlarmDust(float alarm) {
+        Log.d(tag,String.valueOf(alarm));
         config.saveConfig("AlarmDust",alarm);
         ScanSensor.getInstance().setAlarmDust(alarm);
     }
@@ -295,6 +297,16 @@ public class InformationProtocol implements GeneralInfoProtocol{
         dustMeterCalProcess = 0;
         ScanSensor.getInstance().stopScan(null);
         ScanSensor.getInstance().calibrationDustMeterZeroWithMan(null,null);
+    }
+
+    @Override
+    public void setAlarmMark(boolean alarm) {
+            this.alarm = alarm;
+    }
+
+    @Override
+    public boolean getAlarmMark() {
+        return alarm;
     }
 
     private class ExportDataThread extends Thread implements ExportDataProcessListener{

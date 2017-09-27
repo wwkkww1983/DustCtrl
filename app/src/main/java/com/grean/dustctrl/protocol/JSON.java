@@ -1,5 +1,7 @@
 package com.grean.dustctrl.protocol;
 
+import android.util.Log;
+
 import com.grean.dustctrl.myApplication;
 import com.grean.dustctrl.process.ScanSensor;
 import com.grean.dustctrl.process.SensorData;
@@ -76,6 +78,7 @@ public class JSON {
         infoProtocol.setServer(jsonObject.getString("serverIp"),jsonObject.getInt("serverPort"));
         infoProtocol.setMnCode(jsonObject.getString("mnCode"));
         infoProtocol.setClientProtocol(jsonObject.getInt("clientProtocolName"));
+
         infoProtocol.setAlarmDust((float) jsonObject.getDouble("alarmDust"));
         return object.toString().getBytes();
     }
@@ -148,6 +151,7 @@ public class JSON {
         JSONObject object = new JSONObject();
         object.put("protocolType","realTimeData");
         object.put("state",infoProtocol.getSystemState());
+        object.put("alarm",infoProtocol.getAlarmMark());
         JSONArray array = new JSONArray();
         array.put(putItem("dust",data.getDust()));
         array.put(putItem("temperature",data.getAirTemperature()));

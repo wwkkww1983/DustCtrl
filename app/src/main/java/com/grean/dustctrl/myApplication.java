@@ -60,7 +60,7 @@ public class myApplication extends Application implements ReadWriteConfig{
             editor.putBoolean("FactorySetting",true);
             editor.putFloat("DustParaK",1f);
             editor.putInt("MotorRounds",10);
-            editor.putInt("MotorTime",100);
+            editor.putInt("MotorTime",1000);
             editor.putLong("AutoCalTime",1483200000000l);
             editor.putLong("AutoCalInterval",86400000l);
             editor.putBoolean("AutoCalibrationEnable",true);

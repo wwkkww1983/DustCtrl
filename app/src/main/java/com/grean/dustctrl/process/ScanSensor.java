@@ -252,6 +252,8 @@ public class ScanSensor extends Observable{
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+            com.setMotorSetting(CtrlCommunication.MotorForward);//转遮光板
+
             if (dialogInfo!=null) {
                 dialogInfo.showInfo("量程校准...");
             }
@@ -297,6 +299,12 @@ public class ScanSensor extends Observable{
             }
            // sendMainFragmentString("结束校准");
             com.ctrlDo(1,false);
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            com.setMotorSetting(CtrlCommunication.MotorBackward);//撤回转遮光板
             try {
                 Thread.sleep(10000);
             } catch (InterruptedException e) {
@@ -403,6 +411,7 @@ public class ScanSensor extends Observable{
                 }
                 infoProtocol.notifySenorData(data);
                 clientProtocol.setRealTimeData(data);
+                infoProtocol.setAlarmMark(alarm);
                 if(i>29){//1min一条数据
                     i=0;
                     DbTask helper = new DbTask(context,1);
