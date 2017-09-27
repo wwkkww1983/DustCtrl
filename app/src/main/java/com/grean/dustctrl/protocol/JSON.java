@@ -75,6 +75,8 @@ public class JSON {
         object.put("success",infoProtocol.setAutoCal(enable,date,interval));
         infoProtocol.setServer(jsonObject.getString("serverIp"),jsonObject.getInt("serverPort"));
         infoProtocol.setMnCode(jsonObject.getString("mnCode"));
+        infoProtocol.setClientProtocol(jsonObject.getInt("clientProtocolName"));
+        infoProtocol.setAlarmDust((float) jsonObject.getDouble("alarmDust"));
         return object.toString().getBytes();
     }
 
@@ -110,6 +112,9 @@ public class JSON {
         }else if(jsonObject.has("DustMeterCal")){//粉尘仪校零，校跨
             object.put("DustMeterCal",true);
             infoProtocol.calDustMeter();
+        }else if(jsonObject.has("DustMeterCalZero")){//单独校零
+            object.put("DustMeterCalZero",true);
+            infoProtocol.calDustMeterZero();
         }else if(jsonObject.has("DustMeterCalResult")){//查询校零校跨结果
             object.put("DustMeterCalResult",true);
             object.put("DustMeterCalBg",infoProtocol.getDustMeterBg());

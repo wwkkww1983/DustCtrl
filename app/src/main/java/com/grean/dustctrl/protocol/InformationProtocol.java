@@ -286,8 +286,15 @@ public class InformationProtocol implements GeneralInfoProtocol{
 
     @Override
     public void setClientProtocol(int name) {
-        config.saveConfig("ClianeProtocolName",name);
+        config.saveConfig("ClientProtocolName",name);
         GetProtocols.getInstance().setClientProtocol(name);
+    }
+
+    @Override
+    public void calDustMeterZero() {
+        dustMeterCalProcess = 0;
+        ScanSensor.getInstance().stopScan(null);
+        ScanSensor.getInstance().calibrationDustMeterZeroWithMan(null,null);
     }
 
     private class ExportDataThread extends Thread implements ExportDataProcessListener{

@@ -38,7 +38,7 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
 
     private ProcessDialogFragment dialogFragment;
     private String dustMeterInfo,autoCalTime,toastString;
-    private Button btnDustMeterManCal,btnDustMeterInquire,btnMotorSet,btnSaveAutoCal,btnSaveServer,btnUpdateSoftware,btnCalcParaK,btnSetAlarm;
+    private Button btnDustMeterManCal,btnDustMeterInquire,btnMotorSet,btnSaveAutoCal,btnSaveServer,btnUpdateSoftware,btnCalcParaK,btnSetAlarm,btnDustMeterManCalZero;
     private TextView tvDustMeterInfo,tvNextAutoCalTime,tvLocalIp,tvParaK,tvSoftwareVersion;
     private EditText etMotorRounds,etMotorTime,etAutoCalInterval,etServerIp,etServerPort,etUpdateSoftwareUrl,etTargetValue,etMnCode,etAlarm;
     private Switch swDustMeterRun,swValve,swFan,swExt1,swExt2,swBackup,swAutoCalibrationEnable;
@@ -143,8 +143,9 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
         tvSoftwareVersion = v.findViewById(R.id.tvOperateSoftwareVerison);
         btnSetAlarm = v.findViewById(R.id.btnOperateSaveAlarm);
         spProtocol = v.findViewById(R.id.spOperateProtocol);
-
+        btnDustMeterManCalZero = v.findViewById(R.id.btnOperateCalZero);
         etAlarm = v.findViewById(R.id.etOperateAlarm);
+        btnDustMeterManCalZero.setOnClickListener(this);
         btnSetAlarm.setOnClickListener(this);
         btnCalcParaK.setOnClickListener(this);
         btnSaveServer.setOnClickListener(this);
@@ -271,6 +272,12 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
                 break;
             case R.id.btnOperateSaveAlarm:
                 system.setAlarmDust(etAlarm.getText().toString());
+                break;
+            case R.id.btnOperateCalZero:
+                dialogFragment = new ProcessDialogFragment();
+                dialogFragment.setCancelable(false);
+                dialogFragment.show(getFragmentManager(),"Calibration");
+                dustMeter.calibrationDustMeterZero(dialogFragment);
                 break;
             default:
                 break;

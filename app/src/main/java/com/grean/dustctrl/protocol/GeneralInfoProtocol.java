@@ -100,4 +100,6 @@ public interface GeneralInfoProtocol {
 
     void setAlarmDust(float alarm);
     void setClientProtocol(int name);
+
+    void calDustMeterZero();
 }

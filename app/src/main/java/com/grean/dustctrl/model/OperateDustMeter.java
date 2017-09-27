@@ -53,6 +53,16 @@ public class OperateDustMeter implements NotifyScanEnd{
         thread.start();*/
     }
 
+    public void calibrationDustMeterZero(NotifyProcessDialogInfo notifyProcessDialogInfo){
+        this.dialogInfo = notifyProcessDialogInfo;
+        dialogInfo.showInfo("停止测量");
+        ScanSensor scan = ScanSensor.getInstance();
+        scan.stopScan(this);
+        scan.calibrationDustMeterZeroWithMan(info,dialogInfo);
+        /*CalibrationDustMeterThread thread = new CalibrationDustMeterThread();
+        thread.start();*/
+    }
+
     @Override
     public void onComplete() {
         if (dialogInfo!=null){

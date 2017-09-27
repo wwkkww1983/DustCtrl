@@ -70,11 +70,117 @@ public class ScanSensor extends Observable{
         thread.start();
     }
 
+    public void calibrationDustMeterZeroWithMan(NotifyOperateInfo info, NotifyProcessDialogInfo dialogInfo){
+        this.info = info;
+        this.dialogInfo = dialogInfo;
+        run = false;
+        CalibrationDustMeterZeroThread thread = new CalibrationDustMeterZeroThread();
+        thread.start();
+    }
+
     public void calibrationDustMeterWithAuto (CalcNextAutoCalibration calcNextAutoCalibration){
         this.calcNextAutoCalibration = calcNextAutoCalibration;
         run = false;
         CalibrationDustMeterThread thread = new CalibrationDustMeterThread();
         thread.start();
+    }
+
+    private class CalibrationDustMeterZeroThread extends Thread{
+
+        @Override
+        public void run() {
+            Log.d(tag,"开始校准");
+            setChanged();
+            notifyObservers(new LogFormat("开始校准"));
+            sendMainFragmentString("停止测量,开始校准");
+            CtrlCommunication com;
+            com = CtrlCommunication.getInstance();
+            GeneralInfoProtocol infoProtocol = GetProtocols.getInstance().getInfoProtocol();
+            infoProtocol.notifySystemState("停止测量，开始校准");
+            infoProtocol.setDustCalMeterProcess(2);
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            com.ctrlDo(1,true);
+            /*try {
+                Thread.sleep(60000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }*/
+            com.SendFrame(CtrlCommunication.DustMeterStop);
+            try {
+                Thread.sleep(10000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            if (dialogInfo!=null) {
+                dialogInfo.showInfo("本底校准...");
+            }
+            sendMainFragmentString("正在校零");
+            infoProtocol.notifySystemState("正在校零");
+            infoProtocol.setDustCalMeterProcess(15);
+            com.SendFrame(CtrlCommunication.DustMeterBgStart);
+            try {
+                Thread.sleep(100000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            com.SendFrame(CtrlCommunication.DustMeterBgResult);
+            try {
+                Thread.sleep(10000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            DustMeterInfo dustMeterInfo = com.getInfo();
+
+            setChanged();
+            if (dustMeterInfo.isBgOk()){
+                notifyObservers(new LogFormat("校零成功"));
+                sendMainFragmentString("校零成功");
+                infoProtocol.notifySystemState("校零成功");
+            }else{
+                notifyObservers(new LogFormat("校零失败"));
+                sendMainFragmentString("校零失败");
+                infoProtocol.notifySystemState("校零失败");
+            }
+            infoProtocol.setDustCalMeterProcess(80);
+
+            com.SendFrame(CtrlCommunication.DustMeterBgEnd);
+
+            infoProtocol.setDustMeterResult(dustMeterInfo.isBgOk(),dustMeterInfo.isSpanOk());
+            infoProtocol.setDustCalMeterProcess(90);
+            com.SendFrame(CtrlCommunication.DustMeterSpanEnd);
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            if(dialogInfo!=null) {
+                dialogInfo.showInfo("结束校准...");
+            }
+            // sendMainFragmentString("结束校准");
+            com.ctrlDo(1,false);
+            try {
+                Thread.sleep(10000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            setChanged();
+            notifyObservers(new LogFormat("结束校准"));
+            infoProtocol.setDustCalMeterProcess(100);
+            infoProtocol.notifySystemState("校准结束");
+            com.SendFrame(CtrlCommunication.DustMeterRun);
+            if(info!=null) {
+                info.cancelDialog();
+            }
+            if(calcNextAutoCalibration!=null){
+                calcNextAutoCalibration.onComplete();
+            }
+
+            restartScanSensor();
+        }
     }
 
 
