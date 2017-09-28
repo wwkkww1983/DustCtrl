@@ -103,6 +103,7 @@ public class SocketTask implements TcpClientCallBack{
         //Log.d(tag,"connected"+String.valueOf(connected));
         if (connected){
             sendBuff.add(data);
+
         }
         return connected;
     }
@@ -135,6 +136,7 @@ public class SocketTask implements TcpClientCallBack{
                 }
 
                 connected = true;
+                Log.d(tag,"已连接服务器");
                 while (connected){
                     if (socketClient.isConnected()){
                         while ((count = receive.read(readBuff))!=-1 && connected){
@@ -262,6 +264,7 @@ public class SocketTask implements TcpClientCallBack{
                         if(!sendBuff.isEmpty()){
                             send.write(sendBuff.poll());
                             send.flush();
+                            //Log.d(tag,"success send");
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -272,14 +275,14 @@ public class SocketTask implements TcpClientCallBack{
                     receiverThread.start();
 
                     try {
-                        Thread.sleep(8000);
+                        Thread.sleep(19000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                 }
 
                 try {
-                    Thread.sleep(2000);
+                    Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

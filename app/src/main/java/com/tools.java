@@ -229,6 +229,11 @@ import android.annotation.SuppressLint;
 		SimpleDateFormat sDateFormat = new SimpleDateFormat("yyyyMMddHHmmssSSS");
 		return  sDateFormat.format(new Date(l));
 	}
+
+	public static String timeStamp2TcpStringWithoutMs(long l){
+		SimpleDateFormat sDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+		return  sDateFormat.format(new Date(l));
+	}
 	
 	/*将时间戳转化为字符串
 	 * */

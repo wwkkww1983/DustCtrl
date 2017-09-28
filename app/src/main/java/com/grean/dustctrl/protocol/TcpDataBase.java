@@ -208,7 +208,7 @@ public class TcpDataBase implements GeneralDataBaseProtocol{
             lastMinDate = 1505923200000l;
         }
         if(minInterval == 0l){
-            minInterval = 300000l;
+            minInterval = 60000l;
         }
         nextMinDate = lastMinDate + minInterval;
 

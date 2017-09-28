@@ -67,7 +67,7 @@ public class GetProtocols {
             if(clientProtocolName == CLIENT_PROTOCOL_DEFAULT) {
                 clientProtocol = new TcpClient(SocketTask.getInstance());
             }else if(clientProtocolName == CLIENT_PROTOCOL_HJT212){
-                clientProtocol = new TcpClient(SocketTask.getInstance());
+                clientProtocol = new TcpClientHjt212(SocketTask.getInstance());
             }else{
                 clientProtocol = new TcpClient(SocketTask.getInstance());
             }
