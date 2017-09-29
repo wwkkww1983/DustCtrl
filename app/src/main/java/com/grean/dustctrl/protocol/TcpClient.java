@@ -168,11 +168,11 @@ public class TcpClient implements GeneralClientProtocol{
                 addSendBuff(rtdString);*/
                 addSendBuff(insertOneFrame(getRealTimeDataString(now)));
                 if(now > lastMinDate){//发送分钟数据
-                    Log.d(tag,"now"+tools.timestamp2string(now)+"last"+tools.timestamp2string(dataBaseProtocol.getLastMinDate())+"next"+tools.timestamp2string(dataBaseProtocol.getNextMinDate()));
+                    /*Log.d(tag,"now"+tools.timestamp2string(now)+"last"+tools.timestamp2string(dataBaseProtocol.getLastMinDate())+"next"+tools.timestamp2string(dataBaseProtocol.getNextMinDate()));
                     String string = insertOneFrame(getMinDataString(now,dataBaseProtocol.getLastMinDate(),dataBaseProtocol.getNextMinDate()));
                     Log.d(tag,"send min data="+string);
-                    addSendBuff(string);
-                   // addSendBuff(insertOneFrame(getMinDataString(now,dataBaseProtocol.getLastMinDate(),dataBaseProtocol.getNextMinDate())));
+                    addSendBuff(string);*/
+                    addSendBuff(insertOneFrame(getMinDataString(now,dataBaseProtocol.getLastMinDate(),dataBaseProtocol.getNextMinDate())));
                     lastMinDate = dataBaseProtocol.calcNextMinDate(now);
                 }
                 try {

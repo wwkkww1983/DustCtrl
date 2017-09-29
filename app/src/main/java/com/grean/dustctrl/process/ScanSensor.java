@@ -416,7 +416,7 @@ public class ScanSensor extends Observable{
                     i=0;
                     DbTask helper = new DbTask(context,1);
                     SQLiteDatabase db = helper.getReadableDatabase();
-                    Log.d(tag,"存储数据");
+                    //Log.d(tag,"存储数据");
                     ContentValues values = new ContentValues();
                     long l = tools.nowtime2timestamp();
                     values.put("date",l);

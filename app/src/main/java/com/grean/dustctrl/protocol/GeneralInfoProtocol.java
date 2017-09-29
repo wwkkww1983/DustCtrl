@@ -106,4 +106,6 @@ public interface GeneralInfoProtocol {
     void setAlarmMark(boolean alarm);
 
     boolean getAlarmMark();
+
+    boolean isServerConnected();
 }

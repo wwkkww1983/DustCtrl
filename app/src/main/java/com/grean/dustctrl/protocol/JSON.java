@@ -152,6 +152,7 @@ public class JSON {
         object.put("protocolType","realTimeData");
         object.put("state",infoProtocol.getSystemState());
         object.put("alarm",infoProtocol.getAlarmMark());
+        object.put("serverConnected",infoProtocol.isServerConnected());
         JSONArray array = new JSONArray();
         array.put(putItem("dust",data.getDust()));
         array.put(putItem("temperature",data.getAirTemperature()));

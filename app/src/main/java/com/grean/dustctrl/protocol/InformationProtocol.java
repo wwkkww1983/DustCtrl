@@ -309,6 +309,11 @@ public class InformationProtocol implements GeneralInfoProtocol{
         return alarm;
     }
 
+    @Override
+    public boolean isServerConnected() {
+        return SocketTask.getInstance().isConnected();
+    }
+
     private class ExportDataThread extends Thread implements ExportDataProcessListener{
         private long start,end;
 

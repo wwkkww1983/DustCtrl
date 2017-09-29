@@ -55,8 +55,11 @@ public class SocketTask implements TcpClientCallBack{
 
     }
 
+    public static boolean isConnected() {
+        return connected;
+    }
 
-    public void resetSocketClient(String ip,int port,NotifyOperateInfo notifyOperateInfo,NotifyProcessDialogInfo notifyProcessDialogInfo){
+    public void resetSocketClient(String ip, int port, NotifyOperateInfo notifyOperateInfo, NotifyProcessDialogInfo notifyProcessDialogInfo){
         this.notifyProcessDialogInfo = notifyProcessDialogInfo;
         this.notifyOperateInfo = notifyOperateInfo;
         this.serverIp = ip;
