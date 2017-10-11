@@ -39,7 +39,7 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
     private ProcessDialogFragment dialogFragment;
     private String dustMeterInfo,autoCalTime,toastString;
     private Button btnDustMeterManCal,btnDustMeterInquire,btnMotorSet,btnSaveAutoCal,btnSaveServer,btnUpdateSoftware,btnCalcParaK,btnSetAlarm
-            ,btnDustMeterManCalZero,btnMotorTestUp,btnMotorTestDown;
+            ,btnDustMeterManCalZero,btnMotorTestUp,btnMotorTestDown,btnUpdateSetting;
     private TextView tvDustMeterInfo,tvNextAutoCalTime,tvLocalIp,tvParaK,tvSoftwareVersion;
     private EditText etMotorRounds,etMotorTime,etAutoCalInterval,etServerIp,etServerPort,etUpdateSoftwareUrl,etTargetValue,etMnCode,etAlarm;
     private Switch swDustMeterRun,swValve,swFan,swExt1,swExt2,swBackup,swAutoCalibrationEnable;
@@ -112,6 +112,11 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
         clientProtocolName = system.getClientName();
         spProtocol.setSelection(clientProtocolName);
         etAlarm.setText(system.getAlarmDust());
+        swValve.setChecked(dustMeter.getCtrlDo(0));
+        swFan.setChecked(dustMeter.getCtrlDo(1));
+        swExt1.setChecked(dustMeter.getCtrlDo(2));
+        swExt2.setChecked(dustMeter.getCtrlDo(3));
+        swBackup.setChecked(dustMeter.getCtrlDo(4));
     }
 
     private void initView(View v){
@@ -146,6 +151,7 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
         spProtocol = v.findViewById(R.id.spOperateProtocol);
         btnDustMeterManCalZero = v.findViewById(R.id.btnOperateCalZero);
         etAlarm = v.findViewById(R.id.etOperateAlarm);
+        btnUpdateSetting = v.findViewById(R.id.btnOperateUpdateSetting);
         btnMotorTestDown = v.findViewById(R.id.btnOperateTestDown);
         btnMotorTestUp = v.findViewById(R.id.btnOperateTestUp);
         btnMotorTestDown.setOnClickListener(this);
@@ -167,6 +173,7 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
         swExt2.setOnClickListener(this);
         swExt1.setOnClickListener(this);
         btnMotorSet.setOnClickListener(this);
+        btnUpdateSetting.setOnClickListener(this);
     }
 
 
@@ -289,6 +296,9 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
                 break;
             case R.id.btnOperateTestUp:
                 system.testMotor(true);
+                break;
+            case R.id.btnOperateUpdateSetting:
+                onShow();
                 break;
             default:
                 break;

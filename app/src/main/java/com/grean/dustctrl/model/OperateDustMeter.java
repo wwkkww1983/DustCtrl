@@ -83,5 +83,9 @@ public class OperateDustMeter implements NotifyScanEnd{
         return String.valueOf(k);
     }
 
+    public boolean getCtrlDo(int num){
+        return com.getData().getCtrlDo(num);
+    }
+
 
 }
