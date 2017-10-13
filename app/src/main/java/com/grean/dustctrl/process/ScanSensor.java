@@ -403,6 +403,8 @@ public class ScanSensor extends Observable{
                     e.printStackTrace();
                 }
                 data = com.getData();
+                data.calcHiDewPoint();
+                data.calcLoDewPoint();
                 data.setNoise(noiseCom.getNoiseData());
                 if(data.getDust()>=alarmDust){
                     alarm = true;

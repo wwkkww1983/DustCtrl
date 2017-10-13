@@ -26,6 +26,7 @@ public class SensorData {
     private int motorState;
     private int motorRounds;
     private int motorTime;
+    private float hiDewPoint,loDewPoint;
 
     public SensorData(){
 
@@ -201,5 +202,31 @@ public class SensorData {
 
     public void setBatteryLow(boolean batteryLow) {
         this.batteryLow = batteryLow;
+    }
+
+    public float calcHiDewPoint(){
+        if(hiTemp >= 0f){
+            hiDewPoint = (float) (243.12f*(Math.log(hiHumidity/100)+17.62f*hiTemp/(243.12+hiTemp))/(17.62 - Math.log(hiHumidity/100)-17.62*hiTemp/(243.12+hiTemp)));
+        }else{
+            hiDewPoint = (float) (272.62f*(Math.log(hiHumidity/100)+22.46f*hiTemp/(272.62+hiTemp))/(22.46 - Math.log(hiHumidity/100)-22.46*hiTemp/(272.62+hiTemp)));
+        }
+        return hiDewPoint;
+    }
+
+    public float calcLoDewPoint(){
+        if(loTemp >= 0f){
+            loDewPoint = (float) (243.12f*(Math.log(loHumidity/100)+17.62f*loTemp/(243.12+loTemp))/(17.62 - Math.log(loHumidity/100)-17.62*loTemp/(243.12+loTemp)));
+        }else{
+            loDewPoint = (float) (272.62f*(Math.log(loHumidity/100)+22.46f*loTemp/(272.62+loTemp))/(22.46 - Math.log(loHumidity/100)-22.46*loTemp/(272.62+loTemp)));
+        }
+        return loDewPoint;
+    }
+
+    public float getHiDewPoint() {
+        return hiDewPoint;
+    }
+
+    public float getLoDewPoint() {
+        return loDewPoint;
     }
 }

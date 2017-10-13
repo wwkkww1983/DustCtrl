@@ -34,7 +34,8 @@ public class FragmentMain extends Fragment implements NotifyScanSensor{
     private TextView tvWindForce;
     private TextView tvWindDirection;
     private TextView tvNoise,tvNextCal,tvValue;
-    private TextView tvHiTemperature,tvLoTemperature,tvHiHumidity,tvLoHumidity,tvPwm,tvBatteryOk,tvPowerIn,tvAlarm;
+    private TextView tvHiTemperature,tvLoTemperature,tvHiHumidity,tvLoHumidity,tvPwm,tvBatteryOk,tvPowerIn,tvAlarm,
+    tvHiDewPoint,tvLoDewPoint;
     private SensorData data;
     private OperateInit operateInit;
     private boolean alarm = false;
@@ -73,6 +74,8 @@ public class FragmentMain extends Fragment implements NotifyScanSensor{
                     tvHiTemperature.setText(tools.float2String3(data.getHiTemp()));
                     tvLoHumidity.setText(tools.float2String3(data.getLoHumidity()));
                     tvLoTemperature.setText(tools.float2String3(data.getLoTemp()));
+                    tvHiDewPoint.setText(String.valueOf(data.getHiDewPoint()));
+                    tvLoDewPoint.setText(String.valueOf(data.getLoDewPoint()));
                     tvPwm.setText(String.valueOf(data.getHeatPwm()));
                     if(data.isAcIn()){
                         tvPowerIn.setText("外接电源:正常");
@@ -138,6 +141,8 @@ public class FragmentMain extends Fragment implements NotifyScanSensor{
         tvBatteryOk = v.findViewById(R.id.tvMainBatteryOk);
         tvPowerIn = v.findViewById(R.id.tvMainPowerIn);
         tvAlarm = v.findViewById(R.id.tvMainAlarm);
+        tvHiDewPoint = v.findViewById(R.id.tvMainHiDewPoint);
+        tvLoDewPoint = v.findViewById(R.id.tvMainLoDewPoint);
     }
 
     @Override
