@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import com.SystemDateTime;
 import com.grean.dustctrl.CtrlCommunication;
 import com.grean.dustctrl.DbTask;
 import com.grean.dustctrl.MainActivity;
@@ -312,6 +313,17 @@ public class InformationProtocol implements GeneralInfoProtocol{
     @Override
     public boolean isServerConnected() {
         return SocketTask.getInstance().isConnected();
+    }
+
+    @Override
+    public void setSystemDate(int year, int mon, int day, int hour, int min, int second) {
+        try {
+            SystemDateTime.setDateTime(year,mon,day,hour,min,second);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     private class ExportDataThread extends Thread implements ExportDataProcessListener{

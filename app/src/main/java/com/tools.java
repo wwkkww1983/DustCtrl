@@ -225,6 +225,23 @@ import android.annotation.SuppressLint;
 		return l;
 	}
 
+	/*将字符串转化为时间戳
+	 * */
+	public static long tcpTimeString2timestamp(String string){
+		long l=0;
+		Date date;
+		SimpleDateFormat sDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+		try {
+			date = sDateFormat.parse(string);
+			l = date.getTime();
+		}
+		catch (ParseException e) {
+			// TODO 自动生成的 catch 块
+			e.printStackTrace();
+		}
+		return l;
+	}
+
 	public static String timeStamp2TcpString(long l){
 		SimpleDateFormat sDateFormat = new SimpleDateFormat("yyyyMMddHHmmssSSS");
 		return  sDateFormat.format(new Date(l));

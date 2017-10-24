@@ -108,4 +108,6 @@ public interface GeneralInfoProtocol {
     boolean getAlarmMark();
 
     boolean isServerConnected();
+
+    void setSystemDate(int year,int mon,int day,int hour,int min,int second);
 }
