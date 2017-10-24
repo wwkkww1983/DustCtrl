@@ -63,12 +63,12 @@ public class TcpClientHjt212 implements GeneralClientProtocol{
 
     private String getRealTimeDataString(long now){
         String timeString = tools.timeStamp2TcpStringWithoutMs(now)+";";
-        return  "QN="+timeString+";ST=31;CN=2011;PW=123456;MN="+mnCode+";CP=&DataTime="+timeString+insertSensorData(realTimeData)+"&&";
+        return  "QN="+timeString+";ST=51;CN=2011;PW=123456;MN="+mnCode+";CP=&DataTime="+timeString+insertSensorData(realTimeData)+"&&";
         //return  "ST=31;CN=2011;PW=123456;MN="+mnCode+";CP=&&DataTime="+timeString+insertSensorData(realTimeData)+"&&";
     }
 
     private String getMinDataString(long now,long lastMinDate,long nexMinDate){
-        return "QN="+tools.timeStamp2TcpString(now)+";ST=31;CN=2061;PW=123456;MN="+mnCode+";CP=&DataTime="+tools.timeStamp2TcpString(lastMinDate)+";"+
+        return "QN="+tools.timeStamp2TcpString(now)+";ST=51;CN=2051;PW=123456;MN="+mnCode+";CP=&DataTime="+tools.timeStamp2TcpString(lastMinDate)+";"+
                insertMinData(getMeanData(GetProtocols.getInstance().getDataBaseProtocol().getData(lastMinDate ,nexMinDate)))+"&&";
         /*return "ST=31;CN=2061;PW=123456;MN="+mnCode+";CP=&&DataTime="+tools.timeStamp2TcpStringWithoutMs(lastMinDate)+";"+
                 insertMinData(getMeanData(GetProtocols.getInstance().getDataBaseProtocol().getData(lastMinDate ,nexMinDate)))+"&&";*/

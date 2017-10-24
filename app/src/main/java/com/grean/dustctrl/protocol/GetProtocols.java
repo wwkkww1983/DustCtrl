@@ -16,9 +16,10 @@ public class GetProtocols {
     private GeneralServerProtocol serverProtocol;
     private GeneralInfoProtocol infoProtocol;
     private GeneralDataBaseProtocol dataBaseProtocol;
+    private GeneralCommandProtocol commandProtocol;
     private int clientProtocolName =0;
-    public static final int CLIENT_PROTOCOL_DEFAULT=0,CLIENT_PROTOCOL_HJT212 = 1,CLIENT_PROTOCOL_MAX = 2;
-    public static final String[] CLIENT_PROTOCOL_DEFAULT_NAMES ={"Default","HJ/T-212"};
+    public static final int CLIENT_PROTOCOL_DEFAULT=0,CLIENT_PROTOCOL_HJT212 = 1,CLIENT_PROTOCOL_DB12T725 = 2,CLIENT_PROTOCOL_MAX = 3;
+    public static final String[] CLIENT_PROTOCOL_DEFAULT_NAMES ={"Default","HJ/T-212","DB12T 725-2017"};
     private Context context;
 
     private GetProtocols(){
@@ -68,11 +69,20 @@ public class GetProtocols {
                 clientProtocol = new TcpClient(SocketTask.getInstance());
             }else if(clientProtocolName == CLIENT_PROTOCOL_HJT212){
                 clientProtocol = new TcpClientHjt212(SocketTask.getInstance());
+            }else if(clientProtocolName == CLIENT_PROTOCOL_DB12T725){
+                clientProtocol = new TcpClientDB12t725(SocketTask.getInstance());
             }else{
                 clientProtocol = new TcpClient(SocketTask.getInstance());
             }
         }
         return clientProtocol;
+    }
+
+    public GeneralCommandProtocol getGeneralCommandProtocol(){
+        if(commandProtocol==null){
+           commandProtocol = new Hjt212CommandProtocol();
+        }
+        return commandProtocol;
     }
 
     synchronized public GeneralServerProtocol getServerProtocol() {
