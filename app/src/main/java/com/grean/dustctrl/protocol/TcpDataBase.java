@@ -22,7 +22,7 @@ import java.util.ArrayList;
 public class TcpDataBase implements GeneralDataBaseProtocol{
     private static final String tag = "TcpDataBase";
     private Context context;
-    long lastMinDate,minInterval=300000l,nextMinDate;
+    long lastMinDate,minInterval=300000l,nextMinDate,lastHourDate,nextHourDate;
 
     public TcpDataBase (Context context){
         this.context = context;
@@ -192,6 +192,24 @@ public class TcpDataBase implements GeneralDataBaseProtocol{
     }
 
     @Override
+    public long getLastHourDate() {
+        return lastHourDate;
+    }
+
+    @Override
+    public long getNextHourDate() {
+        return nextHourDate;
+    }
+
+    @Override
+    public long calcNextHourDate(long now) {
+        lastHourDate = nextHourDate;
+        nextHourDate = tools.calcNextTime(now,lastHourDate,60*60000l);
+        myApplication.getInstance().saveConfig("LastHourDate",lastHourDate);
+        return nextHourDate;
+    }
+
+    @Override
     public long calcNextMinDate(long now) {
        // Log.d(tag,"now="+tools.timestamp2string(now)+";plan="+tools.timestamp2string(lastMinDate)+";interval = "+String.valueOf(minInterval/1000l));
         lastMinDate = nextMinDate;
@@ -204,14 +222,18 @@ public class TcpDataBase implements GeneralDataBaseProtocol{
     public void loadMinDate() {
         lastMinDate = myApplication.getInstance().getConfigLong("LastMinDate");
         minInterval = myApplication.getInstance().getConfigLong("MinInterval");
+        lastHourDate = myApplication.getInstance().getConfigLong("LastHourDate");
         if(lastMinDate == 0l){
             lastMinDate = 1505923200000l;
+        }
+        if(lastHourDate == 0l){
+            lastHourDate = 1505923200000l;
         }
         if(minInterval == 0l){
             minInterval = 300000l;
         }
         nextMinDate = lastMinDate + minInterval;
-
+        nextHourDate = lastHourDate + 3600000l;
        // Log.d(tag,"next ="+tools.timestamp2string(nextMinDate)+";plan="+tools.timestamp2string(lastMinDate)+";interval = "+String.valueOf(minInterval/1000l));
     }
 }

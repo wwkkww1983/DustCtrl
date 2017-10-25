@@ -1,5 +1,7 @@
 package com.grean.dustctrl.protocol;
 
+import android.util.Log;
+
 import com.tools;
 
 /**
@@ -7,6 +9,7 @@ import com.tools;
  */
 
 public class Hjt212CommandProtocol implements GeneralCommandProtocol{
+    private final static String tag = "Hjt212CommandProtocol";
     String qn,st,cn,pw,mn,flag,cp,systemTime,beginTime,endTime,mnCode,passWord;
     long begin,end;
 
@@ -41,9 +44,9 @@ public class Hjt212CommandProtocol implements GeneralCommandProtocol{
               }
           }else if(item[0].equals("MN")){
               mn=item[1];
-              if(!mn.equals(mnCode)){
+              /*if(!mn.equals(mnCode)){
                   return true;
-              }
+              }*/
           }else if(item[0].equals("Flag")){
               flag=item[1];
           }else if(item[0].equals("CP")){
@@ -72,14 +75,16 @@ public class Hjt212CommandProtocol implements GeneralCommandProtocol{
         if(cn.equals("2011")){//实时数据
             callBack.addOneFrame(returnProtocol.getRealTimeData().getBytes());
         }else if(cn.equals("1012")){//修改系统时间
+            Log.d(tag,"修改时间");
             callBack.addOneFrame(returnProtocol.getSystemResponse(qn).getBytes());
             int year,month,day,hour,min,second;
-            year=Integer.valueOf(systemTime.substring(0,3));
-            month=Integer.valueOf(systemTime.substring(4,5));
-            day=Integer.valueOf(systemTime.substring(6,7));
-            hour=Integer.valueOf(systemTime.substring(8,9));
-            min=Integer.valueOf(systemTime.substring(10,11));
-            second=Integer.valueOf(systemTime.substring(12,13));
+            year=Integer.valueOf(systemTime.substring(0,4));
+            month=Integer.valueOf(systemTime.substring(4,6));
+            day=Integer.valueOf(systemTime.substring(6,8));
+            hour=Integer.valueOf(systemTime.substring(8,10));
+            min=Integer.valueOf(systemTime.substring(10,12));
+            second=Integer.valueOf(systemTime.substring(12,14));
+            Log.d(tag,String.valueOf(year)+"-"+String.valueOf(month)+"-"+String.valueOf(day)+" "+String.valueOf(hour)+":"+String.valueOf(min)+":"+String.valueOf(second));
             infoProtocol.setSystemDate(year,month,day,hour,min,second);
             callBack.addOneFrame(returnProtocol.getSystemOk(qn).getBytes());
         }else if(cn.equals("2051")){//获取分钟数据

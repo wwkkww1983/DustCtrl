@@ -31,6 +31,12 @@ public interface GeneralDataBaseProtocol {
      */
     void setMinDataInterval(long min);
 
+    long getLastHourDate();
+
+    long getNextHourDate();
+
+    long calcNextHourDate(long now);
+
     /**
      * 计算下一次时间
      * @return

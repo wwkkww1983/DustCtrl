@@ -18,6 +18,9 @@ public class TcpClientDB12t725 implements GeneralClientProtocol,GeneralReturnPro
     private TcpClientCallBack callBack;
     private GeneralCommandProtocol commandProtocol;
     private GeneralInfoProtocol infoProtocol;
+    private boolean heartRun = false;
+    private long lastMinDate,lastHourDate;
+    private HeartThread thread;
     public TcpClientDB12t725 (TcpClientCallBack callBack){
         this.callBack = callBack;
         commandProtocol = GetProtocols.getInstance().getGeneralCommandProtocol();
@@ -70,13 +73,13 @@ public class TcpClientDB12t725 implements GeneralClientProtocol,GeneralReturnPro
     }
 
     private String insertSensorData (float[] data){
-        String string = "A01-Rtd="+tools.float2String3(data[GeneralHistoryDataFormat.Dust])+";01-Flag=3;";
+        String string = "A01-Rtd="+tools.float2String3(data[GeneralHistoryDataFormat.Dust])+";A01-Flag=N";
         return string;
     }
 
     private String getRealTimeDataString(long now){
         String timeString = tools.timeStamp2TcpStringWithoutMs(now)+";";
-        return  "ST=51;CN=2011;PW=123456;MN="+mnCode+";CP=&DataTime="+timeString+insertSensorData(realTimeData)+"&&";
+        return  "ST=51;CN=2011;PW=123456;MN="+mnCode+";CP=&&DataTime="+timeString+insertSensorData(realTimeData)+"&&";
     }
 
     /**
@@ -128,12 +131,20 @@ public class TcpClientDB12t725 implements GeneralClientProtocol,GeneralReturnPro
 
     @Override
     public void startHeartBeatPacket() {
-
+        if(thread != null) {
+            if(!thread.isAlive()) {
+                thread = new HeartThread();
+                thread.start();
+            }
+        }else {
+            thread = new HeartThread();
+            thread.start();
+        }
     }
 
     @Override
     public void stopHeartBeatPacket() {
-
+        heartRun = false;
     }
 
     @Override
@@ -164,20 +175,20 @@ public class TcpClientDB12t725 implements GeneralClientProtocol,GeneralReturnPro
         return "##"+lenString+body+crcString+"\r\n";
     }
 
-    private String getMinDataString(String qn,long lastMinDate,long nexMinDate){
+    private String getMinDataString(long lastMinDate,long nexMinDate){
         float [] data = getMinAvgMaxData(GetProtocols.getInstance().getDataBaseProtocol().getData(lastMinDate ,nexMinDate));
-        return "QN="+qn+";ST=51;CN=2051;PW=123456;MN="+mnCode+";CP=&DataTime="+tools.timeStamp2TcpString(lastMinDate)+";"+
+        return "ST=51;CN=2051;PW=123456;MN="+mnCode+";CP=&&DataTime="+tools.timeStamp2TcpString(lastMinDate)+";"+
                 insertMinData(data[0],data[1],data[2])+"&&";
     }
 
-    private String getHOurDataString(String qn,long lastMinDate,long nexMinDate){
+    private String getHOurDataString(long lastMinDate,long nexMinDate){
         float [] data = getMinAvgMaxData(GetProtocols.getInstance().getDataBaseProtocol().getData(lastMinDate ,nexMinDate));
-        return "QN="+qn+";ST=51;CN=2061;PW=123456;MN="+mnCode+";CP=&DataTime="+tools.timeStamp2TcpString(lastMinDate)+";"+
+        return "ST=51;CN=2061;PW=123456;MN="+mnCode+";CP=&&DataTime="+tools.timeStamp2TcpString(lastMinDate)+";"+
                 insertMinData(data[0],data[1],data[2])+"&&";
     }
 
     private String insertMinData(float min,float avg,float max){
-        String string = "A01-Min="+tools.float2String3(min)+"A01-Avg="+tools.float2String3(avg)+"A01-Max="+tools.float2String3(max);
+        String string = "A01-Min="+tools.float2String3(min)+",A01-Avg="+tools.float2String3(avg)+",A01-Max="+tools.float2String3(max);
         return string;
     }
 
@@ -189,22 +200,52 @@ public class TcpClientDB12t725 implements GeneralClientProtocol,GeneralReturnPro
 
     @Override
     public String getMinData(String qn,long begin, long end) {
-        return insertOneFrame(getMinDataString(qn,begin,end));
+        return insertOneFrame(getMinDataString(begin,end));
     }
 
     @Override
     public String getHourData(String qn,long begin, long end) {
-        return insertOneFrame(getHOurDataString(qn,begin,end));
+        return insertOneFrame(getHOurDataString(begin,end));
     }
 
 
     @Override
     public String getSystemResponse(String qn) {
-        return insertOneFrame("ST=91;CN=9011;PW=123456;MN="+mnCode+"Flag=1;CP=&&QN="+qn+";QnRtn=1&&");
+        return insertOneFrame("ST=91;CN=9011;PW=123456;MN="+mnCode+";Flag=1;CP=&&QN="+qn+";QnRtn=1&&");
     }
 
     @Override
     public String getSystemOk(String qn) {
-        return insertOneFrame("ST=91;CN=9011;PW=123456;MN="+mnCode+"CP=&&QN="+qn+";ExeRtn=1&&");
+        return insertOneFrame("ST=91;CN=9011;PW=123456;MN="+mnCode+";CP=&&QN="+qn+";ExeRtn=1&&");
+    }
+
+    private class HeartThread extends Thread{
+
+        @Override
+        public void run() {
+            GeneralDataBaseProtocol dataBaseProtocol = GetProtocols.getInstance().getDataBaseProtocol();
+            dataBaseProtocol.loadMinDate();
+            lastMinDate = dataBaseProtocol.getNextMinDate();
+            lastHourDate = dataBaseProtocol.getNextHourDate();
+            dataBaseProtocol.setMinDataInterval(10*60000l);//设置为10分钟间隔
+            heartRun = true;
+            while (heartRun&&!interrupted()) {
+                long now = tools.nowtime2timestamp();
+                addSendBuff(insertOneFrame(getRealTimeDataString(now)));
+                if(now > lastMinDate){//发送分钟数据
+                    addSendBuff(insertOneFrame(getMinDataString(dataBaseProtocol.getLastMinDate(),dataBaseProtocol.getNextMinDate())));
+                    lastMinDate = dataBaseProtocol.calcNextMinDate(now);
+                }
+                if(now > lastHourDate){
+                    addSendBuff(insertOneFrame(getHOurDataString(dataBaseProtocol.getLastHourDate(),dataBaseProtocol.getNextHourDate())));
+                    lastHourDate = dataBaseProtocol.calcNextHourDate(now);
+                }
+                try {
+                    Thread.sleep(60000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 }
