@@ -9,4 +9,5 @@ public interface GeneralCommandProtocol {
     void setPassWord(String stirng);
     boolean handleString(String string);
     void executeProtocol(GeneralReturnProtocol returnProtocol,TcpClientCallBack callBack,GeneralInfoProtocol infoProtocol);
+    boolean checkRecString(byte[] rec,int count);
 }

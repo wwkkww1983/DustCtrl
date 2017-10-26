@@ -32,7 +32,7 @@ public class TcpClientDB12t725 implements GeneralClientProtocol,GeneralReturnPro
     @Override
     public void handleProtocol(byte[] rec, int count) {
         Log.d(tag,new String(rec,0,count));
-        if(checkRecString(rec,count)) {
+        if(commandProtocol.checkRecString(rec,count)) {
             String recString = new String(rec, 6, count - 14);
             String[] item = recString.split(";");
             for(int i=0;i<item.length;i++) {
@@ -59,21 +59,9 @@ public class TcpClientDB12t725 implements GeneralClientProtocol,GeneralReturnPro
 
     }
 
-    private boolean checkRecString(byte[] rec,int count){
-        int len = Integer.valueOf(new String(rec,2,4));
-        if((len+12)!=count){//头 + 数据块长 + crc + 尾
-            return false;
-        }
-
-        if((rec[0]!='#')||(rec[1]!='#')||(rec[count-2]!='\r')||(rec[count-1]!='\n')){
-            return false;
-        }
-
-        return true;
-    }
 
     private String insertSensorData (float[] data){
-        String string = "A01-Rtd="+tools.float2String3(data[GeneralHistoryDataFormat.Dust])+";A01-Flag=N";
+        String string = "A01-Rtd="+tools.float2String3(data[GeneralHistoryDataFormat.Dust])+",A01-Flag=N;";
         return string;
     }
 
@@ -126,7 +114,10 @@ public class TcpClientDB12t725 implements GeneralClientProtocol,GeneralReturnPro
 
     @Override
     public boolean addSendBuff(String string) {
-        return callBack.addOneFrame(string.getBytes());
+        if(string!=null) {
+            return callBack.addOneFrame(string.getBytes());
+        }
+        return false;
     }
 
     @Override

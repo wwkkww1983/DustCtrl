@@ -44,9 +44,9 @@ public class Hjt212CommandProtocol implements GeneralCommandProtocol{
               }
           }else if(item[0].equals("MN")){
               mn=item[1];
-              /*if(!mn.equals(mnCode)){
+              if(!mn.equals(mnCode)){
                   return true;
-              }*/
+              }
           }else if(item[0].equals("Flag")){
               flag=item[1];
           }else if(item[0].equals("CP")){
@@ -106,5 +106,19 @@ public class Hjt212CommandProtocol implements GeneralCommandProtocol{
 
         }
 
+    }
+
+    @Override
+    public boolean checkRecString(byte[] rec, int count) {
+        int len = Integer.valueOf(new String(rec,2,4));
+        if((len+12)!=count){//头 + 数据块长 + crc + 尾
+            return false;
+        }
+
+        if((rec[0]!='#')||(rec[1]!='#')||(rec[count-2]!='\r')||(rec[count-1]!='\n')){
+            return false;
+        }
+
+        return true;
     }
 }
