@@ -98,6 +98,8 @@ public class ScanSensor extends Observable{
             GeneralInfoProtocol infoProtocol = GetProtocols.getInstance().getInfoProtocol();
             infoProtocol.notifySystemState("停止测量，开始校准");
             infoProtocol.setDustCalMeterProcess(2);
+            GeneralClientProtocol clientProtocol = GetProtocols.getInstance().getClientProtocol();
+            clientProtocol.setRealTimeAlarm(GeneralClientProtocol.ALARM_C);
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
@@ -197,6 +199,8 @@ public class ScanSensor extends Observable{
             GeneralInfoProtocol infoProtocol = GetProtocols.getInstance().getInfoProtocol();
             infoProtocol.notifySystemState("停止测量，开始校准");
             infoProtocol.setDustCalMeterProcess(2);
+            GeneralClientProtocol clientProtocol = GetProtocols.getInstance().getClientProtocol();
+            clientProtocol.setRealTimeAlarm(GeneralClientProtocol.ALARM_C);
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
@@ -390,6 +394,7 @@ public class ScanSensor extends Observable{
             setChanged();
             notifyObservers(new LogFormat("开始测量"));
             infoProtocol.notifySystemState("正在测量");
+            clientProtocol.setRealTimeAlarm(GeneralClientProtocol.AlARM_N);
             while (run){
                 com.SendFrame(CtrlCommunication.Inquire);
                 com.SendFrame(CtrlCommunication.WindForce);
@@ -408,8 +413,10 @@ public class ScanSensor extends Observable{
                 data.setNoise(noiseCom.getNoiseData());
                 if(data.getDust()>=alarmDust){
                     alarm = true;
+                    clientProtocol.setRealTimeAlarm(GeneralClientProtocol.ALARM_ADD);
                 }else{
                     alarm = false;
+                    clientProtocol.setRealTimeAlarm(GeneralClientProtocol.AlARM_N);
                 }
                 infoProtocol.notifySenorData(data);
                 clientProtocol.setRealTimeData(data);

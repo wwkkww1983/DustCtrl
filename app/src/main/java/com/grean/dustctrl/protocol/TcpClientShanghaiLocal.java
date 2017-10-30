@@ -10,6 +10,7 @@ import java.util.ArrayList;
  */
 
 public class TcpClientShanghaiLocal implements GeneralClientProtocol,GeneralReturnProtocol{
+    private String dustFlag="N",windSpeedFlag="N";
     private float [] realTimeData = new float[7];
     private TcpClientCallBack callBack;
     private HeartThread thread;
@@ -133,11 +134,11 @@ public class TcpClientShanghaiLocal implements GeneralClientProtocol,GeneralRetu
     }
 
     private String insertSensorData (float[] data){
-        String string = "a34001-Rtd="+tools.float2String3(data[GeneralHistoryDataFormat.Dust])+",a34001-Flag=N;";
+        String string = "a34001-Rtd="+tools.float2String3(data[GeneralHistoryDataFormat.Dust])+",a34001-Flag="+dustFlag+";";
         string += "a01001-Rtd="+tools.float2String3(data[GeneralHistoryDataFormat.Temperature])+",a01001-Flag=N;";
         string += "a01002-Rtd="+tools.float2String3(data[GeneralHistoryDataFormat.Humidity])+",a01002-Flag=N;";
         string += "a01006-Rtd="+tools.float2String3(data[GeneralHistoryDataFormat.Pressure])+",a01006-Flag=N;";
-        string += "a01007-Rtd="+tools.float2String3(data[GeneralHistoryDataFormat.WindForce])+",a01007-Flag=N;";
+        string += "a01007-Rtd="+tools.float2String3(data[GeneralHistoryDataFormat.WindForce])+",a01007-Flag="+windSpeedFlag+";";
         string += "a01008-Rtd="+tools.float2String3(data[GeneralHistoryDataFormat.WindDirection])+",a01008-Flag=N;";
         string += "a50001-Rtd="+tools.float2String3(data[GeneralHistoryDataFormat.Noise])+",a50001-Flag=N";
         return string;
@@ -183,6 +184,54 @@ public class TcpClientShanghaiLocal implements GeneralClientProtocol,GeneralRetu
         realTimeData[GeneralHistoryDataFormat.Noise] = data.getNoise();
         realTimeData[GeneralHistoryDataFormat.WindDirection] = data.getWindDirection();
         realTimeData[GeneralHistoryDataFormat.WindForce] = data.getWindForce();
+    }
+
+    @Override
+    public void setRealTimeAlarm(int alarm) {
+        switch (alarm){
+            case GeneralClientProtocol.AlARM_N:
+                dustFlag = "N";
+                break;
+            case GeneralClientProtocol.ALARM_C:
+                dustFlag = "C";
+                break;
+            case GeneralClientProtocol.ALARM_D:
+                dustFlag = "D";
+                break;
+            case GeneralClientProtocol.ALARM_P:
+                dustFlag = "P";
+                break;
+            case GeneralClientProtocol.ALARM_L:
+                dustFlag = "L";
+                break;
+            case GeneralClientProtocol.ALARM_H:
+                dustFlag = "H";
+                break;
+            case GeneralClientProtocol.ALARM_SUB:
+                dustFlag = "-";
+                break;
+            case GeneralClientProtocol.ALARM_ADD:
+                dustFlag = "+";
+                break;
+            case GeneralClientProtocol.ALARM_LESS_THAN:
+                dustFlag = "<";
+                break;
+            case GeneralClientProtocol.ALARM_GREAT_THAN:
+                dustFlag = ">";
+                break;
+            case GeneralClientProtocol.ALARM_S:
+                windSpeedFlag = "S";
+                break;
+            case GeneralClientProtocol.ALARM_R:
+                dustFlag = "R";
+                break;
+            case GeneralClientProtocol.ALARM_A:
+                dustFlag = "A";
+                break;
+            default:
+
+                break;
+        }
     }
 
     @Override

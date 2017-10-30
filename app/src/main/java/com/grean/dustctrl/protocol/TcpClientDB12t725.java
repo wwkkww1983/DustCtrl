@@ -149,6 +149,11 @@ public class TcpClientDB12t725 implements GeneralClientProtocol,GeneralReturnPro
         realTimeData[GeneralHistoryDataFormat.WindForce] = data.getWindForce();
     }
 
+    @Override
+    public void setRealTimeAlarm(int alarm) {
+
+    }
+
     /**
      * 装帧头 数据长度 CRC 帧尾
      * @param body

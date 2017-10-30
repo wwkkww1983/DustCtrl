@@ -61,6 +61,11 @@ public class TcpClientHjt212 implements GeneralClientProtocol{
         realTimeData[GeneralHistoryDataFormat.WindForce] = data.getWindForce();
     }
 
+    @Override
+    public void setRealTimeAlarm(int alarm) {
+
+    }
+
     private String getRealTimeDataString(long now){
         String timeString = tools.timeStamp2TcpStringWithoutMs(now)+";";
         return  "QN="+timeString+";ST=51;CN=2011;PW=123456;MN="+mnCode+";CP=&DataTime="+timeString+insertSensorData(realTimeData)+"&&";
