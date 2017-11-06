@@ -22,7 +22,7 @@ import java.util.ArrayList;
 public class TcpDataBase implements GeneralDataBaseProtocol{
     private static final String tag = "TcpDataBase";
     private Context context;
-    long lastMinDate,minInterval=300000l,nextMinDate,lastHourDate,nextHourDate;
+    long lastMinDate,minInterval=60000l,nextMinDate,lastHourDate,nextHourDate;
 
     public TcpDataBase (Context context){
         this.context = context;
@@ -32,9 +32,9 @@ public class TcpDataBase implements GeneralDataBaseProtocol{
         ArrayList<String> list = new ArrayList<String>();
         String statement;
         if (start > end){
-            statement = "date <"+ String.valueOf(start)+" and date >"+String.valueOf(end);
+            statement = "date <"+ String.valueOf(start)+" and date >="+String.valueOf(end);
         }else{
-            statement = "date >"+ String.valueOf(start)+" and date <"+String.valueOf(end);
+            statement = "date >="+ String.valueOf(start)+" and date <"+String.valueOf(end);
         }
         DbTask helperDbTask = new DbTask(context,1);
         SQLiteDatabase db = helperDbTask.getReadableDatabase();
@@ -101,7 +101,7 @@ public class TcpDataBase implements GeneralDataBaseProtocol{
     public GeneralHistoryDataFormat getHourData(long dateStart) {
         GeneralHistoryDataFormat format = new GeneralHistoryDataFormat();
         String statement;
-        statement = "date >"+ String.valueOf(dateStart)+" and date <"+String.valueOf(dateStart + 3600000l);
+        statement = "date >="+ String.valueOf(dateStart)+" and date <"+String.valueOf(dateStart + 3600000l);
         DbTask helperDbTask = new DbTask(context,1);
         SQLiteDatabase db = helperDbTask.getReadableDatabase();
         Cursor cursor;
@@ -130,7 +130,7 @@ public class TcpDataBase implements GeneralDataBaseProtocol{
     public ArrayList<String> getDayLog(long endDate) {
         ArrayList<String> list = new ArrayList<String>();
         String statement;
-        statement = "date >"+ String.valueOf(endDate - 3600000l*24)+" and date <"+String.valueOf(endDate);
+        statement = "date >="+ String.valueOf(endDate - 3600000l*24)+" and date <"+String.valueOf(endDate);
 
         DbTask helperDbTask = new DbTask(context,1);
         SQLiteDatabase db = helperDbTask.getReadableDatabase();
@@ -150,7 +150,7 @@ public class TcpDataBase implements GeneralDataBaseProtocol{
     public GeneralHistoryDataFormat getData(long start, long end) {
         GeneralHistoryDataFormat format = new GeneralHistoryDataFormat();
         String statement;
-        statement = "date >"+ String.valueOf(start)+" and date <"+String.valueOf(end);
+        statement = "date >="+ String.valueOf(start)+" and date <"+String.valueOf(end);
         DbTask helperDbTask = new DbTask(context,1);
         SQLiteDatabase db = helperDbTask.getReadableDatabase();
         Cursor cursor;

@@ -139,6 +139,13 @@ public class InformationProtocol implements GeneralInfoProtocol{
     }
 
     @Override
+    public void setDustParaK(float paraK) {
+        this.paraK = paraK;
+        CtrlCommunication.getInstance().getData().setParaK(paraK);
+        config.saveConfig("DustParaK",paraK);
+    }
+
+    @Override
     public void calDustMeter() {
         dustMeterCalProcess = 0;
         ScanSensor.getInstance().stopScan(null);

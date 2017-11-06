@@ -39,9 +39,9 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
     private ProcessDialogFragment dialogFragment;
     private String dustMeterInfo,autoCalTime,toastString;
     private Button btnDustMeterManCal,btnDustMeterInquire,btnMotorSet,btnSaveAutoCal,btnSaveServer,btnUpdateSoftware,btnCalcParaK,btnSetAlarm
-            ,btnDustMeterManCalZero,btnMotorTestUp,btnMotorTestDown,btnUpdateSetting;
-    private TextView tvDustMeterInfo,tvNextAutoCalTime,tvLocalIp,tvParaK,tvSoftwareVersion;
-    private EditText etMotorRounds,etMotorTime,etAutoCalInterval,etServerIp,etServerPort,etUpdateSoftwareUrl,etTargetValue,etMnCode,etAlarm;
+            ,btnDustMeterManCalZero,btnMotorTestUp,btnMotorTestDown,btnUpdateSetting,btnSetParaK;
+    private TextView tvDustMeterInfo,tvNextAutoCalTime,tvLocalIp,tvSoftwareVersion;//tvParaK
+    private EditText etMotorRounds,etMotorTime,etAutoCalInterval,etServerIp,etServerPort,etUpdateSoftwareUrl,etTargetValue,etMnCode,etAlarm,etSetParaK;
     private Switch swDustMeterRun,swValve,swFan,swExt1,swExt2,swBackup,swAutoCalibrationEnable;
     private Spinner spProtocol;
     private int clientProtocolName;
@@ -95,7 +95,8 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
         autoCalTime = system.getAutoCalNextTime();
         tvNextAutoCalTime.setText(autoCalTime);
         tvLocalIp.setText(operateTcp.getLocalIpAddress()+":8888");
-        tvParaK.setText(dustMeter.getParaKString());
+        //tvParaK.setText(dustMeter.getParaKString());
+        etSetParaK.setText(dustMeter.getParaKString());
         etMnCode.setText(operateTcp.getTcpMnCode());
         if (system.getAutoCalibrationEnable()){
             swAutoCalibrationEnable.setChecked(true);
@@ -142,7 +143,9 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
         btnSaveServer = v.findViewById(R.id.btnOperateSaveServer);
         btnUpdateSoftware = v.findViewById(R.id.btnOperateUpdateSoftware);
         tvLocalIp = v.findViewById(R.id.tvOperateLocalIp);
-        tvParaK = v.findViewById(R.id.tvOperateParaK);
+        //tvParaK = v.findViewById(R.id.tvOperateParaK);
+        etSetParaK = v.findViewById(R.id.etOperateParaK);
+        btnSetParaK = v.findViewById(R.id.btnOperateSetParaK);
         etTargetValue = v.findViewById(R.id.etOperateTargetValue);
         btnCalcParaK = v.findViewById(R.id.btnOperateCalcPraraK);
         etMnCode = v.findViewById(R.id.etOperateMnCode);
@@ -174,6 +177,7 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
         swExt1.setOnClickListener(this);
         btnMotorSet.setOnClickListener(this);
         btnUpdateSetting.setOnClickListener(this);
+        btnSetParaK.setOnClickListener(this);
     }
 
 
@@ -280,7 +284,8 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
                 break;
             case R.id.btnOperateCalcPraraK:
                 String string = dustMeter.calcParaK(etTargetValue.getText().toString());
-                tvParaK.setText(string);
+                //tvParaK.setText(string);
+                etSetParaK.setText(string);
                 break;
             case R.id.btnOperateSaveAlarm:
                 system.setAlarmDust(etAlarm.getText().toString());
@@ -299,6 +304,9 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
                 break;
             case R.id.btnOperateUpdateSetting:
                 onShow();
+                break;
+            case R.id.btnOperateSetParaK:
+                dustMeter.setParaK(etSetParaK.getText().toString());
                 break;
             default:
                 break;

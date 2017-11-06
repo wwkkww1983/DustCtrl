@@ -78,6 +78,12 @@ public class OperateDustMeter implements NotifyScanEnd{
         return String.valueOf(k);
     }
 
+    public void setParaK(String paraK){
+        float k = Float.valueOf(paraK);
+        com.getData().setParaK(k);
+        myApplication.getInstance().saveConfig("DustParaK",k);
+    }
+
     public String getParaKString(){
         float k = com.getData().getParaK();
         return String.valueOf(k);

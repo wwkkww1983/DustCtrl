@@ -116,6 +116,9 @@ public class JSON {
         }else if(jsonObject.has("DustMeterCal")){//粉尘仪校零，校跨
             object.put("DustMeterCal",true);
             infoProtocol.calDustMeter();
+        }else if(jsonObject.has("DustMeterSetParaK")){//直接写斜率
+            object.put("DustMeterSetParaK",true);
+            infoProtocol.setDustParaK((float) jsonObject.getDouble("DustMeterParaK"));
         }else if(jsonObject.has("DustMeterCalZero")){//单独校零
             object.put("DustMeterCalZero",true);
             infoProtocol.calDustMeterZero();

@@ -2,6 +2,7 @@ package com.grean.dustctrl.protocol;
 
 import android.util.Log;
 
+import com.grean.dustctrl.process.ScanSensor;
 import com.grean.dustctrl.process.SensorData;
 import com.tools;
 
@@ -161,13 +162,16 @@ public class TcpClientHjt212 implements GeneralClientProtocol{
             dataBaseProtocol.loadMinDate();
             lastMinDate = dataBaseProtocol.getNextMinDate();
             Log.d(tag,"lastMinDate"+tools.timestamp2string(lastMinDate));
+            ClientDataBaseCtrl dataBaseCtrl = ScanSensor.getInstance();
             while (run&&!interrupted()) {
                 now = tools.nowtime2timestamp();
                 /*String rtdString = insertOneFrame(getRealTimeDataString(now));
                 Log.d(tag,"send rtd data="+rtdString);
                 addSendBuff(rtdString);*/
+                dataBaseCtrl.getRealTimeData(realTimeData);
                 addSendBuff(insertOneFrame(getRealTimeDataString(now)));
                 if(now > lastMinDate){//发送分钟数据
+                    dataBaseCtrl.saveMinData(now);
                     Log.d(tag,"now"+tools.timestamp2string(now)+"last"+tools.timestamp2string(dataBaseProtocol.getLastMinDate())+"next"+tools.timestamp2string(dataBaseProtocol.getNextMinDate()));
                     String string = insertOneFrame(getMinDataString(now,dataBaseProtocol.getLastMinDate(),dataBaseProtocol.getNextMinDate()));
                     Log.d(tag,"send min data="+string);

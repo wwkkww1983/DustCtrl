@@ -2,6 +2,7 @@ package com.grean.dustctrl.protocol;
 
 import android.util.Log;
 
+import com.grean.dustctrl.process.ScanSensor;
 import com.grean.dustctrl.process.SensorData;
 import com.tools;
 
@@ -225,10 +226,13 @@ public class TcpClientDB12t725 implements GeneralClientProtocol,GeneralReturnPro
             lastHourDate = dataBaseProtocol.getNextHourDate();
             dataBaseProtocol.setMinDataInterval(10*60000l);//设置为10分钟间隔
             heartRun = true;
+            ClientDataBaseCtrl dataBaseCtrl = ScanSensor.getInstance();
             while (heartRun&&!interrupted()) {
                 long now = tools.nowtime2timestamp();
+                dataBaseCtrl.getRealTimeData(realTimeData);
                 addSendBuff(insertOneFrame(getRealTimeDataString(now)));
                 if(now > lastMinDate){//发送分钟数据
+                    dataBaseCtrl.saveMinData(now);
                     addSendBuff(insertOneFrame(getMinDataString(dataBaseProtocol.getLastMinDate(),dataBaseProtocol.getNextMinDate())));
                     lastMinDate = dataBaseProtocol.calcNextMinDate(now);
                 }

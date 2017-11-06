@@ -3,6 +3,7 @@ package com.grean.dustctrl.protocol;
 import android.os.StrictMode;
 import android.util.Log;
 
+import com.grean.dustctrl.process.ScanSensor;
 import com.grean.dustctrl.process.SensorData;
 import com.tools;
 
@@ -57,13 +58,13 @@ public class TcpClient implements GeneralClientProtocol{
     @Override
     public void setRealTimeData(SensorData data) {
         //Log.d(tag,"copy data"+String.valueOf(data.getNoise()));
-        realTimeData[GeneralHistoryDataFormat.Dust] = data.getDust();
+        /*realTimeData[GeneralHistoryDataFormat.Dust] = data.getDust();
         realTimeData[GeneralHistoryDataFormat.Temperature] = data.getAirTemperature();
         realTimeData[GeneralHistoryDataFormat.Humidity] = data.getAirHumidity();
         realTimeData[GeneralHistoryDataFormat.Pressure] = data.getAirPressure();
         realTimeData[GeneralHistoryDataFormat.Noise] = data.getNoise();
         realTimeData[GeneralHistoryDataFormat.WindDirection] = data.getWindDirection();
-        realTimeData[GeneralHistoryDataFormat.WindForce] = data.getWindForce();
+        realTimeData[GeneralHistoryDataFormat.WindForce] = data.getWindForce();*/
     }
 
     @Override
@@ -164,20 +165,25 @@ public class TcpClient implements GeneralClientProtocol{
             run = true;
             GeneralDataBaseProtocol dataBaseProtocol = GetProtocols.getInstance().getDataBaseProtocol();
             dataBaseProtocol.loadMinDate();
+            dataBaseProtocol.setMinDataInterval(60000l);//设置为1分钟间隔
             lastMinDate = dataBaseProtocol.getNextMinDate();
             Log.d(tag,"lastMinDate"+tools.timestamp2string(lastMinDate));
+            ClientDataBaseCtrl dataBaseCtrl = ScanSensor.getInstance();
             while (run&&!interrupted()) {
                 now = tools.nowtime2timestamp();
                 /*String rtdString = insertOneFrame(getRealTimeDataString(now));
                 Log.d(tag,"send rtd data="+rtdString);
                 addSendBuff(rtdString);*/
+                dataBaseCtrl.getRealTimeData(realTimeData);
                 addSendBuff(insertOneFrame(getRealTimeDataString(now)));
                 if(now > lastMinDate){//发送分钟数据
-                    /*Log.d(tag,"now"+tools.timestamp2string(now)+"last"+tools.timestamp2string(dataBaseProtocol.getLastMinDate())+"next"+tools.timestamp2string(dataBaseProtocol.getNextMinDate()));
+                    dataBaseCtrl.saveMinData(now);
+                    /*Log.d(tag,"now"+tools.timestamp2string(now)+"last"+tools.timestamp2string(dataBaseProtocol.getLastMinDate())+"next"+tools.timestamp2string(dataBaseProtocol.getNextMinDate()));*/
                     String string = insertOneFrame(getMinDataString(now,dataBaseProtocol.getLastMinDate(),dataBaseProtocol.getNextMinDate()));
                     Log.d(tag,"send min data="+string);
-                    addSendBuff(string);*/
-                    addSendBuff(insertOneFrame(getMinDataString(now,dataBaseProtocol.getLastMinDate(),dataBaseProtocol.getNextMinDate())));
+                    addSendBuff(string);
+                    //dataBaseCtrl.saveMinData(now);
+                    //addSendBuff(insertOneFrame(getMinDataString(now,dataBaseProtocol.getLastMinDate(),dataBaseProtocol.getNextMinDate())));
                     lastMinDate = dataBaseProtocol.calcNextMinDate(now);
                 }
                 try {

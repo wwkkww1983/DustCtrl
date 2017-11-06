@@ -1,5 +1,6 @@
 package com.grean.dustctrl.protocol;
 
+import com.grean.dustctrl.process.ScanSensor;
 import com.grean.dustctrl.process.SensorData;
 import com.tools;
 
@@ -269,11 +270,14 @@ public class TcpClientShanghaiLocal implements GeneralClientProtocol,GeneralRetu
             lastMinDate = dataBaseProtocol.getNextMinDate();
             lastHourDate = dataBaseProtocol.getNextHourDate();
             dataBaseProtocol.setMinDataInterval(60000l);//设置为1分钟间隔
+            ClientDataBaseCtrl dataBaseCtrl = ScanSensor.getInstance();
             heartRun = true;
             while (heartRun&&!interrupted()) {
                 long now = tools.nowtime2timestamp();
+                dataBaseCtrl.getRealTimeData(realTimeData);
                 addSendBuff(insertOneFrame(getRealTimeDataString(now)));
                 if(now > lastMinDate){//发送分钟数据
+                    dataBaseCtrl.saveMinData(now);
                     addSendBuff(insertOneFrame(getMinDataString(dataBaseProtocol.getLastMinDate(),dataBaseProtocol.getNextMinDate())));
                     lastMinDate = dataBaseProtocol.calcNextMinDate(now);
                 }

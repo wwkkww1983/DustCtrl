@@ -52,6 +52,8 @@ public interface GeneralInfoProtocol {
 
     void calDust(float target);
 
+    void setDustParaK(float paraK);
+
     void calDustMeter();
 
     void setDustMeterResult(boolean bg,boolean span);

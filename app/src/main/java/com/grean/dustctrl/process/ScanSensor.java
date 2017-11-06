@@ -14,7 +14,9 @@ import com.grean.dustctrl.myApplication;
 import com.grean.dustctrl.presenter.CalcNextAutoCalibration;
 import com.grean.dustctrl.presenter.NotifyOperateInfo;
 import com.grean.dustctrl.presenter.NotifyProcessDialogInfo;
+import com.grean.dustctrl.protocol.ClientDataBaseCtrl;
 import com.grean.dustctrl.protocol.GeneralClientProtocol;
+import com.grean.dustctrl.protocol.GeneralHistoryDataFormat;
 import com.grean.dustctrl.protocol.GeneralInfoProtocol;
 import com.grean.dustctrl.protocol.GetProtocols;
 import com.grean.dustctrl.protocol.InformationProtocol;
@@ -27,7 +29,7 @@ import java.util.Observable;
  * Created by Administrator on 2017/8/25.
  */
 
-public class ScanSensor extends Observable{
+public class ScanSensor extends Observable implements ClientDataBaseCtrl {
     private static final String tag = "ScanSensor";
     private static ScanSensor instance = new ScanSensor();
     private boolean run = false;
@@ -40,7 +42,9 @@ public class ScanSensor extends Observable{
     private CalcNextAutoCalibration calcNextAutoCalibration;
     private SensorData data;
     private float alarmDust;
-
+    private double [] sumData = new double[7];
+    private int scanTimes = 0;
+    private float [] minData = new float[7];
 
     public boolean isRun() {
         return run;
@@ -83,6 +87,52 @@ public class ScanSensor extends Observable{
         run = false;
         CalibrationDustMeterThread thread = new CalibrationDustMeterThread();
         thread.start();
+    }
+
+    @Override
+    public void saveMinData(long now) {
+        calcMean();
+        DbTask helper = new DbTask(context,1);
+        SQLiteDatabase db = helper.getReadableDatabase();
+        Log.d(tag,"存储数据");
+        ContentValues values = new ContentValues();
+        values.put("date",now);
+        values.put("dust",minData[GeneralHistoryDataFormat.Dust]);
+        if(data!=null) {
+            values.put("value", data.getValue());
+        }
+        values.put("temperature",minData[GeneralHistoryDataFormat.Temperature]);
+        values.put("humidity",minData[GeneralHistoryDataFormat.Humidity]);
+        values.put("pressure",minData[GeneralHistoryDataFormat.Pressure]);
+        values.put("windforce",minData[GeneralHistoryDataFormat.WindForce]);
+        values.put("winddirection",minData[GeneralHistoryDataFormat.WindDirection]);
+        values.put("noise",minData[GeneralHistoryDataFormat.Noise]);
+        db.insert("result",null,values);
+        if(data!=null) {
+            values = new ContentValues();
+            values.put("date", now);
+            values.put("hitemp", data.getHiTemp());
+            values.put("lotemp", data.getLoTemp());
+            values.put("hihumidity", data.getHiHumidity());
+            values.put("lohumidity", data.getLoHumidity());
+            values.put("pwm", data.getHeatPwm());
+            db.insert("detail", null, values);
+        }
+        db.close();
+        helper.close();
+    }
+
+    @Override
+    public void getRealTimeData(float[] realTimeData) {
+        if((realTimeData.length >= 7)&&(data!=null)){
+            realTimeData[GeneralHistoryDataFormat.Dust] = data.getDust();
+            realTimeData[GeneralHistoryDataFormat.Temperature] = data.getAirTemperature();
+            realTimeData[GeneralHistoryDataFormat.Humidity] = data.getAirHumidity();
+            realTimeData[GeneralHistoryDataFormat.Pressure] = data.getAirPressure();
+            realTimeData[GeneralHistoryDataFormat.Noise] = data.getNoise();
+            realTimeData[GeneralHistoryDataFormat.WindDirection] = data.getWindDirection();
+            realTimeData[GeneralHistoryDataFormat.WindForce] = data.getWindForce();
+        }
     }
 
     private class CalibrationDustMeterZeroThread extends Thread{
@@ -390,7 +440,7 @@ public class ScanSensor extends Observable{
             GeneralInfoProtocol infoProtocol = GetProtocols.getInstance().getInfoProtocol();
             GeneralClientProtocol clientProtocol = GetProtocols.getInstance().getClientProtocol();
             //infoProtocol.
-            int i=0;
+            //int i=0;
             setChanged();
             notifyObservers(new LogFormat("开始测量"));
             infoProtocol.notifySystemState("正在测量");
@@ -421,7 +471,8 @@ public class ScanSensor extends Observable{
                 infoProtocol.notifySenorData(data);
                 clientProtocol.setRealTimeData(data);
                 infoProtocol.setAlarmMark(alarm);
-                if(i>29){//1min一条数据
+                calcSum(data);
+               /* if(i>29){//1min一条数据
                     i=0;
                     DbTask helper = new DbTask(context,1);
                     SQLiteDatabase db = helper.getReadableDatabase();
@@ -450,7 +501,7 @@ public class ScanSensor extends Observable{
                     helper.close();
                 }else{
                     i++;
-                }
+                }*/
 
                 if(notifyScanSensor!=null){
                     notifyScanSensor.onResult(data);
@@ -463,6 +514,25 @@ public class ScanSensor extends Observable{
                 notifyScanEnd.onComplete();
             }
         }
+    }
+
+    synchronized private void calcSum(SensorData data){
+        sumData[GeneralHistoryDataFormat.Dust] += data.getDust();
+        sumData[GeneralHistoryDataFormat.Noise] += data.getNoise();
+        sumData[GeneralHistoryDataFormat.Temperature] += data.getAirTemperature();
+        sumData[GeneralHistoryDataFormat.Humidity] += data.getAirHumidity();
+        sumData[GeneralHistoryDataFormat.Pressure] += data.getAirPressure();
+        sumData[GeneralHistoryDataFormat.WindForce] += data.getWindForce();
+        sumData[GeneralHistoryDataFormat.WindDirection] += data.getWindDirection();
+        scanTimes++;
+    }
+
+    synchronized private void calcMean(){
+        for(int i=0;i<7;i++){
+            minData[i] = (float) (sumData[i] / scanTimes);
+            sumData[i] = 0d;
+        }
+        scanTimes = 0;
     }
 
     public void inquireDustMeterInfo(NotifyOperateInfo info){
