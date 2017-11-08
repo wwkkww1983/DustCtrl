@@ -20,6 +20,7 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.grean.dustctrl.NoiseCalibrationListener;
 import com.grean.dustctrl.R;
 import com.grean.dustctrl.model.OperateDustMeter;
 import com.grean.dustctrl.model.OperateSystem;
@@ -31,20 +32,22 @@ import java.util.Calendar;
  * Created by Administrator on 2017/8/25.
  */
 
-public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View.OnClickListener , DialogTimeSelected, AdapterView.OnItemSelectedListener {
+public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View.OnClickListener , DialogTimeSelected, AdapterView.OnItemSelectedListener  , NoiseCalibrationListener{
     private static final int CancelDialog = 1;
     private static final int ShowDustMeterInfo = 2;
-    private static final int CancelDialogWithToast = 3;
+    private static final int CancelDialogWithToast = 3,showNoiseCalResult = 4;
 
     private ProcessDialogFragment dialogFragment;
-    private String dustMeterInfo,autoCalTime,toastString;
+    private String dustMeterInfo,autoCalTime,toastString,NoiseCalibrationInfo;
     private Button btnDustMeterManCal,btnDustMeterInquire,btnMotorSet,btnSaveAutoCal,btnSaveServer,btnUpdateSoftware,btnCalcParaK,btnSetAlarm
-            ,btnDustMeterManCalZero,btnMotorTestUp,btnMotorTestDown,btnUpdateSetting,btnSetParaK;
+            ,btnDustMeterManCalZero,btnMotorTestUp,btnMotorTestDown,btnUpdateSetting,btnSetParaK,btnNoiseCal;
     private TextView tvDustMeterInfo,tvNextAutoCalTime,tvLocalIp,tvSoftwareVersion;//tvParaK
     private EditText etMotorRounds,etMotorTime,etAutoCalInterval,etServerIp,etServerPort,etUpdateSoftwareUrl,etTargetValue,etMnCode,etAlarm,etSetParaK;
     private Switch swDustMeterRun,swValve,swFan,swExt1,swExt2,swBackup,swAutoCalibrationEnable;
     private Spinner spProtocol;
     private int clientProtocolName;
+
+
 
     private OperateDustMeter dustMeter;
     private OperateSystem system;
@@ -64,6 +67,9 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
                 case CancelDialogWithToast:
                     dialogFragment.dismiss();
                     Toast.makeText(getActivity(),toastString,Toast.LENGTH_SHORT).show();
+                    break;
+                case showNoiseCalResult:
+                    Toast.makeText(getActivity(),NoiseCalibrationInfo,Toast.LENGTH_LONG).show();
                     break;
                 default:
 
@@ -157,6 +163,8 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
         btnUpdateSetting = v.findViewById(R.id.btnOperateUpdateSetting);
         btnMotorTestDown = v.findViewById(R.id.btnOperateTestDown);
         btnMotorTestUp = v.findViewById(R.id.btnOperateTestUp);
+        btnNoiseCal = v.findViewById(R.id.btnOperateNoiseCal);
+        btnNoiseCal.setOnClickListener(this);
         btnMotorTestDown.setOnClickListener(this);
         btnMotorTestUp.setOnClickListener(this);
         btnDustMeterManCalZero.setOnClickListener(this);
@@ -308,6 +316,9 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
             case R.id.btnOperateSetParaK:
                 dustMeter.setParaK(etSetParaK.getText().toString());
                 break;
+            case R.id.btnOperateNoiseCal:
+                system.calNoise(this);
+                break;
             default:
                 break;
         }
@@ -335,5 +346,11 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
     @Override
     public void onNothingSelected(AdapterView<?> adapterView) {
 
+    }
+
+    @Override
+    public void onResult(String calInfo) {
+        NoiseCalibrationInfo = calInfo;
+        handler.sendEmptyMessage(showNoiseCalResult);
     }
 }

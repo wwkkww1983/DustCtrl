@@ -8,6 +8,8 @@ import android.os.Environment;
 import android.os.Process;
 import android.util.Log;
 import com.grean.dustctrl.CtrlCommunication;
+import com.grean.dustctrl.NoiseCalibrationListener;
+import com.grean.dustctrl.NoiseCommunication;
 import com.grean.dustctrl.SocketTask;
 import com.grean.dustctrl.myApplication;
 import com.grean.dustctrl.presenter.NotifyOperateInfo;
@@ -225,6 +227,11 @@ public class OperateSystem {
         }else{
             com.setMotorSetting(CtrlCommunication.MotorBackward);
         }
+    }
+
+    public void calNoise(NoiseCalibrationListener listener){
+        NoiseCommunication.getInstance().sendCalibrationCmd(listener);
+
     }
 
 }

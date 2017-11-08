@@ -179,11 +179,11 @@ public class TcpClient implements GeneralClientProtocol{
                 if(now > lastMinDate){//发送分钟数据
                     dataBaseCtrl.saveMinData(now);
                     /*Log.d(tag,"now"+tools.timestamp2string(now)+"last"+tools.timestamp2string(dataBaseProtocol.getLastMinDate())+"next"+tools.timestamp2string(dataBaseProtocol.getNextMinDate()));*/
-                    String string = insertOneFrame(getMinDataString(now,dataBaseProtocol.getLastMinDate(),dataBaseProtocol.getNextMinDate()));
+                   /* String string = insertOneFrame(getMinDataString(now,dataBaseProtocol.getLastMinDate(),dataBaseProtocol.getNextMinDate()));
                     Log.d(tag,"send min data="+string);
-                    addSendBuff(string);
+                    addSendBuff(string);*/
                     //dataBaseCtrl.saveMinData(now);
-                    //addSendBuff(insertOneFrame(getMinDataString(now,dataBaseProtocol.getLastMinDate(),dataBaseProtocol.getNextMinDate())));
+                    addSendBuff(insertOneFrame(getMinDataString(now,dataBaseProtocol.getLastMinDate(),dataBaseProtocol.getNextMinDate())));
                     lastMinDate = dataBaseProtocol.calcNextMinDate(now);
                 }
                 try {

@@ -105,6 +105,7 @@ public class SocketTask implements TcpClientCallBack{
     public boolean addOneFrame(byte[] data) {
         //Log.d(tag,"connected"+String.valueOf(connected));
         if (connected){
+            Log.d(tag,new String(data));
             sendBuff.add(data);
 
         }
@@ -141,7 +142,7 @@ public class SocketTask implements TcpClientCallBack{
                 connected = true;
                 Log.d(tag,"已连接服务器");
                 while (connected){
-                    if (socketClient.isConnected()){
+                    if (socketClient.isConnected()&&(!socketClient.isClosed())){
                         while ((count = receive.read(readBuff))!=-1 && connected){
                             clientProtocol.handleProtocol(readBuff,count);
                         }
@@ -264,12 +265,21 @@ public class SocketTask implements TcpClientCallBack{
                     try {
                         /*send.write(heartString.getBytes());
                         send.flush();*/
+
                         if(!sendBuff.isEmpty()){
+                            socketClient.sendUrgentData(0xFF);
+                           //Log.d(tag,"socket is"+String.valueOf(socketClient.isClosed()));
                             send.write(sendBuff.poll());
                             send.flush();
-                            //Log.d(tag,"success send");
+                            Log.d(tag,"success send rest buff size is"+String.valueOf(sendBuff.size()));
                         }
                     } catch (IOException e) {
+                        Log.d(tag,"发送失败");
+                        try {
+                            socketClient.close();
+                        } catch (IOException e1) {
+                            e1.printStackTrace();
+                        }
                         e.printStackTrace();
                     }
                 }else{

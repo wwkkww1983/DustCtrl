@@ -498,13 +498,28 @@
                     android:textSize="24sp" />
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/textView21"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="噪声仪"
-                android:textSize="30sp" />
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/textView21"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="噪声仪"
+                    android:textSize="30sp" />
+
+                <Button
+                    android:id="@+id/btnOperateNoiseCal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="手动校准"
+                    android:textSize="24sp" />
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/textView24"
