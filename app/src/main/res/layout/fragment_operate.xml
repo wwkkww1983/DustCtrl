@@ -256,7 +256,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="电机参数:圈数"
+                    android:text="电机参数:角度"
                     android:textSize="24sp" />
 
                 <EditText
@@ -266,15 +266,15 @@
                     android:layout_weight="1"
                     android:ems="10"
                     android:inputType="number"
-                    android:maxLength="2"
-                    android:text="2" />
+                    android:maxLength="3"
+                    android:text="100" />
 
                 <TextView
                     android:id="@+id/textView15"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="圈;时间:"
+                    android:text="步(1.8°);时间:"
                     android:textSize="24sp" />
 
                 <EditText
@@ -284,7 +284,7 @@
                     android:layout_weight="1"
                     android:ems="10"
                     android:inputType="numberDecimal"
-                    android:maxLength="5"
+                    android:maxLength="4"
                     android:text="20" />
 
                 <TextView
@@ -308,7 +308,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="正传测试"
+                    android:text="正转测试"
                     android:textSize="18sp" />
 
                 <Button

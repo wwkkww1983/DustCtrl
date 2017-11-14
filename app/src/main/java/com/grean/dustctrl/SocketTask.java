@@ -271,7 +271,7 @@ public class SocketTask implements TcpClientCallBack{
                            //Log.d(tag,"socket is"+String.valueOf(socketClient.isClosed()));
                             send.write(sendBuff.poll());
                             send.flush();
-                            Log.d(tag,"success send rest buff size is"+String.valueOf(sendBuff.size()));
+                            //Log.d(tag,"success send rest buff size is "+String.valueOf(sendBuff.size()));
                         }
                     } catch (IOException e) {
                         Log.d(tag,"发送失败");

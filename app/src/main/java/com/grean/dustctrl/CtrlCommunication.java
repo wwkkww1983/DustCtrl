@@ -83,11 +83,13 @@ public class CtrlCommunication extends SerialCommunication{
         cmdMotorRounds[5] = buff[1];
         tools.addCrc16(cmdMotorRounds,0,6);
         addSendBuff(cmdMotorRounds,Other);
+        Log.d(tag,"Send"+tools.bytesToHexString(cmdMotorRounds,cmdMotorRounds.length));
         buff = tools.int2byte(motorTime);
         cmdMotorTime[4] = buff[0];
         cmdMotorTime[5] = buff[1];
         tools.addCrc16(cmdMotorTime,0,6);
         addSendBuff(cmdMotorTime,Other);
+        Log.d(tag,"Send"+tools.bytesToHexString(cmdMotorTime,cmdMotorTime.length));
         switch (fun){
             case MotorStop:
                 cmdMotorState[5] = 0x00;
@@ -103,6 +105,7 @@ public class CtrlCommunication extends SerialCommunication{
         }
         tools.addCrc16(cmdMotorState,0,6);
         addSendBuff(cmdMotorState,Other);
+        Log.d(tag,"Send"+tools.bytesToHexString(cmdMotorState,cmdMotorState.length));
     }
 
     public static CtrlCommunication getInstance() {
