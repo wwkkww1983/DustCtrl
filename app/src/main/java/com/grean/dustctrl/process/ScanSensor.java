@@ -445,6 +445,7 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
             notifyObservers(new LogFormat("开始测量"));
             infoProtocol.notifySystemState("正在测量");
             clientProtocol.setRealTimeAlarm(GeneralClientProtocol.AlARM_N);
+            scanTimes = 0;
             while (run){
                 com.SendFrame(CtrlCommunication.Inquire);
                 com.SendFrame(CtrlCommunication.WindForce);
@@ -528,9 +529,11 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
     }
 
     synchronized private void calcMean(){
-        for(int i=0;i<7;i++){
-            minData[i] = (float) (sumData[i] / scanTimes);
-            sumData[i] = 0d;
+        if(scanTimes != 0) {
+            for (int i = 0; i < 7; i++) {
+                minData[i] = (float) (sumData[i] / scanTimes);
+                sumData[i] = 0d;
+            }
         }
         scanTimes = 0;
     }

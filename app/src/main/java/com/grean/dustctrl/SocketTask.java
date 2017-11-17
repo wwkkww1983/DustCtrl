@@ -105,7 +105,7 @@ public class SocketTask implements TcpClientCallBack{
     public boolean addOneFrame(byte[] data) {
         //Log.d(tag,"connected"+String.valueOf(connected));
         if (connected){
-            Log.d(tag,new String(data));
+            //Log.d(tag,new String(data));
             sendBuff.add(data);
 
         }
