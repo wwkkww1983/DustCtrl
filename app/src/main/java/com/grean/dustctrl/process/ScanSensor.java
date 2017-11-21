@@ -446,6 +446,14 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
             infoProtocol.notifySystemState("正在测量");
             clientProtocol.setRealTimeAlarm(GeneralClientProtocol.AlARM_N);
             scanTimes = 0;
+            for(int i=0;i<7;i++){
+                sumData[i] = 0;
+            }
+            try {
+                Thread.sleep(20000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             while (run){
                 com.SendFrame(CtrlCommunication.Inquire);
                 com.SendFrame(CtrlCommunication.WindForce);
