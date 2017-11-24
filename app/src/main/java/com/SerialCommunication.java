@@ -142,7 +142,7 @@ public abstract class SerialCommunication {
                         } finally {
                             lock.unlock();
                         }
-                        //Log.d(tag, "sizeof"+String.valueOf(recSize)+":"+tools.bytesToHexString(recBuff,recSize));
+                       // Log.d(tag, "sizeof"+String.valueOf(recSize)+":"+tools.bytesToHexString(recBuff,recSize));
                     }
                     else{
                         //Log.d(tag, "unchecked frame sizeof"+String.valueOf(recSize)+":"+tools.bytesToHexString(recBuff,recSize));
