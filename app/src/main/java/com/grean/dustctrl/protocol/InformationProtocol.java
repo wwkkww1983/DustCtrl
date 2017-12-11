@@ -13,6 +13,7 @@ import com.grean.dustctrl.DbTask;
 import com.grean.dustctrl.MainActivity;
 import com.grean.dustctrl.ReadWriteConfig;
 import com.grean.dustctrl.SocketTask;
+import com.grean.dustctrl.model.OperateDustMeter;
 import com.grean.dustctrl.myApplication;
 import com.grean.dustctrl.presenter.NotifyDataInfo;
 import com.grean.dustctrl.process.ScanSensor;
@@ -280,6 +281,16 @@ public class InformationProtocol implements GeneralInfoProtocol{
     @Override
     public int getClientProtocolName() {
         return GetProtocols.getInstance().getClientProtocolName();
+    }
+
+    @Override
+    public String[] getDustNames() {
+        return OperateDustMeter.DustNames;
+    }
+
+    @Override
+    public int getDustName() {
+        return config.getConfigInt("DustName");
     }
 
     @Override

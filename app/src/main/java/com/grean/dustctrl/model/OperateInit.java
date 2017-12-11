@@ -14,6 +14,7 @@ public class OperateInit {
     private long nextCalTime,interval;
     private boolean autoCalEnable;
     private Context context;
+    private String dustName = "TSP:";
 
     public String getAutoNextTime(){
         myApplication app = myApplication.getInstance();
@@ -29,9 +30,14 @@ public class OperateInit {
 
     }
 
+    public String getDustName(){
+        return dustName;
+    }
+
     public OperateInit (Context context){
         this.context = context;
-
+        int name = myApplication.getInstance().getConfigInt("DustName");
+        dustName = OperateDustMeter.DustNames[name]+":";
     }
 
     public void setAutoCalTime(){

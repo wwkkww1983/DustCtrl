@@ -170,6 +170,19 @@ public class JSON {
         return object.toString().getBytes();
     }
 
+    private static byte[] handleOperateInit(JSONObject jsonObject,GeneralInfoProtocol infoProtocol) throws JSONException {
+        JSONObject object = new JSONObject();
+        object.put("protocolType","operateInit");
+        String [] names = infoProtocol.getDustNames();
+        JSONArray array = new JSONArray();
+        for(int i=0;i<names.length;i++){
+            array.put(names[i]);
+        }
+        object.put("dustNames",array);
+        object.put("dustName",infoProtocol.getDustName());
+        return object.toString().getBytes();
+    }
+
     private static byte[] handleLog(JSONObject jsonObject,GeneralInfoProtocol infoProtocol) throws JSONException {
         JSONObject object = new JSONObject();
         object.put("protocolType","log");
@@ -228,6 +241,8 @@ public class JSON {
             return handleHistoryData(jsonObject,infoProtocol);
         }else if(jsonObject.getString("protocolType").equals("log")){
             return handleLog(jsonObject,infoProtocol);
+        }else if(jsonObject.getString("protocolType").equals("operateInit")){
+            return handleOperateInit(jsonObject,infoProtocol);
         }else {
             JSONObject object = new JSONObject();
             object.put("protocolType","error");

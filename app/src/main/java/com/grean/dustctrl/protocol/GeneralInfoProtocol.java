@@ -98,6 +98,18 @@ public interface GeneralInfoProtocol {
      */
     int getClientProtocolName();
 
+    /**
+     * 获取当前扬尘参数名称字符串数组
+     * @return
+     */
+    String[] getDustNames();
+
+    /**
+     * 获取当前扬尘参数名字
+     * @return
+     */
+    int getDustName();
+
     float getAlarmDust();
 
     void setAlarmDust(float alarm);

@@ -44,7 +44,7 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
     private TextView tvDustMeterInfo,tvNextAutoCalTime,tvLocalIp,tvSoftwareVersion;//tvParaK
     private EditText etMotorRounds,etMotorTime,etAutoCalInterval,etServerIp,etServerPort,etUpdateSoftwareUrl,etTargetValue,etMnCode,etAlarm,etSetParaK;
     private Switch swDustMeterRun,swValve,swFan,swExt1,swExt2,swBackup,swAutoCalibrationEnable;
-    private Spinner spProtocol;
+    private Spinner spProtocol,spDustName;
     private int clientProtocolName;
 
 
@@ -118,6 +118,12 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
         spProtocol.setAdapter(clientProtocolNames);
         clientProtocolName = system.getClientName();
         spProtocol.setSelection(clientProtocolName);
+
+        ArrayAdapter<String>dustNames = new ArrayAdapter<String>(getActivity(),R.layout.my_spnner,dustMeter.DustNames);
+        spDustName.setOnItemSelectedListener(this);
+        spDustName.setAdapter(dustNames);
+        spDustName.setSelection(dustMeter.getDustName());
+
         etAlarm.setText(system.getAlarmDust());
         swValve.setChecked(dustMeter.getCtrlDo(0));
         swFan.setChecked(dustMeter.getCtrlDo(1));
@@ -127,6 +133,7 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
     }
 
     private void initView(View v){
+        spDustName = v.findViewById(R.id.spOperateDust);
         btnDustMeterInquire = v.findViewById(R.id.btnOperateInquireDuster);
         btnDustMeterManCal = v.findViewById(R.id.btnOperateManCal);
         tvDustMeterInfo = v.findViewById(R.id.tvOperateDusterInfo);
@@ -336,6 +343,14 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
         switch (adapterView.getId()){
             case R.id.spOperateProtocol:
                 clientProtocolName = i;
+                break;
+            case R.id.spOperateDust:
+                dustMeter.setDustName(i);
+                Toast.makeText(getActivity(),"当前扬尘参数为 "+dustMeter.DustNames[i],Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent();
+                intent.setAction("changeDustName");
+                intent.putExtra("name",dustMeter.DustNames[i]);
+                getActivity().sendBroadcast(intent);
                 break;
             default:
 

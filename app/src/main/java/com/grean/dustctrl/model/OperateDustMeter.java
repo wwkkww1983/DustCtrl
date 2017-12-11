@@ -18,10 +18,14 @@ public class OperateDustMeter implements NotifyScanEnd{
     private boolean dustMeterRun;
     private NotifyOperateInfo info;
     private NotifyProcessDialogInfo dialogInfo;
+    public static final String[] DustNames = {"TSP","PM10","PM2.5"};
+    public static final int TSP=0,PM10=1,PM2_5=2;
+    private int dustName;
 
     public OperateDustMeter(NotifyOperateInfo info){
         dustMeterRun = com.isDustMeterRun();
         this.info = info;
+        dustName = myApplication.getInstance().getConfigInt("DustName");
     }
 
     public boolean isDustMeterRun() {
@@ -82,6 +86,17 @@ public class OperateDustMeter implements NotifyScanEnd{
         float k = Float.valueOf(paraK);
         com.getData().setParaK(k);
         myApplication.getInstance().saveConfig("DustParaK",k);
+    }
+
+    public int getDustName(){
+        return dustName;
+    }
+
+    public void setDustName(int name){
+        if(name <DustNames.length){
+            dustName = name;
+            myApplication.getInstance().saveConfig("DustName",name);
+        }
     }
 
     public String getParaKString(){

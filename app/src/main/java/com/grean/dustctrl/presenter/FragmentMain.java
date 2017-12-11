@@ -27,7 +27,7 @@ import com.tools;
  */
 
 public class FragmentMain extends Fragment implements NotifyScanSensor{
-    private TextView tvDust;
+    private TextView tvDust,tvDustName;
     private TextView tvTemperature;
     private TextView tvHumidity;
     private TextView tvPressure;
@@ -40,10 +40,11 @@ public class FragmentMain extends Fragment implements NotifyScanSensor{
     private OperateInit operateInit;
     private boolean alarm = false;
 
-    private String nextCalString;
-    private static final int msgUpdateSensor = 1;
-    private static final int msgUpdateNextCal =2;
-    private static final int msgUpdateAlarm=3;
+    private String nextCalString,dustName;
+    private static final int msgUpdateSensor = 1,
+            msgUpdateNextCal =2,
+            msgUpdateAlarm=3,
+            msgChangeDustName = 4;
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -51,7 +52,12 @@ public class FragmentMain extends Fragment implements NotifyScanSensor{
             if(intent.getAction().equals("autoCalNextString")){
                 nextCalString = intent.getStringExtra("content");
                 handler.sendEmptyMessage(msgUpdateNextCal);
+            }else if(intent.getAction().equals("changeDustName")){
+                dustName = intent.getStringExtra("name")+":";
+                handler.sendEmptyMessage(msgChangeDustName);
             }
+
+
 
         }
     };
@@ -98,7 +104,9 @@ public class FragmentMain extends Fragment implements NotifyScanSensor{
                         tvAlarm.setText("报警:无");
                     }
                     break;
-
+                case msgChangeDustName:
+                    tvDustName.setText(dustName);
+                    break;
                 default:
 
                     break;
@@ -113,17 +121,19 @@ public class FragmentMain extends Fragment implements NotifyScanSensor{
         initView(messageLayout);
         ScanSensor.getInstance().setNotifyScanSensor(this);
 
-
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction("autoCalNextString");
+        intentFilter.addAction("changeDustName");
         getActivity().registerReceiver(broadcastReceiver,intentFilter);
         operateInit = new OperateInit(getActivity());
+        tvDustName.setText(operateInit.getDustName());
         tvNextCal.setText(operateInit.getAutoNextTime());
         operateInit.setAutoCalTime();
         return messageLayout;
     }
 
     void initView(View v){
+        tvDustName = v.findViewById(R.id.tvMainDustName);
         tvDust = v.findViewById(R.id.tvMainDust);
         tvTemperature = v.findViewById(R.id.tvMainTemperature);
         tvHumidity = v.findViewById(R.id.tvMainHumidity);
