@@ -248,6 +248,12 @@ public class CtrlCommunication extends SerialCommunication{
                     float floatData = ((float)intDate)/10.0f;
                     data.setAirPressure(floatData);
                     intDate = tools.byte2int(rec,5);
+                    //intDate = 0x8001;
+                    //处理负数
+                    if(intDate >= 32768){
+                        intDate -= 32768;
+                        intDate *= -1;
+                    }
                     floatData = ((float)intDate)/10.0f;
                     data.setAirTemperature(floatData);
                     intDate = tools.byte2int(rec,7);
