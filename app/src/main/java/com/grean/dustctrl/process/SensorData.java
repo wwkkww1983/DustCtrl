@@ -70,7 +70,7 @@ public class SensorData {
     }
 
     public void setHiTemp(float hiTemp) {
-        this.hiTemp = hiTemp;
+        this.hiTemp = airTemperature;
     }
 
     public float getLoTemp() {
@@ -86,7 +86,7 @@ public class SensorData {
     }
 
     public void setHiHumidity(float hiHumidity) {
-        this.hiHumidity = hiHumidity;
+        this.hiHumidity = airHumidity;
     }
 
     public float getLoHumidity() {
@@ -206,9 +206,9 @@ public class SensorData {
 
     public float calcHiDewPoint(){
         if(hiTemp >= 0f){
-            hiDewPoint = (float) (243.12f*(Math.log(hiHumidity/100)+17.62f*hiTemp/(243.12+hiTemp))/(17.62 - Math.log(hiHumidity/100)-17.62*hiTemp/(243.12+hiTemp)));
+            hiDewPoint = (float) (243.12f*(Math.log(airHumidity/100)+17.62f*airTemperature/(243.12+airTemperature))/(17.62 - Math.log(airHumidity/100)-17.62*airTemperature/(243.12+airTemperature)));
         }else{
-            hiDewPoint = (float) (272.62f*(Math.log(hiHumidity/100)+22.46f*hiTemp/(272.62+hiTemp))/(22.46 - Math.log(hiHumidity/100)-22.46*hiTemp/(272.62+hiTemp)));
+            hiDewPoint = (float) (272.62f*(Math.log(airHumidity/100)+22.46f*airTemperature/(272.62+airTemperature))/(22.46 - Math.log(airHumidity/100)-22.46*airTemperature/(272.62+airTemperature)));
         }
         return hiDewPoint;
     }

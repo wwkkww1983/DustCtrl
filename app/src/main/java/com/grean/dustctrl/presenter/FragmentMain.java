@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +28,7 @@ import com.tools;
  */
 
 public class FragmentMain extends Fragment implements NotifyScanSensor{
+    private static final String tag = "FragmentMain";
     private TextView tvDust,tvDustName;
     private TextView tvTemperature;
     private TextView tvHumidity;
@@ -114,6 +116,16 @@ public class FragmentMain extends Fragment implements NotifyScanSensor{
         }
     };
 
+    /*private BroadcastReceiver mBatInfoReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(intent.getAction().equals(Intent.ACTION_BATTERY_CHANGED)){
+                Log.d(tag,"temperature = "+String.valueOf(intent.getIntExtra("temperature",0)));
+
+            }
+        }
+    };*/
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
@@ -129,6 +141,9 @@ public class FragmentMain extends Fragment implements NotifyScanSensor{
         tvDustName.setText(operateInit.getDustName());
         tvNextCal.setText(operateInit.getAutoNextTime());
         operateInit.setAutoCalTime();
+
+        //getActivity().registerReceiver(mBatInfoReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+
         return messageLayout;
     }
 
