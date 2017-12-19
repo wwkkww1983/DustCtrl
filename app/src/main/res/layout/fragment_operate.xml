@@ -230,7 +230,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:ems="10"
-                    android:inputType="number"
+                    android:inputType="numberDecimal"
                     android:text="24" />
 
                 <TextView
@@ -238,7 +238,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="H"
+                    android:text="min"
                     android:textSize="24sp" />
 
                 <Button
@@ -461,7 +461,7 @@
                     android:layout_weight="1"
                     android:ems="10"
                     android:inputType="textPersonName"
-                    android:text="http://192.168.168.134:8080/app-debug.apk"
+                    android:text="http://117.149.30.221:12599/DustCtrl.apk"
                     android:textSize="24sp" />
 
                 <Button

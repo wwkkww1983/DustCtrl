@@ -181,12 +181,14 @@ public class OperateSystem {
     public String getAutoCalInterval(){
         String string;
         interval = myApplication.getInstance().getConfigLong("AutoCalInterval");
-        string = String.valueOf(interval / 3600000l);
+        //string = String.valueOf(interval / 3600000l);
+        string = String.valueOf(interval / 60000l);
         return  string;
     }
 
     public void setAutoCalInterval(String string){
-        long l = Integer.valueOf(string)*3600000l;
+        //long l = Integer.valueOf(string)*3600000l;
+        long l = Integer.valueOf(string)*60000l;
         interval = l;
         myApplication.getInstance().saveConfig("AutoCalInterval",l);
     }
