@@ -236,4 +236,8 @@ public class OperateSystem {
 
     }
 
+    public void resetComFlag(){
+        com.resetComFlag();
+    }
+
 }

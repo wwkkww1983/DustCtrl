@@ -40,7 +40,7 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
     private ProcessDialogFragment dialogFragment;
     private String dustMeterInfo,autoCalTime,toastString,NoiseCalibrationInfo;
     private Button btnDustMeterManCal,btnDustMeterInquire,btnMotorSet,btnSaveAutoCal,btnSaveServer,btnUpdateSoftware,btnCalcParaK,btnSetAlarm
-            ,btnDustMeterManCalZero,btnMotorTestUp,btnMotorTestDown,btnUpdateSetting,btnSetParaK,btnNoiseCal;
+            ,btnDustMeterManCalZero,btnMotorTestUp,btnMotorTestDown,btnUpdateSetting,btnSetParaK,btnNoiseCal,btnResetResetCom;
     private TextView tvDustMeterInfo,tvNextAutoCalTime,tvLocalIp,tvSoftwareVersion;//tvParaK
     private EditText etMotorRounds,etMotorTime,etAutoCalInterval,etServerIp,etServerPort,etUpdateSoftwareUrl,etTargetValue,etMnCode,etAlarm,etSetParaK;
     private Switch swDustMeterRun,swValve,swFan,swExt1,swExt2,swBackup,swAutoCalibrationEnable;
@@ -171,6 +171,8 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
         btnMotorTestDown = v.findViewById(R.id.btnOperateTestDown);
         btnMotorTestUp = v.findViewById(R.id.btnOperateTestUp);
         btnNoiseCal = v.findViewById(R.id.btnOperateNoiseCal);
+        btnResetResetCom = v.findViewById(R.id.btnOperateResetCom);
+        btnResetResetCom.setOnClickListener(this);
         btnNoiseCal.setOnClickListener(this);
         btnMotorTestDown.setOnClickListener(this);
         btnMotorTestUp.setOnClickListener(this);
@@ -325,6 +327,9 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
                 break;
             case R.id.btnOperateNoiseCal:
                 system.calNoise(this);
+                break;
+            case R.id.btnOperateResetCom:
+                system.resetComFlag();
                 break;
             default:
                 break;

@@ -360,7 +360,7 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
             }
             com.setMotorSetting(CtrlCommunication.MotorBackward);//撤回转遮光板
             try {
-                Thread.sleep(10000);
+                Thread.sleep(20000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

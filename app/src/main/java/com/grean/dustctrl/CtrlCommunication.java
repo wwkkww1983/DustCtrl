@@ -373,6 +373,10 @@ public class CtrlCommunication extends SerialCommunication{
         return true;
     }
 
+    public void resetComFlag(){
+        super.flag = false;
+    }
+
     private boolean checkFrameWithAddr(byte []buff,int size,byte addr){
         if (buff[0]!=addr){
             return false;
