@@ -62,12 +62,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Intent mainFragmentIntent = new Intent();
                 mainFragmentIntent.setAction("autoCalNextString");
                 if (intent.getBooleanExtra("enable",true)){
+                    myApplication.getInstance().saveConfig("AutoCalibrationEnable",true);
                     cancelAutoCalibrationTimer();
                     autoCalibrationTimer = new Timer();
                     Date when = new Date(intent.getLongExtra("date",0l));
                     mainFragmentIntent.putExtra("content",tools.timestamp2string(intent.getLongExtra("date",0l)));
                     autoCalibrationTimer.schedule(new AutoCalibrationTimerTask(),when);
                 }else {
+                    myApplication.getInstance().saveConfig("AutoCalibrationEnable",false);
                     cancelAutoCalibrationTimer();
                     mainFragmentIntent.putExtra("content","-");
                 }
@@ -86,14 +88,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         long next = tools.calcNextTime(now,plan,interval);
         myApplication.getInstance().saveConfig("AutoCalTime",next);
         cancelAutoCalibrationTimer();
-        autoCalibrationTimer = new Timer();
-        Date when = new Date(next);
-        autoCalibrationTimer.schedule(new AutoCalibrationTimerTask(),when);
-        Intent intent = new Intent();
-        intent.setAction("autoCalNextString");
-        intent.putExtra("content",tools.timestamp2string(next));
-        sendBroadcast(intent);
-        Log.d(tag,"计算下次测量时间"+tools.timestamp2string(next));
+        if(myApplication.getInstance().getConfigBoolean("AutoCalibrationEnable")) {
+            autoCalibrationTimer = new Timer();
+            Date when = new Date(next);
+            autoCalibrationTimer.schedule(new AutoCalibrationTimerTask(), when);
+            Intent intent = new Intent();
+            intent.setAction("autoCalNextString");
+            intent.putExtra("content", tools.timestamp2string(next));
+            sendBroadcast(intent);
+            Log.d(tag, "计算下次测量时间" + tools.timestamp2string(next));
+        }
     }
 
     @Override
