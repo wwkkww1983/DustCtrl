@@ -280,6 +280,7 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+            infoProtocol.setDustCalMeterProcess(45);
             com.SendFrame(CtrlCommunication.DustMeterBgResult);
             try {
                 Thread.sleep(10000);
@@ -289,18 +290,22 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
             DustMeterInfo dustMeterInfo = com.getInfo();
 
             setChanged();
+            String zeroResultString;
             if (dustMeterInfo.isBgOk()){
                 notifyObservers(new LogFormat("校零成功"));
                 sendMainFragmentString("校零成功");
+                zeroResultString = "校零成功";
                 infoProtocol.notifySystemState("校零成功");
             }else{
                 notifyObservers(new LogFormat("校零失败"));
                 sendMainFragmentString("校零失败");
-                infoProtocol.notifySystemState("校零失败");
+                zeroResultString = "校零失败";
             }
+            infoProtocol.notifySystemState(zeroResultString);
             infoProtocol.setDustCalMeterProcess(50);
 
             com.SendFrame(CtrlCommunication.DustMeterBgEnd);
+
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
@@ -312,18 +317,23 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
                 dialogInfo.showInfo("量程校准...");
             }
             sendMainFragmentString("正在校跨");
+            int motorTime = com.getMotorTime();
+            if(motorTime <= 0){
+                motorTime = 1800;
+            }
             try {
-                Thread.sleep(20000);
+                Thread.sleep((motorTime+200)*10);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            infoProtocol.notifySystemState("正在校跨");
+            infoProtocol.notifySystemState(zeroResultString+",正在校跨");
             com.SendFrame(CtrlCommunication.DustMeterSpanStart);
             try {
                 Thread.sleep(80000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+            infoProtocol.setDustCalMeterProcess(85);
             com.SendFrame(CtrlCommunication.DustMeterSpanResult);
             try {
                 Thread.sleep(1000);
@@ -331,15 +341,17 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
                 e.printStackTrace();
             }
             setChanged();
+            String spanResultString;
             if (dustMeterInfo.isSpanOk()){
                 notifyObservers(new LogFormat("校跨成功"));
                 sendMainFragmentString("校跨成功");
-                infoProtocol.notifySystemState("校跨成功");
+                spanResultString = "校跨成功";
             }else{
                 notifyObservers(new LogFormat("校跨失败"));
                 sendMainFragmentString("校跨失败");
-                infoProtocol.notifySystemState("校跨失败");
+                spanResultString = "校跨失败";
             }
+            infoProtocol.notifySystemState(zeroResultString+","+spanResultString);
             infoProtocol.setDustMeterResult(dustMeterInfo.isBgOk(),dustMeterInfo.isSpanOk());
             infoProtocol.setDustCalMeterProcess(90);
             com.SendFrame(CtrlCommunication.DustMeterSpanEnd);
@@ -349,7 +361,7 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
                 e.printStackTrace();
             }
             if(dialogInfo!=null) {
-                dialogInfo.showInfo("结束校准...");
+                dialogInfo.showInfo(zeroResultString+","+spanResultString+",结束校准...");
             }
            // sendMainFragmentString("结束校准");
             com.ctrlDo(1,false);
@@ -360,7 +372,7 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
             }
             com.setMotorSetting(CtrlCommunication.MotorBackward);//撤回转遮光板
             try {
-                Thread.sleep(20000);
+                Thread.sleep((motorTime + 200)*10);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
