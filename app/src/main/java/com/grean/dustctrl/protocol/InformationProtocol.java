@@ -361,6 +361,7 @@ public class InformationProtocol implements GeneralInfoProtocol{
                 e.printStackTrace();
             }
             exportDataProcess = 100;
+            Log.d(tag,"导出完成");
         }
 
         @Override

@@ -330,9 +330,11 @@ public class CtrlCommunication extends SerialCommunication{
                 addSendBuff(cmdDustMeterBgEnd,cmd);
                 break;
             case DustMeterBgResult:
+                info.setBgOk(false);
                 addSendBuff(cmdDustMeterBgResult,cmd);
                 break;
             case DustMeterSpanStart:
+                info.setSpanOk(false);
                 addSendBuff(cmdDustMeterSpanStart,cmd);
                 break;
             case DustMeterSpanEnd:

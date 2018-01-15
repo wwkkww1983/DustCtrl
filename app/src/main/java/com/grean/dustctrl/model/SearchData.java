@@ -23,6 +23,7 @@ import java.util.ArrayList;
  */
 
 public class SearchData {
+    private static final String tag = "SearchData";
     private static final String[] name ={"时间","扬尘 mg/Lm/m³","温度 ℃","湿度 %","大气压 hPa","风速 m/s","风向 °","噪声 d"};
     private InsertString insert;
     private Context context;
@@ -129,6 +130,7 @@ public class SearchData {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+            Log.d(tag,"导出完成");
             dataInfo.exportDataResult(success);
 
         }

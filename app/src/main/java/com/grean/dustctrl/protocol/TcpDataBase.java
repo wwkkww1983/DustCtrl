@@ -11,9 +11,18 @@ import com.tools;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
+
+import jxl.Workbook;
+import jxl.write.Label;
+import jxl.write.WritableSheet;
+import jxl.write.WritableWorkbook;
+import jxl.write.WriteException;
+import jxl.write.biff.RowsExceededException;
 
 /**
  * Created by weifeng on 2017/9/21.
@@ -26,6 +35,36 @@ public class TcpDataBase implements GeneralDataBaseProtocol{
 
     public TcpDataBase (Context context){
         this.context = context;
+    }
+
+    private ArrayList<HistoryDataFormat> exportDataFormat(long start,long end){
+        ArrayList<HistoryDataFormat> list = new ArrayList<>();
+        String statement;
+        if (start > end){
+            statement = "date <"+ String.valueOf(start)+" and date >="+String.valueOf(end);
+        }else{
+            statement = "date >="+ String.valueOf(start)+" and date <"+String.valueOf(end);
+        }
+        DbTask helperDbTask = new DbTask(context,1);
+        SQLiteDatabase db = helperDbTask.getReadableDatabase();
+        Cursor cursor;
+        cursor = db.rawQuery("SELECT * FROM result WHERE "+statement+" ORDER BY date desc",new String[]{});
+        HistoryDataFormat format;
+        long date;
+        float[] data = new float[7];
+        while (cursor.moveToNext()){
+            date = cursor.getLong(0);
+            data[0] = cursor.getFloat(1);
+            for(int i = 1;i<7;i++){
+                data[i] = cursor.getFloat(i+2);
+            }
+            format = new HistoryDataFormat(date,data);
+            list.add(format);
+        }
+        db.close();
+        helperDbTask.close();
+        return list;
+
     }
 
     private ArrayList<String> exportDataBase(long start, long end){
@@ -58,11 +97,115 @@ public class TcpDataBase implements GeneralDataBaseProtocol{
     }
 
 
+    private void addTitle(WritableSheet sheet) throws WriteException {
+        Label label;
+        label = new Label(0,0,"时间");
+        sheet.addCell(label);
+        label = new Label(1,0,"扬尘 mg/m³");
+        sheet.addCell(label);
+        label = new Label(2,0,"温度 ℃");
+        sheet.addCell(label);
+        label = new Label(3,0,"湿度 %");
+        sheet.addCell(label);
+        label = new Label(4,0,"气压 hPa");
+        sheet.addCell(label);
+        label = new Label(5,0,"风速 m/s");
+        sheet.addCell(label);
+        label = new Label(6,0,"风向 °");
+        sheet.addCell(label);
+        label = new Label(7,0,"噪声 dB");
+        sheet.addCell(label);
+    }
+
+    private void addOneSheet(WritableSheet sheet,ArrayList<HistoryDataFormat> list,int index,int max) throws WriteException {
+        HistoryDataFormat format;
+        int row=1;
+        float [] data;
+        String date;
+        for(int i=index;i<max;i++){
+            format = list.get(i);
+            date = format.getDate();
+            data = format.getData();
+            Label label;
+            label = new Label(0,row,date);
+            sheet.addCell(label);
+            for(int j=0;j<7;j++){
+                label = new Label(j+1,row,tools.float2String3(data[j]));
+                sheet.addCell(label);
+            }
+            row++;
+        }
+    }
+
     @Override
     public boolean exportData2File(long start, long  end,ExportDataProcessListener listener) {
         boolean exportDataResult=true;
         String pathName = "/mnt/usbhost/Storage01/GREAN/"; // /storage/sdcard0/GREAN/
-        String fileName = "数据"+tools.nowTime2FileString()+"导出.txt";
+        String fileName = "数据"+tools.nowTime2FileString()+"Excel导出.xls";
+        File path = new File(pathName);
+        File file = new File(path,fileName);
+
+        try{
+            if (!path.exists()) {
+                Log.d("TestFile", "Create the path:" + pathName);
+                path.mkdir();
+            }
+            if (!file.exists()) {
+                Log.d("TestFile", "Create the file:" + fileName);
+                file.createNewFile();
+            }
+            if(listener!=null) {
+                listener.setProcess(10);
+            }
+            WritableWorkbook wwb;
+            OutputStream os = new FileOutputStream(file);
+            wwb = Workbook.createWorkbook(os);
+
+            ArrayList<HistoryDataFormat> list = exportDataFormat(start,end);
+            WritableSheet sheet;
+            //每个sheet最多65534行
+            int elementMax = list.size();
+            if(elementMax > 0) {
+                int sheetMax = elementMax / 65534;
+                sheetMax += 1;
+                int index = 0;
+                for(int i=0;i<sheetMax;i++){
+                    sheet = wwb.createSheet("Sheet"+String.valueOf(i+1),i);
+                    addTitle(sheet);
+                    if((elementMax-index)>= 65534){
+                        addOneSheet(sheet,list,index,index+65534);
+                        index += 65534;
+                    }else{
+                        addOneSheet(sheet,list,index,elementMax);
+                        break;
+                    }
+                }
+            }else{
+                sheet = wwb.createSheet("Sheet1",0);
+                addTitle(sheet);
+            }
+
+            wwb.write();
+            os.flush();
+            wwb.close();
+            //需要关闭输出流，结束占用，否则系统会 结束 app
+            os.close();
+            if(listener!=null) {
+                listener.setProcess(80);
+            }
+        }catch (IOException e) {
+            e.printStackTrace();
+            exportDataResult = false;
+        } catch (RowsExceededException e) {
+            e.printStackTrace();
+            exportDataResult = false;
+        } catch (WriteException e) {
+            e.printStackTrace();
+            exportDataResult = false;
+        }
+        return exportDataResult;
+
+        /*String fileName = "数据"+tools.nowTime2FileString()+"导出.txt";
         File path = new File(pathName);
         File file = new File(pathName + fileName);
         try {
@@ -94,7 +237,7 @@ public class TcpDataBase implements GeneralDataBaseProtocol{
             e.printStackTrace();
             exportDataResult = false;
         }
-        return exportDataResult;
+        return exportDataResult;*/
     }
 
     @Override
