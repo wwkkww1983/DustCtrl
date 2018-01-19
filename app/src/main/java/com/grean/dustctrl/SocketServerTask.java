@@ -34,19 +34,30 @@ public class SocketServerTask {
         return instance;
     }
 
-    public void startSocketServer(GeneralServerProtocol serverProtocol){
+    public void startSocketServer(GeneralServerProtocol serverProtocol,int port){
         this.serverProtocol = serverProtocol;
-        acceptThread = new AcceptThread();
+        acceptThread = new AcceptThread(port);
         acceptThread.start();
     }
 
+    public void stopServer(){
+        stop = true;
+        serverRun = false;
+    }
+
     private class AcceptThread extends Thread{
+
+        int port;
+
+        public AcceptThread(int port){
+            this.port = port;
+        }
         @Override
         public void run() {
             serverRun = true;
 
                 try {
-                    serverSocket = new ServerSocket(8888);
+                    serverSocket = new ServerSocket(port);
 
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -57,9 +68,14 @@ public class SocketServerTask {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                receiveThread = new ReceiveThread(clientSocket);
-                stop = false;
-                receiveThread.start();
+                if(clientSocket.isConnected()) {
+                    Log.d(tag,"开启接收线程");
+                    receiveThread = new ReceiveThread(clientSocket);
+                    stop = false;
+                    receiveThread.start();
+                }else{
+                    Log.d(tag,"未连接");
+                }
                 try {
                     Thread.sleep(20000);
                 } catch (InterruptedException e) {

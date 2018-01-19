@@ -141,17 +141,17 @@ public class TcpDataBase implements GeneralDataBaseProtocol{
     public boolean exportData2File(long start, long  end,ExportDataProcessListener listener) {
         boolean exportDataResult=true;
         String pathName = "/mnt/usbhost/Storage01/GREAN/"; // /storage/sdcard0/GREAN/
-        String fileName = "数据"+tools.nowTime2FileString()+"Excel导出.xls";
+        String fileName = "数据"+tools.nowTime2FileString()+"导出.xls";
         File path = new File(pathName);
         File file = new File(path,fileName);
 
         try{
             if (!path.exists()) {
-                Log.d("TestFile", "Create the path:" + pathName);
+                //Log.d("TestFile", "Create the path:" + pathName);
                 path.mkdir();
             }
             if (!file.exists()) {
-                Log.d("TestFile", "Create the file:" + fileName);
+                //Log.d("TestFile", "Create the file:" + fileName);
                 file.createNewFile();
             }
             if(listener!=null) {
