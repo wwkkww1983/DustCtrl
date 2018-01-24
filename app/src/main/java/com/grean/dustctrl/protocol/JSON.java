@@ -199,7 +199,12 @@ public class JSON {
     private static byte[] handleHistoryData(JSONObject jsonObject,GeneralInfoProtocol infoProtocol) throws JSONException {
         JSONObject object = new JSONObject();
         object.put("protocolType","historyData");
-        GeneralHistoryDataFormat format = infoProtocol.getHistoryData(jsonObject.getLong("Date"));
+        GeneralHistoryDataFormat format;
+        if(jsonObject.has("Date")) {
+            format = infoProtocol.getHistoryData(jsonObject.getLong("Date"));
+        }else{
+            format = infoProtocol.getHistoryData(jsonObject.getLong("startDate"),jsonObject.getLong("endDate"));
+        }
         int size = format.getSize();
         object.put("DateSize",size);
         JSONArray array = new JSONArray();

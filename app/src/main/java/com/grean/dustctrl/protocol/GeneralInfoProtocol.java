@@ -70,6 +70,7 @@ public interface GeneralInfoProtocol {
     int getDustMeterCalProcess();
 
     GeneralHistoryDataFormat getHistoryData(long endDate);
+    GeneralHistoryDataFormat getHistoryData(long startDate,long endDate);
 
     ArrayList<String> getLog(long dateStart);
 

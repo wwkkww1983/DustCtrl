@@ -211,6 +211,11 @@ public class InformationProtocol implements GeneralInfoProtocol{
     }
 
     @Override
+    public GeneralHistoryDataFormat getHistoryData(long startDate, long endDate) {
+        return GetProtocols.getInstance().getDataBaseProtocol().getData(startDate,endDate);
+    }
+
+    @Override
     public ArrayList<String> getLog(long endDate) {
         return GetProtocols.getInstance().getDataBaseProtocol().getDayLog(endDate);
     }
