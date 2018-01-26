@@ -94,6 +94,8 @@ public class JSON {
         object.put("serverPort",infoProtocol.getServerPort());
         object.put("mnCode",infoProtocol.getMnCode());
         object.put("dustParaK",infoProtocol.getParaK());
+        object.put("motorTime",infoProtocol.getMotorTime());
+        object.put("motorStep",infoProtocol.getMotorStep());
         String [] names = infoProtocol.getClientProtocolNames();
         JSONArray array = new JSONArray();
         for(int i=0;i<names.length;i++){
@@ -144,6 +146,28 @@ public class JSON {
             object.put("ExportDataProcess",true);
             object.put("process",infoProtocol.getExportDataProcess());
             object.put("result",infoProtocol.getExportDataResult());
+        }else if(jsonObject.has("DustMeterRun")){
+            object.put("DustMeterRun",true);
+            infoProtocol.setDustMeterRun(jsonObject.getBoolean("DustMeterRun"));
+        }else if(jsonObject.has("RelayCtrl")){
+            object.put("RelayCtrl",true);
+            infoProtocol.setRelay(jsonObject.getInt("num"),jsonObject.getBoolean("key"));
+        }else if(jsonObject.has("MotorSet")){
+            object.put("MotorSet",true);
+            infoProtocol.setMotorTime(jsonObject.getInt("motorTime"));
+            infoProtocol.setMotorStep(jsonObject.getInt("motorStep"));
+        }else if(jsonObject.has("MotorForwardTest")){
+            object.put("MotorForwardTest",true);
+            infoProtocol.ForwardTest();
+        }else if(jsonObject.has("MotorBackwardTest")){
+            object.put("MotorBackwardTest",true);
+            infoProtocol.ForwardStep();
+        }else if(jsonObject.has("MotorForwardStep")){
+            object.put("MotorForwardStep",true);
+            infoProtocol.BackwardTest();
+        }else if(jsonObject.has("MotorBackwardStep")){
+            object.put("MotorBackwardStep",true);
+            infoProtocol.BackwardStep();
         }else{
             object.put("ErrorCommand",true);
         }
@@ -157,6 +181,16 @@ public class JSON {
         object.put("state",infoProtocol.getSystemState());
         object.put("alarm",infoProtocol.getAlarmMark());
         object.put("serverConnected",infoProtocol.isServerConnected());
+        object.put("acOk",data.isAcIn());
+        object.put("batteryLow",data.isBatteryLow());
+        object.put("heatPwm",data.getHeatPwm());
+        object.put("relay1",data.getCtrlDo(0));
+        object.put("relay2",data.getCtrlDo(1));
+        object.put("relay3",data.getCtrlDo(2));
+        object.put("relay4",data.getCtrlDo(3));
+        object.put("relay5",data.getCtrlDo(4));
+        object.put("dustMeterRun",infoProtocol.isDustMeterRun());
+
         JSONArray array = new JSONArray();
         array.put(putItem("dust",data.getDust()));
         array.put(putItem("temperature",data.getAirTemperature()));
@@ -165,6 +199,11 @@ public class JSON {
         array.put(putItem("windForce",data.getWindForce()));
         array.put(putItem("windDirection",data.getWindDirection()));
         array.put(putItem("noise",data.getNoise()));
+        array.put(putItem("value",data.getValue()));
+        array.put(putItem("exitTemperature",data.getLoTemp()));
+        array.put(putItem("exitHumidity",data.getLoHumidity()));
+        array.put(putItem("highDew",data.getHiDewPoint()));
+        array.put(putItem("lowDew",data.getLoDewPoint()));
         array.put(putItem("value",data.getValue()));
         object.put("realTimeData",array);
         return object.toString().getBytes();
@@ -186,7 +225,12 @@ public class JSON {
     private static byte[] handleLog(JSONObject jsonObject,GeneralInfoProtocol infoProtocol) throws JSONException {
         JSONObject object = new JSONObject();
         object.put("protocolType","log");
-        ArrayList<String> list = infoProtocol.getLog(jsonObject.getLong("Date"));
+        ArrayList<String> list;
+        if(jsonObject.has("Date")) {
+            list = infoProtocol.getLog(jsonObject.getLong("Date"));
+        }else{
+            list = infoProtocol.getLog(jsonObject.getLong("startDate"),jsonObject.getLong("endDate"));
+        }
         JSONArray array = new JSONArray();
         for(int i=0;i<list.size();i++){
             String string = list.get(i);

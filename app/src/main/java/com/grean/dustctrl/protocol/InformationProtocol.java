@@ -42,6 +42,8 @@ public class InformationProtocol implements GeneralInfoProtocol{
     private float paraK;
     private Context context;
     private ReadWriteConfig config;
+    private CtrlCommunication com = CtrlCommunication.getInstance();
+
     @Override
     public String getSystemState() {
         return stateString;
@@ -62,6 +64,14 @@ public class InformationProtocol implements GeneralInfoProtocol{
         this.data.setNoise(data.getNoise());
         this.data.setWindDirection(data.getWindDirection());
         this.data.setWindForce(data.getWindForce());
+        this.data.setLoHumidity(data.getLoHumidity());
+        this.data.setLoTemp(data.getLoTemp());
+        this.data.calcHiDewPoint();
+        this.data.calcLoDewPoint();
+        this.data.setAcIn(data.isAcIn());
+        this.data.setBatteryLow(data.isBatteryLow());
+        this.data.setHeatPwm(data.getHeatPwm());
+        this.data.setCtrlDo(data.getCtrlDo());
     }
 
     @Override
@@ -221,6 +231,11 @@ public class InformationProtocol implements GeneralInfoProtocol{
     }
 
     @Override
+    public ArrayList<String> getLog(long startDate, long endDate) {
+        return GetProtocols.getInstance().getDataBaseProtocol().getLog(startDate,endDate);
+    }
+
+    @Override
     public float getParaK() {
         return paraK;
     }
@@ -346,6 +361,79 @@ public class InformationProtocol implements GeneralInfoProtocol{
             e.printStackTrace();
         } catch (InterruptedException e) {
             e.printStackTrace();
+        }
+    }
+
+    @Override
+    public int getMotorTime() {
+        return com.getMotorTime()/100;
+    }
+
+    @Override
+    public int getMotorStep() {
+        return com.getMotorRounds();
+    }
+
+    @Override
+    public void setMotorTime(int time) {
+        config.saveConfig("MotorTime",time*100);
+        com.setMotorTime(time*100);
+    }
+
+    @Override
+    public void setMotorStep(int step) {
+        config.saveConfig("MotorRounds",step);
+        com.setMotorRounds(step);
+    }
+
+    @Override
+    public void setRelay(int num, boolean key) {
+        com.ctrlDo(num,key);
+    }
+
+    @Override
+    public void ForwardTest() {
+        com.setMotorSetting(CtrlCommunication.MotorForward);
+    }
+
+    @Override
+    public void BackwardTest() {
+        com.setMotorSetting(CtrlCommunication.MotorBackward);
+    }
+
+    @Override
+    public void ForwardStep() {
+        int time = com.getMotorTime();
+        int step = com.getMotorRounds();
+        com.setMotorTime(500);
+        com.setMotorRounds(100);
+        com.setMotorSetting(CtrlCommunication.MotorForward);
+        com.setMotorTime(time);
+        com.setMotorRounds(step);
+    }
+
+    @Override
+    public void BackwardStep() {
+        int time = com.getMotorTime();
+        int step = com.getMotorRounds();
+        com.setMotorTime(500);
+        com.setMotorRounds(100);
+        com.setMotorSetting(CtrlCommunication.MotorBackward);
+        com.setMotorTime(time);
+        com.setMotorRounds(step);
+    }
+
+    @Override
+    public boolean isDustMeterRun() {
+        return com.isDustMeterRun();
+    }
+
+    @Override
+    public void setDustMeterRun(boolean key) {
+        if(key){
+            com.setMotorSetting(CtrlCommunication.DustMeterRun);
+        }else{
+            com.setMotorSetting(CtrlCommunication.DustMeterStop);
         }
     }
 

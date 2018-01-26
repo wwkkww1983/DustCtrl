@@ -73,6 +73,7 @@ public interface GeneralInfoProtocol {
     GeneralHistoryDataFormat getHistoryData(long startDate,long endDate);
 
     ArrayList<String> getLog(long dateStart);
+    ArrayList<String> getLog(long startDate,long endDate);
 
     float getParaK();
     String getServerIp();
@@ -110,19 +111,27 @@ public interface GeneralInfoProtocol {
      * @return
      */
     int getDustName();
-
     float getAlarmDust();
-
     void setAlarmDust(float alarm);
     void setClientProtocol(int name);
-
     void calDustMeterZero();
-
     void setAlarmMark(boolean alarm);
-
     boolean getAlarmMark();
-
     boolean isServerConnected();
-
     void setSystemDate(int year,int mon,int day,int hour,int min,int second);
+
+    int getMotorTime();
+    int getMotorStep();
+    void setMotorTime(int time);
+    void setMotorStep(int time);
+
+    void setRelay(int num , boolean key);
+    void ForwardTest();
+    void BackwardTest();
+    void ForwardStep();
+    void BackwardStep();
+
+    boolean isDustMeterRun();
+    void setDustMeterRun(boolean key);
+
 }

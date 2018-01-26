@@ -12,7 +12,7 @@ public interface GeneralDataBaseProtocol {
     GeneralHistoryDataFormat getHourData(long dateStart);
     ArrayList<String> getDayLog(long endDate);
     GeneralHistoryDataFormat getData(long start,long end);
-
+    ArrayList<String> getLog(long start,long end);
     /**
      * 获取上一次分钟数据时间戳
      * @return

@@ -319,6 +319,26 @@ public class TcpDataBase implements GeneralDataBaseProtocol{
     }
 
     @Override
+    public ArrayList<String> getLog(long start, long end) {
+        ArrayList<String> list = new ArrayList<String>();
+        String statement;
+        statement = "date >="+ String.valueOf(start)+" and date <"+String.valueOf(end);
+
+        DbTask helperDbTask = new DbTask(context,1);
+        SQLiteDatabase db = helperDbTask.getReadableDatabase();
+        Cursor cursor;
+        cursor = db.rawQuery("SELECT * FROM log WHERE "+statement+" ORDER BY date desc",new String[]{});
+        int index=0;
+        while ((cursor.moveToNext())&&(index < 100)){
+            list.add(cursor.getString(2));
+            index++;
+        }
+        db.close();
+        helperDbTask.close();
+        return list;
+    }
+
+    @Override
     public long getLastMinDate() {
         return lastMinDate;
     }
