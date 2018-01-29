@@ -111,6 +111,7 @@ public interface GeneralInfoProtocol {
      * @return
      */
     int getDustName();
+    void setDustName(int name);
     float getAlarmDust();
     void setAlarmDust(float alarm);
     void setClientProtocol(int name);

@@ -314,6 +314,11 @@ public class InformationProtocol implements GeneralInfoProtocol{
     }
 
     @Override
+    public void setDustName(int name) {
+        config.saveConfig("DustName",name);
+    }
+
+    @Override
     public float getAlarmDust() {
         return ScanSensor.getInstance().getAlarmDust();
     }

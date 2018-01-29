@@ -89,7 +89,7 @@ public class OperateDustMeter implements NotifyScanEnd{
     }
 
     public int getDustName(){
-        return dustName;
+        return myApplication.getInstance().getConfigInt("DustName");
     }
 
     public void setDustName(int name){

@@ -39,7 +39,7 @@ import java.util.Stack;
  */
 
 public class JSON {
-    //private static final String tag="JSON";
+    private static final String tag="JSON";
 
     public static byte[] createJsonObject(int total,boolean success, List<Map<String,Object>> list) throws JSONException {
         Map<String,Object> map;
@@ -70,6 +70,7 @@ public class JSON {
 
         JSONObject object = new JSONObject();
         object.put("protocolType","uploadSetting");
+        Log.d(tag,"uploadSetting");
 
         boolean enable = jsonObject.getBoolean("autoCalEnable");
         long date = jsonObject.getLong("autoCalTime");
@@ -78,8 +79,16 @@ public class JSON {
         infoProtocol.setServer(jsonObject.getString("serverIp"),jsonObject.getInt("serverPort"));
         infoProtocol.setMnCode(jsonObject.getString("mnCode"));
         infoProtocol.setClientProtocol(jsonObject.getInt("clientProtocolName"));
-
         infoProtocol.setAlarmDust((float) jsonObject.getDouble("alarmDust"));
+        if(jsonObject.has("motorStep")) {
+            infoProtocol.setMotorStep(jsonObject.getInt("motorStep"));
+        }
+        if(jsonObject.has("motorTime")) {
+            infoProtocol.setMotorTime(jsonObject.getInt("motorTime"));
+        }
+        if(jsonObject.has("dustName")) {
+            infoProtocol.setDustName(jsonObject.getInt("dustName"));
+        }
         return object.toString().getBytes();
     }
 
