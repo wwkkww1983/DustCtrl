@@ -263,10 +263,14 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
                 e.printStackTrace();
             }*/
             com.SendFrame(CtrlCommunication.DustMeterStop);
-            try {
-                Thread.sleep(10000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            for(int i=0;i<10;i++) {
+                infoProtocol.setDustCalMeterProcess(4+i);
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
             }
             if (dialogInfo!=null) {
                 dialogInfo.showInfo("本底校准...");
@@ -276,17 +280,35 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
             infoProtocol.setDustCalMeterProcess(15);
             com.SendFrame(CtrlCommunication.DustMeterBgStart);
             try {
-                Thread.sleep(100000);
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+            for(int i=0;i<30;i++){
+                infoProtocol.setDustCalMeterProcess(15+i);
+                try {
+                    Thread.sleep(3300);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
             infoProtocol.setDustCalMeterProcess(45);
             com.SendFrame(CtrlCommunication.DustMeterBgResult);
             try {
-                Thread.sleep(10000);
+                Thread.sleep(2000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+            for(int i=0;i<4;i++){
+                infoProtocol.setDustCalMeterProcess(46+i);
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
             DustMeterInfo dustMeterInfo = com.getInfo();
 
             setChanged();
@@ -321,18 +343,30 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
             if(motorTime <= 0){
                 motorTime = 1800;
             }
+
             try {
                 Thread.sleep((motorTime+200)*10);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+            infoProtocol.setDustCalMeterProcess(55);
+
             infoProtocol.notifySystemState(zeroResultString+",正在校跨");
             com.SendFrame(CtrlCommunication.DustMeterSpanStart);
             try {
-                Thread.sleep(80000);
+                Thread.sleep(5000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+            for(int i=0;i<30;i++){
+                infoProtocol.setDustCalMeterProcess(55+i);
+                try {
+                    Thread.sleep(2500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
             infoProtocol.setDustCalMeterProcess(85);
             com.SendFrame(CtrlCommunication.DustMeterSpanResult);
             try {
@@ -365,6 +399,7 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
             }
            // sendMainFragmentString("结束校准");
             com.ctrlDo(1,false);
+            infoProtocol.setDustCalMeterProcess(95);
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
