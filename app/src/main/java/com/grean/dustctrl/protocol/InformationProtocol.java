@@ -435,10 +435,11 @@ public class InformationProtocol implements GeneralInfoProtocol{
 
     @Override
     public void setDustMeterRun(boolean key) {
+        Log.d(tag,"dustMeterRun = "+String.valueOf(true));
         if(key){
-            com.setMotorSetting(CtrlCommunication.DustMeterRun);
+            com.SendFrame(CtrlCommunication.DustMeterRun);
         }else{
-            com.setMotorSetting(CtrlCommunication.DustMeterStop);
+            com.SendFrame(CtrlCommunication.DustMeterStop);
         }
     }
 

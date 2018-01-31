@@ -170,10 +170,10 @@ public class JSON {
             infoProtocol.ForwardTest();
         }else if(jsonObject.has("MotorBackwardTest")){
             object.put("MotorBackwardTest",true);
-            infoProtocol.ForwardStep();
+            infoProtocol.BackwardTest();
         }else if(jsonObject.has("MotorForwardStep")){
             object.put("MotorForwardStep",true);
-            infoProtocol.BackwardTest();
+            infoProtocol.ForwardStep();
         }else if(jsonObject.has("MotorBackwardStep")){
             object.put("MotorBackwardStep",true);
             infoProtocol.BackwardStep();
