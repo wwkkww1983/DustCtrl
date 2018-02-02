@@ -138,7 +138,7 @@ public class JSON {
             object.put("DustMeterCalBg",infoProtocol.getDustMeterBg());
             object.put("DustMeterCalSpan",infoProtocol.getDustMeterSpan());
         }else if(jsonObject.has("DustMeterInfo")){//获取粉尘仪信息
-            infoProtocol.inquireDustMeterInfo();
+            //infoProtocol.inquireDustMeterInfo();
             object.put("DustMeterInfo",true);
             object.put("DustMeterPumpTime",infoProtocol.getDustMeterPumpTime());
             object.put("DustMeterLaserTime",infoProtocol.getDustMeterLaserTime());

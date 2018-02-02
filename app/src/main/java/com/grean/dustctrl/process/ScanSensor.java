@@ -496,8 +496,28 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
             for(int i=0;i<7;i++){
                 sumData[i] = 0;
             }
+
             try {
-                Thread.sleep(20000);
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            com.SendFrame(CtrlCommunication.DustMeterPumpTime);
+            com.SendFrame(CtrlCommunication.DustMeterLaserTime);
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            DustMeterInfo dustMeterInfo = com.getInfo();
+            String string = "泵运行累计时间:"+String.valueOf(dustMeterInfo.getPumpTime())+"h;激光运行累计时间:"+String.valueOf(dustMeterInfo.getLaserTime())+"h;";
+            infoProtocol.setDustMeterPumpTime(dustMeterInfo.getPumpTime());
+            infoProtocol.setDustMeterLaserTime(dustMeterInfo.getLaserTime());
+            setChanged();
+            notifyObservers(new LogFormat("查询粉尘仪:"+string));
+
+            try {
+                Thread.sleep(16000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -629,9 +649,8 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
             infoProtocol.setDustMeterPumpTime(dustMeterInfo.getPumpTime());
             infoProtocol.setDustMeterLaserTime(dustMeterInfo.getLaserTime());
             ScanSensor.getInstance().restartScanSensor();
-            Log.d(tag,"结束查询");
             setChanged();
-            notifyObservers(new LogFormat("结束查询"));
+            notifyObservers(new LogFormat("查询粉尘仪:"+string));
         }
     }
 }
