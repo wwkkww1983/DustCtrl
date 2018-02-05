@@ -211,6 +211,7 @@ public class JSON {
         array.put(putItem("value",data.getValue()));
         array.put(putItem("exitTemperature",data.getLoTemp()));
         array.put(putItem("exitHumidity",data.getLoHumidity()));
+        //Log.d(tag,String.valueOf(data.getLoDewPoint())+";h = "+String.valueOf(data.getHiDewPoint())+";");
         array.put(putItem("highDew",data.getHiDewPoint()));
         array.put(putItem("lowDew",data.getLoDewPoint()));
         array.put(putItem("value",data.getValue()));

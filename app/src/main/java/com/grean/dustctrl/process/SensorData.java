@@ -1,11 +1,14 @@
 package com.grean.dustctrl.process;
 
+import android.util.Log;
+
 /**
  * 传感器数据结构
  * Created by Administrator on 2017/8/28.
  */
 
 public class SensorData {
+    private static final String tag = "SensorData";
     private float dust;//粉尘仪计算值
     private float value;//粉尘仪原始值
     private float paraK;//粉尘仪K值
@@ -210,6 +213,9 @@ public class SensorData {
         }else{
             hiDewPoint = (float) (272.62f*(Math.log(airHumidity/100)+22.46f*airTemperature/(272.62+airTemperature))/(22.46 - Math.log(airHumidity/100)-22.46*airTemperature/(272.62+airTemperature)));
         }
+        if(hiDewPoint != hiDewPoint){
+            hiDewPoint = 99999.9f;
+        }
         return hiDewPoint;
     }
 
@@ -219,6 +225,11 @@ public class SensorData {
         }else{
             loDewPoint = (float) (272.62f*(Math.log(loHumidity/100)+22.46f*loTemp/(272.62+loTemp))/(22.46 - Math.log(loHumidity/100)-22.46*loTemp/(272.62+loTemp)));
         }
+        if(loDewPoint != loDewPoint){//判断 Nan
+            //Log.d(tag,"loDew error");
+            loDewPoint = 99999.9f;
+        }
+        //Log.d(tag,"loDew"+String.valueOf(loDewPoint));
         return loDewPoint;
     }
 
