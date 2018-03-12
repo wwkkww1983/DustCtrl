@@ -39,7 +39,7 @@ public class InformationProtocol implements GeneralInfoProtocol{
     private long autoCalTime,autoCalInterval;
     private String serverIp,mnCode;
     private int serverPort,pumpTime,laserTime,dustMeterCalProcess,exportDataProcess;
-    private float paraK;
+    private float paraK,paraB;
     private Context context;
     private ReadWriteConfig config;
     private CtrlCommunication com = CtrlCommunication.getInstance();
@@ -57,6 +57,7 @@ public class InformationProtocol implements GeneralInfoProtocol{
     @Override
     public void notifySenorData(SensorData data) {
         this.data.setParaK(data.getParaK());
+        this.data.setParaB(data.getParaB());
         this.data.setValue(data.getValue());
         this.data.setAirTemperature(data.getAirTemperature());
         this.data.setAirHumidity(data.getAirHumidity());
@@ -87,6 +88,7 @@ public class InformationProtocol implements GeneralInfoProtocol{
         autoCalTime = config.getConfigLong("AutoCalTime");
         autoCalInterval = config.getConfigLong("AutoCalInterval");
         paraK = config.getConfigFloat("DustParaK");
+        paraB = config.getConfigFloat("DustParaB");
         mnCode = config.getConfigString("MnCode");
     }
 
@@ -154,6 +156,13 @@ public class InformationProtocol implements GeneralInfoProtocol{
         this.paraK = paraK;
         CtrlCommunication.getInstance().getData().setParaK(paraK);
         config.saveConfig("DustParaK",paraK);
+    }
+
+    @Override
+    public void setDustParaB(float paraB) {
+        this.paraB = paraB;
+        CtrlCommunication.getInstance().getData().setParaB(paraB);
+        config.saveConfig("DustParaB",paraB);
     }
 
     @Override
@@ -238,6 +247,11 @@ public class InformationProtocol implements GeneralInfoProtocol{
     @Override
     public float getParaK() {
         return paraK;
+    }
+
+    @Override
+    public float getParaB() {
+        return paraB;
     }
 
     @Override

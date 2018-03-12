@@ -103,6 +103,7 @@ public class JSON {
         object.put("serverPort",infoProtocol.getServerPort());
         object.put("mnCode",infoProtocol.getMnCode());
         object.put("dustParaK",infoProtocol.getParaK());
+        object.put("dustParaB",infoProtocol.getParaB());
         object.put("motorTime",infoProtocol.getMotorTime());
         object.put("motorStep",infoProtocol.getMotorStep());
         String [] names = infoProtocol.getClientProtocolNames();
@@ -130,6 +131,9 @@ public class JSON {
         }else if(jsonObject.has("DustMeterSetParaK")){//直接写斜率
             object.put("DustMeterSetParaK",true);
             infoProtocol.setDustParaK((float) jsonObject.getDouble("DustMeterParaK"));
+            if(jsonObject.has("DustMeterParaB")){
+                infoProtocol.setDustParaB((float) jsonObject.getDouble("DustMeterParaB"));
+            }
         }else if(jsonObject.has("DustMeterCalZero")){//单独校零
             object.put("DustMeterCalZero",true);
             infoProtocol.calDustMeterZero();

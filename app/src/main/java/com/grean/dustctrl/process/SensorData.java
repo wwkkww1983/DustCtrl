@@ -12,6 +12,7 @@ public class SensorData {
     private float dust;//粉尘仪计算值
     private float value;//粉尘仪原始值
     private float paraK;//粉尘仪K值
+    private float paraB;//
     private float airTemperature;
     private float airHumidity;
     private float airPressure;
@@ -48,7 +49,7 @@ public class SensorData {
     }
 
     public void setValue(float value) {
-        dust = paraK * value;
+        dust = paraK * value+paraB;
         this.value = value;
     }
 
@@ -58,6 +59,14 @@ public class SensorData {
 
     public void setParaK(float paraK) {
         this.paraK = paraK;
+    }
+
+    public float getParaB() {
+        return paraB;
+    }
+
+    public void setParaB(float paraB) {
+        this.paraB = paraB;
     }
 
     public boolean[] getCtrlDo() {

@@ -53,6 +53,7 @@ public interface GeneralInfoProtocol {
     void calDust(float target);
 
     void setDustParaK(float paraK);
+    void setDustParaB(float paraB);
 
     void calDustMeter();
 
@@ -76,6 +77,7 @@ public interface GeneralInfoProtocol {
     ArrayList<String> getLog(long startDate,long endDate);
 
     float getParaK();
+    float getParaB();
     String getServerIp();
     int getServerPort();
     String getMnCode();

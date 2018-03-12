@@ -479,9 +479,11 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
             NoiseCommunication noiseCom;
             noiseCom = NoiseCommunication.getInstance();
             float paraK = myApplication.getInstance().getConfigFloat("DustParaK");
+            float paraB = myApplication.getInstance().getConfigFloat("DustParaB");
             alarmDust = myApplication.getInstance().getConfigFloat("AlarmDust");
             boolean alarm;
             com.setDustParaK(paraK);
+            com.setDustParaB(paraB);
             com.setMotorRounds(myApplication.getInstance().getConfigInt("MotorRounds"));
             com.setMotorTime(myApplication.getInstance().getConfigInt("MotorTime"));
             GeneralInfoProtocol infoProtocol = GetProtocols.getInstance().getInfoProtocol();

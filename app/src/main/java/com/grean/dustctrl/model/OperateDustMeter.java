@@ -88,6 +88,12 @@ public class OperateDustMeter implements NotifyScanEnd{
         myApplication.getInstance().saveConfig("DustParaK",k);
     }
 
+    public void setParaB(String paraB){
+        float b = Float.valueOf(paraB);
+        com.getData().setParaB(b);
+        myApplication.getInstance().saveConfig("DustParaB",b);
+    }
+
     public int getDustName(){
         return myApplication.getInstance().getConfigInt("DustName");
     }
@@ -102,6 +108,11 @@ public class OperateDustMeter implements NotifyScanEnd{
     public String getParaKString(){
         float k = com.getData().getParaK();
         return String.valueOf(k);
+    }
+
+    public String getParaBString(){
+        float b=com.getData().getParaB();
+        return String.valueOf(b);
     }
 
     public boolean getCtrlDo(int num){

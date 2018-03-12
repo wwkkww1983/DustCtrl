@@ -42,7 +42,7 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
     private Button btnDustMeterManCal,btnDustMeterInquire,btnMotorSet,btnSaveAutoCal,btnSaveServer,btnUpdateSoftware,btnCalcParaK,btnSetAlarm
             ,btnDustMeterManCalZero,btnMotorTestUp,btnMotorTestDown,btnUpdateSetting,btnSetParaK,btnNoiseCal,btnResetResetCom;
     private TextView tvDustMeterInfo,tvNextAutoCalTime,tvLocalIp,tvSoftwareVersion;//tvParaK
-    private EditText etMotorRounds,etMotorTime,etAutoCalInterval,etServerIp,etServerPort,etUpdateSoftwareUrl,etTargetValue,etMnCode,etAlarm,etSetParaK;
+    private EditText etMotorRounds,etMotorTime,etAutoCalInterval,etServerIp,etServerPort,etUpdateSoftwareUrl,etTargetValue,etMnCode,etAlarm,etSetParaK,etSetParaB;
     private Switch swDustMeterRun,swValve,swFan,swExt1,swExt2,swBackup,swAutoCalibrationEnable;
     private Spinner spProtocol,spDustName;
     private int clientProtocolName;
@@ -103,6 +103,7 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
         tvLocalIp.setText(operateTcp.getLocalIpAddress()+":8888");
         //tvParaK.setText(dustMeter.getParaKString());
         etSetParaK.setText(dustMeter.getParaKString());
+        etSetParaB.setText(dustMeter.getParaBString());
         etMnCode.setText(operateTcp.getTcpMnCode());
         if (system.getAutoCalibrationEnable()){
             swAutoCalibrationEnable.setChecked(true);
@@ -158,6 +159,7 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
         tvLocalIp = v.findViewById(R.id.tvOperateLocalIp);
         //tvParaK = v.findViewById(R.id.tvOperateParaK);
         etSetParaK = v.findViewById(R.id.etOperateParaK);
+        etSetParaB = v.findViewById(R.id.etOperateParaB);
         btnSetParaK = v.findViewById(R.id.btnOperateSetParaK);
         etTargetValue = v.findViewById(R.id.etOperateTargetValue);
         btnCalcParaK = v.findViewById(R.id.btnOperateCalcPraraK);
@@ -324,6 +326,7 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
                 break;
             case R.id.btnOperateSetParaK:
                 dustMeter.setParaK(etSetParaK.getText().toString());
+                dustMeter.setParaB(etSetParaB.getText().toString());
                 break;
             case R.id.btnOperateNoiseCal:
                 system.calNoise(this);

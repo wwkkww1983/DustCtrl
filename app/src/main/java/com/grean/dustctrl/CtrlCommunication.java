@@ -130,6 +130,13 @@ public class CtrlCommunication extends SerialCommunication{
         }
         data.setParaK(k);
     }
+
+    public void setDustParaB(float b){
+        if (data == null){
+            data = new SensorData();
+        }
+        data.setParaB(b);
+    }
     @Override
     protected boolean checkRecBuff() {
         return true;
