@@ -22,8 +22,8 @@ public class SystemLog implements Observer{
 
     }
     public static SystemLog getInstance(Context con){
-        context = con;
         if (instance == null){
+            context = con;
             instance = new SystemLog();
         }
         return instance;
@@ -35,15 +35,30 @@ public class SystemLog implements Observer{
             DbTask helperDbTask = new DbTask(context,1);
             SQLiteDatabase db = helperDbTask.getReadableDatabase();
             ContentValues values = new ContentValues();
+
             if(o.toString().equals("LogFormat")){
                 LogFormat log = (LogFormat) o;
                 values.put("date",log.getDate());
-
                 values.put("content",log.getText());
                 Log.d(tag,log.getText());
                 db.insert("log",null,values);
 
 
+            }
+
+            db.close();
+            helperDbTask.close();
+        }else {
+            DbTask helperDbTask = new DbTask(context,1);
+            SQLiteDatabase db = helperDbTask.getReadableDatabase();
+            ContentValues values = new ContentValues();
+            Log.d(tag,"new log");
+            if(o.toString().equals("LogFormat")){
+                LogFormat log = (LogFormat) o;
+                values.put("date",log.getDate());
+                values.put("content",log.getText());
+                Log.d(tag,log.getText());
+                db.insert("log",null,values);
             }
 
             db.close();

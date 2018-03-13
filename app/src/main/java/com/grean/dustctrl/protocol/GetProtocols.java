@@ -3,6 +3,7 @@ package com.grean.dustctrl.protocol;
 import android.content.Context;
 
 import com.grean.dustctrl.SocketTask;
+import com.grean.dustctrl.SystemLog;
 import com.grean.dustctrl.myApplication;
 
 /**
@@ -46,7 +47,9 @@ public class GetProtocols {
 
     synchronized public GeneralInfoProtocol getInfoProtocol() {
         if(infoProtocol == null){
-            infoProtocol = new InformationProtocol();
+            InformationProtocol informationProtocol = new InformationProtocol();
+            informationProtocol.addObserver(SystemLog.getInstance(context));
+            infoProtocol = informationProtocol;
         }
         return infoProtocol;
     }

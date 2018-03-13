@@ -21,6 +21,7 @@ import java.net.NetworkInterface;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.Enumeration;
+import java.util.Observable;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
@@ -28,7 +29,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * Created by Administrator on 2017/9/4.
  */
 
-public class SocketTask implements TcpClientCallBack{
+public class SocketTask extends Observable implements TcpClientCallBack{
     private static final String tag = "SocketTask";
     private static SocketTask instance = new SocketTask();
     private static boolean heartRun = false,connected = false;
@@ -140,7 +141,9 @@ public class SocketTask implements TcpClientCallBack{
                 }
 
                 connected = true;
+                setChanged();
                 Log.d(tag,"已连接服务器");
+                notifyObservers(new LogFormat("已连接服务器"));
                 while (connected){
                     if (socketClient.isConnected()&&(!socketClient.isClosed())){
                         while ((count = receive.read(readBuff))!=-1 && connected){
@@ -164,7 +167,8 @@ public class SocketTask implements TcpClientCallBack{
                 }
                 e.printStackTrace();
             }
-
+            setChanged();
+            notifyObservers(new LogFormat("中断网络链接"));
         }
     }
 

@@ -10,6 +10,7 @@ import android.util.Log;
 import com.SystemDateTime;
 import com.grean.dustctrl.CtrlCommunication;
 import com.grean.dustctrl.DbTask;
+import com.grean.dustctrl.LogFormat;
 import com.grean.dustctrl.MainActivity;
 import com.grean.dustctrl.ReadWriteConfig;
 import com.grean.dustctrl.SocketTask;
@@ -26,12 +27,13 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Observable;
 
 /**
  * Created by weifeng on 2017/9/8.
  */
 
-public class InformationProtocol implements GeneralInfoProtocol{
+public class InformationProtocol extends Observable implements GeneralInfoProtocol{
     private static final String tag = "InformationProtocol";
     private String stateString;
     private SensorData data = new SensorData();
@@ -156,6 +158,9 @@ public class InformationProtocol implements GeneralInfoProtocol{
         this.paraK = paraK;
         CtrlCommunication.getInstance().getData().setParaK(paraK);
         config.saveConfig("DustParaK",paraK);
+       // Log.d(tag,"记录数据");
+        setChanged();
+        notifyObservers(new LogFormat("修改斜率为"+String.valueOf(paraK)));
     }
 
     @Override
@@ -163,6 +168,8 @@ public class InformationProtocol implements GeneralInfoProtocol{
         this.paraB = paraB;
         CtrlCommunication.getInstance().getData().setParaB(paraB);
         config.saveConfig("DustParaB",paraB);
+        setChanged();
+        notifyObservers(new LogFormat("修改截距为"+String.valueOf(paraB)));
     }
 
     @Override

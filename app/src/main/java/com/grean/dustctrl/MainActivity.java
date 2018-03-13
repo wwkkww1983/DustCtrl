@@ -25,6 +25,8 @@ import com.grean.dustctrl.presenter.FragmentVideo;
 import com.grean.dustctrl.process.ScanSensor;
 import com.grean.dustctrl.protocol.GetProtocols;
 import com.tools;
+
+import java.net.Socket;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -152,6 +154,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         GetProtocols.getInstance().getInfoProtocol().setContext(this);
         ScanSensor.getInstance().addObserver(SystemLog.getInstance(this));
         ScanSensor.getInstance().startScan(this);
+
+        SocketTask.getInstance().addObserver(SystemLog.getInstance(this));
         SocketTask.getInstance().startSocketHeart(myApplication.getInstance().getConfigString("ServerIp"),myApplication.getInstance().getConfigInt("ServerPort"),this,this,GetProtocols.getInstance().getClientProtocol());
         SocketServerTask.getInstance().startSocketServer(GetProtocols.getInstance().getServerProtocol(),8888);
         GetProtocols.getInstance().getClientProtocol().setMnCode(myApplication.getInstance().getConfigString("MnCode"));
