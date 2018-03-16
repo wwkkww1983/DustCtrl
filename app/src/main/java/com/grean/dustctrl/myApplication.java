@@ -78,35 +78,35 @@ public class myApplication extends Application implements ReadWriteConfig{
         SharedPreferences sp = getSharedPreferences("config",MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.putFloat(key,data);
-        editor.commit();
+        editor.apply();
     }
 
     public void saveConfig(String key,long data){
         SharedPreferences sp = getSharedPreferences("config",MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.putLong(key,data);
-        editor.commit();
+        editor.apply();
     }
 
     public void saveConfig(String key,int data){
         SharedPreferences sp = getSharedPreferences("config",MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.putInt(key,data);
-        editor.commit();
+        editor.apply();
     }
 
     public void saveConfig(String key,String data){
         SharedPreferences sp = getSharedPreferences("config",MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.putString(key,data);
-        editor.commit();
+        editor.apply();
     }
 
     public void saveConfig(String key,boolean data){
         SharedPreferences sp = getSharedPreferences("config",MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.putBoolean(key,data);
-        editor.commit();
+        editor.apply();
     }
 
     public boolean getConfigBoolean(String key){

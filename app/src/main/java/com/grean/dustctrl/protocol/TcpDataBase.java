@@ -61,6 +61,7 @@ public class TcpDataBase implements GeneralDataBaseProtocol{
             format = new HistoryDataFormat(date,data);
             list.add(format);
         }
+        cursor.close();
         db.close();
         helperDbTask.close();
         return list;
@@ -91,6 +92,7 @@ public class TcpDataBase implements GeneralDataBaseProtocol{
             string+=tools.float2String3(cursor.getFloat(8))+"  ";
             list.add(string);
         }
+        cursor.close();
         db.close();
         helperDbTask.close();
         return list;
@@ -264,6 +266,7 @@ public class TcpDataBase implements GeneralDataBaseProtocol{
             format.addItem(item);
             index++;
         }
+        cursor.close();
         db.close();
         helperDbTask.close();
         return format;
@@ -284,6 +287,7 @@ public class TcpDataBase implements GeneralDataBaseProtocol{
             list.add(cursor.getString(2));
             index++;
         }
+        cursor.close();
         db.close();
         helperDbTask.close();
         return list;
@@ -313,6 +317,7 @@ public class TcpDataBase implements GeneralDataBaseProtocol{
             format.addItem(item);
             index++;
         }
+        cursor.close();
         db.close();
         helperDbTask.close();
         return format;
@@ -333,6 +338,7 @@ public class TcpDataBase implements GeneralDataBaseProtocol{
             list.add(cursor.getString(2));
             index++;
         }
+        cursor.close();
         db.close();
         helperDbTask.close();
         return list;

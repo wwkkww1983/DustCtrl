@@ -56,6 +56,7 @@ public class SearchData {
             insert.insertLog(string);
             index++;
         }
+        cursor.close();
         db.close();
         helperDbTask.close();
     }
@@ -91,6 +92,7 @@ public class SearchData {
             insert.insertStrings(data);
             index++;
         }
+        cursor.close();
         db.close();
         helperDbTask.close();
 
