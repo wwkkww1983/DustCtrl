@@ -137,4 +137,14 @@ public interface GeneralInfoProtocol {
     boolean isDustMeterRun();
     void setDustMeterRun(boolean key);
 
+    /**
+     * 开始校准声级计
+     */
+    void calibrationNoise();
+
+    /**
+     * 获取声级计校准状态
+     * @return =0 正在校准 =1 校准成功 =2校准失败
+     */
+    int getCalibrationNoiseState();
 }

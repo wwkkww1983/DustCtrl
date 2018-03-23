@@ -121,7 +121,7 @@ public class JSON {
         JSONObject object = new JSONObject();
         object.put("protocolType","operate");
 
-        if(jsonObject.has("DustCal")){//校准斜率
+        if(jsonObject.has("DustCal")){//校准斜率 隐藏功能，不建议使用
             infoProtocol.calDust((float) jsonObject.getDouble("target"));
             object.put("DustCal",true);
             object.put("ParaK",infoProtocol.getParaK());
@@ -134,7 +134,7 @@ public class JSON {
             if(jsonObject.has("DustMeterParaB")){
                 infoProtocol.setDustParaB((float) jsonObject.getDouble("DustMeterParaB"));
             }
-        }else if(jsonObject.has("DustMeterCalZero")){//单独校零
+        }else if(jsonObject.has("DustMeterCalZero")){//单独校零 最新软件屏蔽该功能，不建议使用
             object.put("DustMeterCalZero",true);
             infoProtocol.calDustMeterZero();
         }else if(jsonObject.has("DustMeterCalResult")){//查询校零校跨结果
@@ -181,6 +181,12 @@ public class JSON {
         }else if(jsonObject.has("MotorBackwardStep")){
             object.put("MotorBackwardStep",true);
             infoProtocol.BackwardStep();
+        }else if(jsonObject.has("NoiseCalibration")){
+            object.put("NoiseCalibration",true);
+            infoProtocol.calibrationNoise();
+        }else if(jsonObject.has("NoiseCalibrationState")) {
+            object.put("NoiseCalibrationState",true);
+            object.put("state",infoProtocol.getCalibrationNoiseState());
         }else{
             object.put("ErrorCommand",true);
         }

@@ -5,5 +5,6 @@ package com.grean.dustctrl;
  */
 
 public interface NoiseCalibrationListener {
-    void onResult(String calInfo);
+    void onResult(String calInfo,boolean success);
+
 }

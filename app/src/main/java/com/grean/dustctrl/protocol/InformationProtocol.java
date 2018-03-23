@@ -12,6 +12,8 @@ import com.grean.dustctrl.CtrlCommunication;
 import com.grean.dustctrl.DbTask;
 import com.grean.dustctrl.LogFormat;
 import com.grean.dustctrl.MainActivity;
+import com.grean.dustctrl.NoiseCalibrationListener;
+import com.grean.dustctrl.NoiseCommunication;
 import com.grean.dustctrl.ReadWriteConfig;
 import com.grean.dustctrl.SocketTask;
 import com.grean.dustctrl.model.OperateDustMeter;
@@ -33,14 +35,14 @@ import java.util.Observable;
  * Created by weifeng on 2017/9/8.
  */
 
-public class InformationProtocol extends Observable implements GeneralInfoProtocol{
+public class InformationProtocol extends Observable implements GeneralInfoProtocol,NoiseCalibrationListener {
     private static final String tag = "InformationProtocol";
     private String stateString;
     private SensorData data = new SensorData();
     private boolean autoCalEnable,dustMeterCalBgOk,dustMeterCalSpanOk,exportDataResult,alarm;
     private long autoCalTime,autoCalInterval;
     private String serverIp,mnCode;
-    private int serverPort,pumpTime,laserTime,dustMeterCalProcess,exportDataProcess;
+    private int serverPort,pumpTime,laserTime,dustMeterCalProcess,exportDataProcess,calibrationNoiseSate;
     private float paraK,paraB;
     private Context context;
     private ReadWriteConfig config;
@@ -461,6 +463,27 @@ public class InformationProtocol extends Observable implements GeneralInfoProtoc
             com.SendFrame(CtrlCommunication.DustMeterRun);
         }else{
             com.SendFrame(CtrlCommunication.DustMeterStop);
+        }
+    }
+
+    @Override
+    public void calibrationNoise() {
+        calibrationNoiseSate = 0;
+        NoiseCommunication.getInstance().sendCalibrationCmd(this);
+    }
+
+    @Override
+    public int getCalibrationNoiseState() {
+        return calibrationNoiseSate;
+    }
+
+
+    @Override
+    public void onResult(String calInfo, boolean success) {
+        if(success){
+            calibrationNoiseSate = 1;
+        }else{
+            calibrationNoiseSate = 2;
         }
     }
 

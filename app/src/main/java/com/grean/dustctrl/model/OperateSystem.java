@@ -15,6 +15,7 @@ import com.grean.dustctrl.SocketTask;
 import com.grean.dustctrl.myApplication;
 import com.grean.dustctrl.presenter.NotifyOperateInfo;
 import com.grean.dustctrl.presenter.NotifyProcessDialogInfo;
+import com.grean.dustctrl.presenter.UpDateProcessFragment;
 import com.grean.dustctrl.process.ScanSensor;
 import com.grean.dustctrl.protocol.GetProtocols;
 import com.tools;
@@ -28,6 +29,7 @@ public class OperateSystem {
     private static final String tag = "OperateSystem";
     private CtrlCommunication com = CtrlCommunication.getInstance();
     private long interval = 24*3600000l,date;
+    private CalibrationNoiseThread calibrationNoiseThread;
     public OperateSystem(){
 
     }
@@ -48,6 +50,7 @@ public class OperateSystem {
     public int getClientName(){
         return GetProtocols.getInstance().getClientProtocolName();
     }
+
 
     private class DownloadRunnable implements Runnable{
 
@@ -232,9 +235,47 @@ public class OperateSystem {
         }
     }
 
-    public void calNoise(NoiseCalibrationListener listener){
-        NoiseCommunication.getInstance().sendCalibrationCmd(listener);
+    public void calNoise(UpDateProcessFragment upDateProcessFragment){
+        calibrationNoiseThread = new CalibrationNoiseThread(upDateProcessFragment);
+        NoiseCommunication.getInstance().sendCalibrationCmd(calibrationNoiseThread);
+        calibrationNoiseThread.start();
+    }
 
+    private class CalibrationNoiseThread extends Thread implements NoiseCalibrationListener{
+        private UpDateProcessFragment upDateProcessFragment;
+        private boolean success;
+
+        public CalibrationNoiseThread(UpDateProcessFragment upDateProcessFragment){
+            this.upDateProcessFragment = upDateProcessFragment;
+        }
+        @Override
+        public void run() {
+            success = false;
+            upDateProcessFragment.setContent("正在校准声级计");
+            for (int i=0;i<10;i++){
+                upDateProcessFragment.setProcess(i*10);
+                try {
+                    sleep(2000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+            if(!success) {
+                upDateProcessFragment.cancelFragmentWithToast("声级计无响应");
+            }
+        }
+
+        @Override
+        public void onResult(String calInfo, boolean success) {
+            this.success = success;
+            if(success){
+                upDateProcessFragment.cancelFragmentWithToast("校准成功!");
+            }else{
+                upDateProcessFragment.cancelFragmentWithToast("校准失败!");
+            }
+        }
     }
 
     public void resetComFlag(){

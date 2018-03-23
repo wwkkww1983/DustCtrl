@@ -12,6 +12,7 @@ import com.SerialCommunication;
 public class NoiseCommunication extends SerialCommunication{
     private static final String tag = "NoiseCommunication";
     private float noiseData;
+    private boolean calOk;
     private NoiseCalibrationListener calibrationListener;
     public static final int NoiseRealTimeData = 1,
             Other = 0;
@@ -39,17 +40,18 @@ public class NoiseCommunication extends SerialCommunication{
     protected void communicationProtocol(byte[] rec, int size,int state) {
         //Log.d(tag,new String(rec,0,size));
         if(checkSum(rec,size)){
-            String cmd = new String(rec,0,4);
+            String[] content = new String(rec,0,size).split(",");
+            String cmd = content[0];
             if(cmd.equals("AWAA")) {
-                String recString = new String(rec, 5, 5);
+                String recString = content[1].substring(0,content[1].indexOf("d"));
                 noiseData = Float.valueOf(recString);
-                //Log.d(tag,"data = "+String.valueOf(noiseData));
+                //Log.d(tag,"cmd = "+new String(rec, 0, size)+"data = "+String.valueOf(noiseData));
             }else if(cmd.equals("AWAV")){
-                calInfo = new String(rec,0,size);
+                /*calInfo = new String(rec,0,size);
                 if(calibrationListener!=null) {
                     calibrationListener.onResult(calInfo);
                 }
-                Log.d(tag,calInfo);
+                Log.d(tag,calInfo);*/
             }else{
 
             }
@@ -100,10 +102,21 @@ public class NoiseCommunication extends SerialCommunication{
         String cmd = new String(rec,0,4);
         if(cmd.equals("AWAV")){
             calInfo = new String(rec,0,size);
-            if(calibrationListener!=null) {
-                calibrationListener.onResult(calInfo);
+            String[]strings = calInfo.split(",");
+            if((strings.length>4)&&(strings[1].equals("E"))) {
+                //Log.d(tag, strings[3]);
+                float value = Float.valueOf(strings[3].substring(0,strings[3].indexOf("dB")));
+                //Log.d(tag, String.valueOf(value));
+                if((value >=88)&&(value <=92)){
+                    calOk = true;
+                }else{
+                    calOk = false;
+                }
+                if(calibrationListener!=null) {
+                    calibrationListener.onResult(calInfo,calOk);
+                }
             }
-           // Log.d(tag,calInfo);
+            Log.d(tag,calInfo);
         }else{
 
         }
@@ -112,6 +125,7 @@ public class NoiseCommunication extends SerialCommunication{
     public void sendCalibrationCmd(NoiseCalibrationListener listener){
         this.calibrationListener = listener;
         addSendBuff(cmdAutoCal,Other);
+        calOk = false;
         calInfo = "Error";
     }
 

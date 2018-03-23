@@ -32,12 +32,13 @@ import java.util.Calendar;
  * Created by Administrator on 2017/8/25.
  */
 
-public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View.OnClickListener , DialogTimeSelected, AdapterView.OnItemSelectedListener  , NoiseCalibrationListener{
+public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View.OnClickListener , DialogTimeSelected, AdapterView.OnItemSelectedListener,UpDateProcessFragment{
     private static final int CancelDialog = 1;
     private static final int ShowDustMeterInfo = 2;
     private static final int CancelDialogWithToast = 3,showNoiseCalResult = 4;
 
     private ProcessDialogFragment dialogFragment;
+    private ProcessFragment processFragment;
     private String dustMeterInfo,autoCalTime,toastString,NoiseCalibrationInfo;
     private Button btnDustMeterManCal,btnDustMeterInquire,btnMotorSet,btnSaveAutoCal,btnSaveServer,btnUpdateSoftware,btnCalcParaK,btnSetAlarm
             ,btnDustMeterManCalZero,btnMotorTestUp,btnMotorTestDown,btnUpdateSetting,btnSetParaK,btnNoiseCal,btnResetResetCom;
@@ -69,6 +70,9 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
                     Toast.makeText(getActivity(),toastString,Toast.LENGTH_SHORT).show();
                     break;
                 case showNoiseCalResult:
+                    if(processFragment!=null){
+                        processFragment.dismiss();
+                    }
                     Toast.makeText(getActivity(),NoiseCalibrationInfo,Toast.LENGTH_LONG).show();
                     break;
                 default:
@@ -329,6 +333,9 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
                 dustMeter.setParaB(etSetParaB.getText().toString());
                 break;
             case R.id.btnOperateNoiseCal:
+                processFragment = new ProcessFragment();
+                processFragment.setCancelable(false);
+                processFragment.show(getFragmentManager(),"calibration noise");
                 system.calNoise(this);
                 break;
             case R.id.btnOperateResetCom:
@@ -372,8 +379,24 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
     }
 
     @Override
-    public void onResult(String calInfo) {
-        NoiseCalibrationInfo = calInfo;
+    public void setContent(String content) {
+        if(processFragment!=null){
+            processFragment.showInfo(content);
+        }
+    }
+
+    @Override
+    public void setProcess(int process) {
+        if(processFragment!=null){
+            processFragment.showProcess(process);
+        }
+    }
+
+    @Override
+    public void cancelFragmentWithToast(String string) {
+        NoiseCalibrationInfo = string;
         handler.sendEmptyMessage(showNoiseCalResult);
     }
+
+
 }
