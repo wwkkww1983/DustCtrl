@@ -136,6 +136,7 @@ public class CtrlCommunication extends SerialCommunication{
             data = new SensorData();
         }
         data.setParaB(b);
+        data.setValue(0);
     }
     @Override
     protected boolean checkRecBuff() {
