@@ -177,24 +177,51 @@ public class TcpClient implements GeneralClientProtocol{
 
 
     private class HeartThread extends Thread{
-
+        private static final long INTERVAL = 60000l;//间隔时间为1分钟
         @Override
         public void run() {
             run = true;
             GeneralDataBaseProtocol dataBaseProtocol = GetProtocols.getInstance().getDataBaseProtocol();
             dataBaseProtocol.loadMinDate();
-            dataBaseProtocol.setMinDataInterval(60000l);//设置为1分钟间隔
+            dataBaseProtocol.setMinDataInterval(INTERVAL);//设置为1分钟间隔
             lastMinDate = dataBaseProtocol.getNextMinDate();
             Log.d(tag,"lastMinDate"+tools.timestamp2string(lastMinDate));
             ClientDataBaseCtrl dataBaseCtrl = ScanSensor.getInstance();
+            long lastProtocolMinDate = lastMinDate;
             while (run&&!interrupted()) {
                 now = tools.nowtime2timestamp();
                 dataBaseCtrl.getRealTimeData(realTimeData);
                 addSendBuff(insertOneFrame(getRealTimeDataString(now)));
-                if(now > lastMinDate){//发送分钟数据
-                    dataBaseCtrl.saveMinData(now);
-                    addSendBuff(insertOneFrame(getMinDataString(now,dataBaseProtocol.getLastMinDate(),dataBaseProtocol.getNextMinDate())));
-                    lastMinDate = dataBaseProtocol.calcNextMinDate(now);
+                if(now > lastProtocolMinDate){//发送分钟数据
+                    dataBaseCtrl.saveMinData(now);//保存数据
+                    if(addSendBuff(insertOneFrame(getMinDataString(now,dataBaseProtocol.getLastMinDate(),dataBaseProtocol.getNextMinDate())))) {
+                        Log.d(tag,"发送分钟数据");
+                        lastMinDate = dataBaseProtocol.calcNextMinDate(now);
+                        lastProtocolMinDate = lastMinDate;
+                        while (now > lastMinDate){
+
+                            try {
+                                Thread.sleep(1000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            if(addSendBuff(insertOneFrame(getMinDataString(now,dataBaseProtocol.getLastMinDate(),dataBaseProtocol.getNextMinDate())))) {
+                                Log.d(tag,"补发分钟数据"+tools.timestamp2string(lastMinDate));
+                                lastMinDate = dataBaseProtocol.calcNextMinDate(now);
+                                lastProtocolMinDate = lastMinDate;
+                            }else{
+                                Log.d(tag,"补发中断");
+                                break;
+                            }
+
+                        }
+
+                    }else{
+                        while (now > lastProtocolMinDate) {
+                            lastProtocolMinDate += INTERVAL;
+                        }
+                    }
+
                 }
 
 

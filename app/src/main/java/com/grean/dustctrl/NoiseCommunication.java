@@ -116,7 +116,7 @@ public class NoiseCommunication extends SerialCommunication{
                     calibrationListener.onResult(calInfo,calOk);
                 }
             }
-            Log.d(tag,calInfo);
+           // Log.d(tag,calInfo);
         }else{
 
         }

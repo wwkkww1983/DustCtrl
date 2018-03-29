@@ -5,6 +5,7 @@ import com.grean.dustctrl.process.SensorData;
 import com.tools;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by weifeng on 2017/10/25.
@@ -236,19 +237,19 @@ public class TcpClientShanghaiLocal implements GeneralClientProtocol,GeneralRetu
     }
 
     @Override
-    public String getRealTimeData() {
+    public String getRealTimeData(String qn) {
         long now = tools.nowtime2timestamp();
         return insertOneFrame(getRealTimeDataString(now));
     }
 
     @Override
-    public String getMinData(String qn, long begin, long end) {
-        return insertOneFrame(getMinDataString(begin,end));
+    public List<String> getMinData(String qn, long begin, long end) {
+        return new ArrayList<>();
     }
 
     @Override
-    public String getHourData(String qn, long begin, long end) {
-        return insertOneFrame(getHOurDataString(begin,end));
+    public List<String> getHourData(String qn, long begin, long end) {
+        return new ArrayList<>();
     }
 
     @Override

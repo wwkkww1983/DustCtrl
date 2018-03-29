@@ -4,6 +4,8 @@ import android.util.Log;
 
 import com.tools;
 
+import java.util.List;
+
 /**
  * Created by weifeng on 2017/10/24.
  */
@@ -72,8 +74,8 @@ public class Hjt212CommandProtocol implements GeneralCommandProtocol{
 
     @Override
     public void executeProtocol(GeneralReturnProtocol returnProtocol, TcpClientCallBack callBack, GeneralInfoProtocol infoProtocol) {
-        if(cn.equals("2011")){//实时数据
-            callBack.addOneFrame(returnProtocol.getRealTimeData().getBytes());
+        if(cn.equals("2011")){//提取实时数据
+            callBack.addOneFrame(returnProtocol.getRealTimeData(qn).getBytes());
         }else if(cn.equals("1012")){//修改系统时间
             Log.d(tag,"修改时间");
             callBack.addOneFrame(returnProtocol.getSystemResponse(qn).getBytes());
@@ -87,17 +89,33 @@ public class Hjt212CommandProtocol implements GeneralCommandProtocol{
             Log.d(tag,String.valueOf(year)+"-"+String.valueOf(month)+"-"+String.valueOf(day)+" "+String.valueOf(hour)+":"+String.valueOf(min)+":"+String.valueOf(second));
             infoProtocol.setSystemDate(year,month,day,hour,min,second);
             callBack.addOneFrame(returnProtocol.getSystemOk(qn).getBytes());
-        }else if(cn.equals("2051")){//获取分钟数据
+        }else if(cn.equals("2051")){//提取分钟数据
             callBack.addOneFrame(returnProtocol.getSystemResponse(qn).getBytes());
             begin = tools.tcpTimeString2timestamp(beginTime);
             end = tools.tcpTimeString2timestamp(endTime);
-            callBack.addOneFrame(returnProtocol.getMinData(qn,begin,end).getBytes());
+            List<String> list = returnProtocol.getMinData(qn,begin,end);
+            for(int i=0;i<list.size();i++){
+                callBack.addOneFrame(list.get(i).getBytes());
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
             callBack.addOneFrame(returnProtocol.getSystemOk(qn).getBytes());
-        }else if(cn.equals("2061")){//获取小时数据
+        }else if(cn.equals("2061")){//提取小时数据
             callBack.addOneFrame(returnProtocol.getSystemResponse(qn).getBytes());
             begin = tools.tcpTimeString2timestamp(beginTime);
             end = tools.tcpTimeString2timestamp(endTime);
-            callBack.addOneFrame(returnProtocol.getHourData(qn,begin,end).getBytes());
+            List<String> list = returnProtocol.getHourData(qn,begin,end);
+            for(int i=0;i<list.size();i++){
+                callBack.addOneFrame(list.get(i).getBytes());
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
             callBack.addOneFrame(returnProtocol.getSystemOk(qn).getBytes());
         }else if(cn.equals("2062")){//反馈小时数据
 

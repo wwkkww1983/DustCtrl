@@ -7,6 +7,7 @@ import com.grean.dustctrl.process.SensorData;
 import com.tools;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by weifeng on 2018/3/28.
@@ -102,10 +103,26 @@ public class TcpClientHjt212_2017 implements GeneralClientProtocol,GeneralReturn
         return string;
     }
 
+    private String insertMinData(ArrayList<Float> item){
+        String string = "103-Cou="+tools.float2String3(item.get(GeneralHistoryDataFormat.Dust))+";103-Flag=N;";//=2
+        string += "104-Cou="+tools.float2String3(item.get(GeneralHistoryDataFormat.Noise))+";104-Flag=N;";
+        string += "105-Cou="+tools.float2String3(item.get(GeneralHistoryDataFormat.Humidity))+";105-Flag=N;";
+        string += "106-Cou="+tools.float2String3(item.get(GeneralHistoryDataFormat.Temperature))+";106-Flag=N;";
+        string += "107-Cou="+tools.float2String3(item.get(GeneralHistoryDataFormat.Pressure))+";107-Flag=N;";
+        string += "108-Cou="+tools.float2String3(item.get(GeneralHistoryDataFormat.WindForce))+";108-Flag=N;";
+        string += "109-Cou="+tools.float2String3(item.get(GeneralHistoryDataFormat.WindDirection))+";109-Flag=N;";
+        return string;
+    }
+
     private String getRealTimeDataString(long now){
         String timeString = tools.timeStamp2TcpStringWithoutMs(now)+";";
         String qnString = tools.timeStamp2TcpString(now);
         return  "QN="+qnString+";ST=21;CN=2011;PW=123456;MN="+mnCode+";Flag=9;CP=&&DataTime="+timeString+insertSensorData(realTimeData)+"&&";
+    }
+
+    private String getRealTimeDataString(String qn){
+        String timeString = qn.substring(0,13);
+        return  "QN="+qn+";ST=21;CN=2011;PW=123456;MN="+mnCode+";Flag=9;CP=&&DataTime="+timeString+insertSensorData(realTimeData)+"&&";
     }
 
     private String getMinDataString(long now,long lastMinDate,long nexMinDate){
@@ -117,6 +134,22 @@ public class TcpClientHjt212_2017 implements GeneralClientProtocol,GeneralReturn
     private String getMinDataString(String qn,long lastMinDate,long nexMinDate){
         return "QN="+qn+";ST=31;CN=2061;PW=123456;MN="+mnCode+";CP=&&DataTime="+tools.timeStamp2TcpStringWithoutMs(lastMinDate)+";"+
                 insertMinData(getMeanData(dataBaseProtocol.getData(lastMinDate ,nexMinDate)))+"&&";
+    }
+
+    private String getMinDateFormat (long date,ArrayList<Float> item){
+        String dateString = "CP=&&DataTime="+tools.timeStamp2TcpString(date)+";";
+        return dateString+insertMinData(item)+"&&";
+    }
+
+    private List<String> getHistoryMinDataString(String qn,long lastMinDate ,long nextMinDate){
+        String head = "QN="+qn+";ST=31;CN=2061;PW=123456;MN="+mnCode+";";
+        List<String> list = new ArrayList<>();
+        GeneralHistoryDataFormat dataFormat = dataBaseProtocol.getData(lastMinDate,nextMinDate);
+        for(int i=0;i<dataFormat.getSize();i++){
+            String string = insertOneFrame(head+getMinDateFormat(dataFormat.getDate(i),dataFormat.getItem(i)));
+            list.add(string);
+        }
+        return list;
     }
 
     /**
@@ -156,29 +189,28 @@ public class TcpClientHjt212_2017 implements GeneralClientProtocol,GeneralReturn
     }
 
     @Override
-    public String getRealTimeData() {
-        long now = tools.nowtime2timestamp();
-        return insertOneFrame(getRealTimeDataString(now));
+    public String getRealTimeData(String qn) {
+        return insertOneFrame(getRealTimeDataString(qn));
     }
 
     @Override
-    public String getMinData(String qn, long begin, long end) {
-        return insertOneFrame(getMinDataString(qn,begin,end));
+    public List<String> getMinData(String qn, long begin, long end) {
+       return getHistoryMinDataString(qn,begin,end);
     }
 
     @Override
-    public String getHourData(String qn, long begin, long end) {
-        return insertOneFrame(getHOurDataString(begin,end));
+    public List<String> getHourData(String qn, long begin, long end) {
+        return getHistoryMinDataString(qn,begin,end);
     }
 
     @Override
     public String getSystemResponse(String qn) {
-        return insertOneFrame("ST=91;CN=9011;PW=123456;MN="+mnCode+";Flag=1;CP=&&QN="+qn+";QnRtn=1&&");
+        return insertOneFrame("QN="+qn+"ST=91;CN=9011;PW=123456;MN="+mnCode+";Flag=9;CP=&&QnRtn=1&&");
     }
 
     @Override
     public String getSystemOk(String qn) {
-        return insertOneFrame("ST=91;CN=9011;PW=123456;MN="+mnCode+";CP=&&QN="+qn+";ExeRtn=1&&");
+        return insertOneFrame("QN="+qn+";ST=91;CN=9012;PW=123456;MN="+mnCode+";Flag=8;CP=&&ExeRtn=1&&");
     }
 
     private class HeartThread extends Thread{
