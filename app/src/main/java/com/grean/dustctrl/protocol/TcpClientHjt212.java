@@ -1,6 +1,7 @@
 package com.grean.dustctrl.protocol;
 
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 
@@ -22,7 +23,7 @@ public class TcpClientHjt212 implements GeneralClientProtocol{
     private String mnCode = "88888";
     private long lastMinDate,now;
     private HeartThread thread;
-    private Handler handler = new Handler(){
+    private Handler handler = new Handler(Looper.getMainLooper()){
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what){

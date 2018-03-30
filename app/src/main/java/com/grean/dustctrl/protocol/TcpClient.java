@@ -1,6 +1,7 @@
 package com.grean.dustctrl.protocol;
 
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.os.StrictMode;
 import android.util.Log;
@@ -25,7 +26,7 @@ public class TcpClient implements GeneralClientProtocol{
     private float [] realTimeData = new float[7];
     //private static String realTimeDataBody = "&&";
     private long lastMinDate,minInterval,now;
-    private Handler handler = new Handler(){
+    private Handler handler = new Handler(Looper.getMainLooper()){
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what){

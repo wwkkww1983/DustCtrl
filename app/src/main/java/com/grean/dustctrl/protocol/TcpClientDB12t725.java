@@ -1,6 +1,7 @@
 package com.grean.dustctrl.protocol;
 
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 
@@ -25,7 +26,7 @@ public class TcpClientDB12t725 implements GeneralClientProtocol,GeneralReturnPro
     private boolean heartRun = false;
     private long lastMinDate,lastHourDate;
     private HeartThread thread;
-    private Handler handler = new Handler(){
+    private Handler handler = new Handler(Looper.getMainLooper()){
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what){

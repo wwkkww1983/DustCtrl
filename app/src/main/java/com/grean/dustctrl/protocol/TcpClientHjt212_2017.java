@@ -1,6 +1,7 @@
 package com.grean.dustctrl.protocol;
 
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 
@@ -26,7 +27,7 @@ public class TcpClientHjt212_2017 implements GeneralClientProtocol,GeneralReturn
     private TcpClientCallBack callBack;
     private GeneralCommandProtocol commandProtocol;
     private GeneralInfoProtocol infoProtocol;
-    private Handler handler = new Handler(){
+    private Handler handler = new Handler(Looper.getMainLooper()){
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what){
