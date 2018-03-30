@@ -1,5 +1,7 @@
 package com.grean.dustctrl.protocol;
 
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 
 import com.grean.dustctrl.process.ScanSensor;
@@ -20,6 +22,29 @@ public class TcpClientHjt212 implements GeneralClientProtocol{
     private String mnCode = "88888";
     private long lastMinDate,now;
     private HeartThread thread;
+    private Handler handler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what){
+                case ClientDataBaseCtrl.UPDATE_REAL_TIME:
+                    if(msg.obj!=null){
+                        SensorData data = (SensorData) msg.obj;
+                        realTimeData[GeneralHistoryDataFormat.Dust] = data.getDust();
+                        realTimeData[GeneralHistoryDataFormat.Temperature] = data.getAirTemperature();
+                        realTimeData[GeneralHistoryDataFormat.Humidity] = data.getAirHumidity();
+                        realTimeData[GeneralHistoryDataFormat.Pressure] = data.getAirPressure();
+                        realTimeData[GeneralHistoryDataFormat.Noise] = data.getNoise();
+                        realTimeData[GeneralHistoryDataFormat.WindDirection] = data.getWindDirection();
+                        realTimeData[GeneralHistoryDataFormat.WindForce] = data.getWindForce();
+                    }
+
+                    break;
+                default:
+
+                    break;
+            }
+        }
+    };
 
     public TcpClientHjt212(TcpClientCallBack callBack){
         this.callBack = callBack;
@@ -168,7 +193,7 @@ public class TcpClientHjt212 implements GeneralClientProtocol{
                 /*String rtdString = insertOneFrame(getRealTimeDataString(now));
                 Log.d(tag,"send rtd data="+rtdString);
                 addSendBuff(rtdString);*/
-                dataBaseCtrl.getRealTimeData(realTimeData);
+                dataBaseCtrl.getRealTimeData(handler);
                 addSendBuff(insertOneFrame(getRealTimeDataString(now)));
                 if(now > lastMinDate){//发送分钟数据
                     dataBaseCtrl.saveMinData(now);

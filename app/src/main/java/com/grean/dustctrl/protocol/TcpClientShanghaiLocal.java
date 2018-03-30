@@ -1,5 +1,8 @@
 package com.grean.dustctrl.protocol;
 
+import android.os.Handler;
+import android.os.Message;
+
 import com.grean.dustctrl.process.ScanSensor;
 import com.grean.dustctrl.process.SensorData;
 import com.tools;
@@ -21,6 +24,30 @@ public class TcpClientShanghaiLocal implements GeneralClientProtocol,GeneralRetu
     private long lastMinDate,lastHourDate;
     private GeneralInfoProtocol infoProtocol;
     private GeneralCommandProtocol commandProtocol;
+    private Handler handler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what){
+                case ClientDataBaseCtrl.UPDATE_REAL_TIME:
+                    if(msg.obj!=null){
+                        SensorData data = (SensorData) msg.obj;
+                        realTimeData[GeneralHistoryDataFormat.Dust] = data.getDust();
+                        realTimeData[GeneralHistoryDataFormat.Temperature] = data.getAirTemperature();
+                        realTimeData[GeneralHistoryDataFormat.Humidity] = data.getAirHumidity();
+                        realTimeData[GeneralHistoryDataFormat.Pressure] = data.getAirPressure();
+                        realTimeData[GeneralHistoryDataFormat.Noise] = data.getNoise();
+                        realTimeData[GeneralHistoryDataFormat.WindDirection] = data.getWindDirection();
+                        realTimeData[GeneralHistoryDataFormat.WindForce] = data.getWindForce();
+                    }
+
+                    break;
+                default:
+
+                    break;
+            }
+        }
+    };
+
     public TcpClientShanghaiLocal(TcpClientCallBack callBack){
         this.callBack = callBack;
         commandProtocol = GetProtocols.getInstance().getGeneralCommandProtocol();
@@ -275,7 +302,7 @@ public class TcpClientShanghaiLocal implements GeneralClientProtocol,GeneralRetu
             heartRun = true;
             while (heartRun&&!interrupted()) {
                 long now = tools.nowtime2timestamp();
-                dataBaseCtrl.getRealTimeData(realTimeData);
+                dataBaseCtrl.getRealTimeData(handler);
                 addSendBuff(insertOneFrame(getRealTimeDataString(now)));
                 if(now > lastMinDate){//发送分钟数据
                     dataBaseCtrl.saveMinData(now);

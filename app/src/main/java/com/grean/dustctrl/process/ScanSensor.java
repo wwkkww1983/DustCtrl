@@ -4,6 +4,8 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 
 import com.grean.dustctrl.CtrlCommunication;
@@ -107,7 +109,15 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
         values.put("windforce",minData[GeneralHistoryDataFormat.WindForce]);
         values.put("winddirection",minData[GeneralHistoryDataFormat.WindDirection]);
         values.put("noise",minData[GeneralHistoryDataFormat.Noise]);
-        db.insert("result",null,values);
+        db.beginTransaction();
+        try{
+            db.insert("result",null,values);
+            db.setTransactionSuccessful();
+        }catch (Exception e){
+
+        }finally {
+            db.endTransaction();
+        }
         if(data!=null) {
             values = new ContentValues();
             values.put("date", now);
@@ -116,15 +126,23 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
             values.put("hihumidity", data.getHiHumidity());
             values.put("lohumidity", data.getLoHumidity());
             values.put("pwm", data.getHeatPwm());
-            db.insert("detail", null, values);
+            db.beginTransaction();
+            try{
+                db.insert("detail", null, values);
+                db.setTransactionSuccessful();
+            }catch (Exception e){
+
+            }finally {
+                db.endTransaction();
+            }
         }
         db.close();
         helper.close();
     }
 
     @Override
-    public void getRealTimeData(float[] realTimeData) {
-        if((realTimeData.length >= 7)&&(data!=null)){
+    public void getRealTimeData(Handler handler) {
+        /*if((realTimeData.length >= 7)&&(data!=null)){
             realTimeData[GeneralHistoryDataFormat.Dust] = data.getDust();
             realTimeData[GeneralHistoryDataFormat.Temperature] = data.getAirTemperature();
             realTimeData[GeneralHistoryDataFormat.Humidity] = data.getAirHumidity();
@@ -132,7 +150,11 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
             realTimeData[GeneralHistoryDataFormat.Noise] = data.getNoise();
             realTimeData[GeneralHistoryDataFormat.WindDirection] = data.getWindDirection();
             realTimeData[GeneralHistoryDataFormat.WindForce] = data.getWindForce();
-        }
+        }*/
+        Message msg = new Message();
+        msg.what = ClientDataBaseCtrl.UPDATE_REAL_TIME;
+        msg.obj = data;
+        handler.sendMessage(msg);
     }
 
     private class CalibrationDustMeterZeroThread extends Thread{

@@ -41,11 +41,16 @@ public class SystemLog implements Observer{
                 values.put("date",log.getDate());
                 values.put("content",log.getText());
                 Log.d(tag,log.getText());
-                db.insert("log",null,values);
+                db.beginTransaction();
+                try{
+                    db.insert("log",null,values);
+                    db.setTransactionSuccessful();
+                }catch (Exception e){
 
-
+                }finally {
+                    db.endTransaction();
+                }
             }
-
             db.close();
             helperDbTask.close();
         }else {
@@ -58,7 +63,15 @@ public class SystemLog implements Observer{
                 values.put("date",log.getDate());
                 values.put("content",log.getText());
                 Log.d(tag,log.getText());
-                db.insert("log",null,values);
+                db.beginTransaction();
+                try{
+                    db.insert("log",null,values);
+                    db.setTransactionSuccessful();
+                }catch (Exception e){
+
+                }finally {
+                    db.endTransaction();
+                }
             }
 
             db.close();
