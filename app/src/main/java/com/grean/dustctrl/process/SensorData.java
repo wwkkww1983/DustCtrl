@@ -13,23 +13,11 @@ public class SensorData {
     private float value;//粉尘仪原始值
     private float paraK;//粉尘仪K值
     private float paraB;//
-    private float airTemperature;
-    private float airHumidity;
-    private float airPressure;
-    private float windForce;
-    private float windDirection;
-    private float noise;
-    private boolean acIn;
-    private boolean batteryLow;
+    private float noise,airTemperature,airHumidity,airPressure,windForce,windDirection;
+    private boolean acIn,batteryLow,blockPos;
     private boolean[] ctrlDo = new boolean[5];
-    private float hiTemp;
-    private float loTemp;
-    private float hiHumidity;
-    private float loHumidity;
-    private int heatPwm;
-    private int motorState;
-    private int motorRounds;
-    private int motorTime;
+    private float hiTemp,loTemp,hiHumidity,loHumidity,pipeTemp;
+    private int heatPwm,motorState,motorRounds,motorTime;
     private float hiDewPoint,loDewPoint;
 
     public SensorData(){
@@ -149,7 +137,23 @@ public class SensorData {
         }
     }
 
-    public void setCtrlDo(int index,boolean value) {
+    public boolean isBlockPos() {
+        return blockPos;
+    }
+
+    public void setBlockPos(boolean blockPos) {
+        this.blockPos = blockPos;
+    }
+
+    public float getPipeTemp() {
+        return pipeTemp;
+    }
+
+    public void setPipeTemp(float pipeTemp) {
+        this.pipeTemp = pipeTemp;
+    }
+
+    public void setCtrlDo(int index, boolean value) {
         if (index < ctrlDo.length) {
             this.ctrlDo[index] = value;
         }

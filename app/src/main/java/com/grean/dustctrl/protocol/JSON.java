@@ -41,6 +41,37 @@ import java.util.Stack;
 public class JSON {
     private static final String tag="JSON";
 
+    public static boolean isFrameRight(String content){
+        if(content.length() <12){
+            return false;
+        }
+
+        if(!content.substring(0,2).equals("##")){
+            return false;
+        }
+
+        if(!content.substring(content.length()-2,content.length()).equals("\r\n")){
+            return false;
+        }
+
+        String string = content.substring(2,content.indexOf("$$"));
+        try{
+            int len = Integer.valueOf(string);
+            if(len!=(content.length()-12)){
+                return false;
+            }
+        }catch (NumberFormatException e){
+            return false;
+        }
+
+        return true;
+    }
+
+    private static byte[] insertFrame(String content){
+        String lenString = String.format("%06d",content.length());
+        return ("##"+lenString+"$$"+content+"\r\n").getBytes();
+    }
+
     public static byte[] createJsonObject(int total,boolean success, List<Map<String,Object>> list) throws JSONException {
         Map<String,Object> map;
         JSONObject jsonObject = new JSONObject();
@@ -89,7 +120,7 @@ public class JSON {
         if(jsonObject.has("dustName")) {
             infoProtocol.setDustName(jsonObject.getInt("dustName"));
         }
-        return object.toString().getBytes();
+        return insertFrame(object.toString());
     }
 
     private static byte[] handleDownloadSetting(GeneralInfoProtocol infoProtocol) throws JSONException {
@@ -114,7 +145,7 @@ public class JSON {
         object.put("clientProtocolNames",array);
         object.put("clientProtocolName",infoProtocol.getClientProtocolName());
         object.put("alarmDust",infoProtocol.getAlarmDust());
-        return object.toString().getBytes();
+        return insertFrame(object.toString());
     }
 
     private static byte[] handleOperate(JSONObject jsonObject,GeneralInfoProtocol infoProtocol) throws JSONException {
@@ -190,7 +221,7 @@ public class JSON {
         }else{
             object.put("ErrorCommand",true);
         }
-        return object.toString().getBytes();
+        return insertFrame(object.toString());
     }
 
     private static byte[] handleRealTimeData(GeneralInfoProtocol infoProtocol) throws JSONException {
@@ -226,7 +257,7 @@ public class JSON {
         array.put(putItem("lowDew",data.getLoDewPoint()));
         array.put(putItem("value",data.getValue()));
         object.put("realTimeData",array);
-        return object.toString().getBytes();
+        return insertFrame(object.toString());
     }
 
     private static byte[] handleOperateInit(JSONObject jsonObject,GeneralInfoProtocol infoProtocol) throws JSONException {
@@ -239,7 +270,7 @@ public class JSON {
         }
         object.put("dustNames",array);
         object.put("dustName",infoProtocol.getDustName());
-        return object.toString().getBytes();
+        return insertFrame(object.toString());
     }
 
     private static byte[] handleLog(JSONObject jsonObject,GeneralInfoProtocol infoProtocol) throws JSONException {
@@ -257,7 +288,7 @@ public class JSON {
             array.put(string);
         }
         object.put("ArrayData",array);
-        return object.toString().getBytes();
+        return insertFrame(object.toString());
     }
 
     private static byte[] handleHistoryData(JSONObject jsonObject,GeneralInfoProtocol infoProtocol) throws JSONException {
@@ -288,7 +319,7 @@ public class JSON {
             array.put(item);
         }
         object.put("ArrayData",array);
-        return object.toString().getBytes();
+        return insertFrame(object.toString());
     }
 
     /**
@@ -315,7 +346,7 @@ public class JSON {
         }else {
             JSONObject object = new JSONObject();
             object.put("protocolType","error");
-            return object.toString().getBytes();
+            return insertFrame(object.toString());
         }
     }
     /**

@@ -38,8 +38,13 @@ public class TcpServer implements GeneralServerProtocol{
     public byte[] handleProtocol(byte[] rec, int count) {
         String string = new String(rec,0,count);
         try {
-            //Log.d(tag, "server receive="+ string);
-            return JSON.handleJsonString(string,GetProtocols.getInstance().getInfoProtocol());
+            Log.d(tag, "server receive="+ string);
+            if(JSON.isFrameRight(string)) {
+                return JSON.handleJsonString(string.substring(string.indexOf("$$")+2,string.indexOf("\r\n")), GetProtocols.getInstance().getInfoProtocol());
+            }else{
+                Log.d(tag, "error"+ string);
+                return testFrame;
+            }
         } catch (JSONException e) {
             //Log.d(tag, "error server receive="+ string);
             e.printStackTrace();
