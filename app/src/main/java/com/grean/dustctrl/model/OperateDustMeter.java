@@ -1,6 +1,7 @@
 package com.grean.dustctrl.model;
 
 import com.grean.dustctrl.CtrlCommunication;
+import com.grean.dustctrl.dust.DustMeterLibs;
 import com.grean.dustctrl.myApplication;
 import com.grean.dustctrl.presenter.NotifyOperateInfo;
 import com.grean.dustctrl.presenter.NotifyProcessDialogInfo;
@@ -19,8 +20,9 @@ public class OperateDustMeter implements NotifyScanEnd{
     private NotifyOperateInfo info;
     private NotifyProcessDialogInfo dialogInfo;
     public static final String[] DustNames = {"TSP","PM10","PM2.5"};
+    public static final String[] DustMeters = {"LD-8-G","LD-8-J"};
     public static final int TSP=0,PM10=1,PM2_5=2;
-    private int dustName;
+    private int dustName,dustMeter;
 
     public OperateDustMeter(NotifyOperateInfo info){
         dustMeterRun = com.isDustMeterRun();
@@ -98,10 +100,21 @@ public class OperateDustMeter implements NotifyScanEnd{
         return myApplication.getInstance().getConfigInt("DustName");
     }
 
+    public int getDustMeter(){
+        return myApplication.getInstance().getConfigInt("DustMeter");
+    }
+
     public void setDustName(int name){
         if(name <DustNames.length){
             dustName = name;
             myApplication.getInstance().saveConfig("DustName",name);
+        }
+    }
+
+    public void setDustMeter(int name){
+        if(name <DustMeters.length){
+            DustMeterLibs.getInstance().setDustMeterName(name);
+            myApplication.getInstance().saveConfig("DustMeter",name);
         }
     }
 

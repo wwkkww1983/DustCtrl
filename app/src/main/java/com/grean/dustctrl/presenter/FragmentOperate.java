@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,6 +38,8 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
     private static final int ShowDustMeterInfo = 2;
     private static final int CancelDialogWithToast = 3,showNoiseCalResult = 4;
 
+    private static final String tag = "FragmentOperate";
+
     private ProcessDialogFragment dialogFragment;
     private ProcessFragment processFragment;
     private String dustMeterInfo,autoCalTime,toastString,NoiseCalibrationInfo;
@@ -45,7 +48,7 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
     private TextView tvDustMeterInfo,tvNextAutoCalTime,tvLocalIp,tvSoftwareVersion;//tvParaK
     private EditText etMotorRounds,etMotorTime,etAutoCalInterval,etServerIp,etServerPort,etUpdateSoftwareUrl,etTargetValue,etMnCode,etAlarm,etSetParaK,etSetParaB;
     private Switch swDustMeterRun,swValve,swFan,swExt1,swExt2,swBackup,swAutoCalibrationEnable;
-    private Spinner spProtocol,spDustName;
+    private Spinner spProtocol,spDustName,spDustMeter;
     private int clientProtocolName;
 
 
@@ -127,7 +130,14 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
         ArrayAdapter<String>dustNames = new ArrayAdapter<String>(getActivity(),R.layout.my_spnner,dustMeter.DustNames);
         spDustName.setOnItemSelectedListener(this);
         spDustName.setAdapter(dustNames);
-        spDustName.setSelection(dustMeter.getDustName());
+        spDustName.setSelection(dustMeter.getDustName(),true);
+
+        ArrayAdapter<String>dustMeters = new ArrayAdapter<String>(getActivity(),R.layout.my_spnner,dustMeter.DustMeters);
+        spDustMeter.setOnItemSelectedListener(this);
+        //spDustMeter.setOnItemClickListener(this);
+        spDustMeter.setAdapter(dustMeters);
+        spDustMeter.setSelection(dustMeter.getDustMeter(),true);
+
 
         etAlarm.setText(system.getAlarmDust());
         swValve.setChecked(dustMeter.getCtrlDo(0));
@@ -138,6 +148,7 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
     }
 
     private void initView(View v){
+        spDustMeter = v.findViewById(R.id.spOperateDustMeter);
         spDustName = v.findViewById(R.id.spOperateDust);
         btnDustMeterInquire = v.findViewById(R.id.btnOperateInquireDuster);
         btnDustMeterManCal = v.findViewById(R.id.btnOperateManCal);
@@ -361,11 +372,14 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
                 break;
             case R.id.spOperateDust:
                 dustMeter.setDustName(i);
-                Toast.makeText(getActivity(),"当前扬尘参数为 "+dustMeter.DustNames[i],Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getActivity(),"当前扬尘参数为 "+dustMeter.DustNames[i],Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent();
                 intent.setAction("changeDustName");
                 intent.putExtra("name",dustMeter.DustNames[i]);
                 getActivity().sendBroadcast(intent);
+                break;
+            case R.id.spOperateDustMeter:
+                dustMeter.setDustMeter(i);
                 break;
             default:
 

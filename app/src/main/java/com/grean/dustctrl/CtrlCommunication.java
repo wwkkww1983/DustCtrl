@@ -4,6 +4,8 @@ import android.util.Log;
 import android.widget.Switch;
 
 import com.SerialCommunication;
+import com.grean.dustctrl.dust.DustMeterController;
+import com.grean.dustctrl.dust.DustMeterLibs;
 import com.grean.dustctrl.process.DustMeterInfo;
 import com.grean.dustctrl.process.SensorData;
 import com.tools;
@@ -190,8 +192,9 @@ public class CtrlCommunication extends SerialCommunication{
             }
 
         }else if (checkFrameWithAddr(rec,size,(byte)0xdd)){//粉尘仪
+            DustMeterLibs.getInstance().getDustMeterController().handleProtocol(rec,size,state,data,info);
            // Log.d(tag,"dust sync right check");
-            switch(state){
+           /* switch(state){
                 case Dust:
                     int intDust = tools.byte2int(rec,3);
                     data.setValue(intDust);
@@ -225,7 +228,7 @@ public class CtrlCommunication extends SerialCommunication{
                     break;
                 default:
                     break;
-            }
+            }*/
 
         }else if (checkFrameWithAddr(rec,size,(byte)0xe1)){//风速
             switch (state){
@@ -310,46 +313,47 @@ public class CtrlCommunication extends SerialCommunication{
      * @param cmd
      */
     public void SendFrame(int cmd){
+        DustMeterController controller = DustMeterLibs.getInstance().getDustMeterController();
         switch (cmd){
             case Inquire:
                 addSendBuff(cmdInquire,cmd);
             break;
             case Dust:
-                addSendBuff(cmdDustMeterCpm,cmd);
+                addSendBuff(controller.getReadCpmCmd(),DustMeterController.Dust);
                 break;
             case DustMeterStop:
-               addSendBuff(cmdStopDustMeter,cmd);
+               addSendBuff(controller.getStopCmd(),DustMeterController.DustMeterStop);
                 dustMeterRun = false;
                 break;
             case DustMeterRun:
-                addSendBuff(cmdRunDustMeter,cmd);
+                addSendBuff(controller.getRunCmd(),DustMeterController.DustMeterRun);
                 dustMeterRun = true;
                 break;
             case DustMeterPumpTime:
-                addSendBuff(cmdDustMeterPumpTime,cmd);
+                addSendBuff(controller.getPumpTimeCmd(),DustMeterController.DustMeterPumpTime);
                 break;
             case DustMeterLaserTime:
-                addSendBuff(cmdDustMeterLaserTime,cmd);
+                addSendBuff(controller.getLaserTimeCmd(),DustMeterController.DustMeterLaserTime);
                 break;
             case DustMeterBgStart:
-                addSendBuff(cmdDustMeterBgStart,cmd);
+                addSendBuff(controller.getBgStartCmd(),DustMeterController.DustMeterBgStart);
                 break;
             case DustMeterBgEnd:
-                addSendBuff(cmdDustMeterBgEnd,cmd);
+                addSendBuff(controller.getBgEndCmd(),DustMeterController.DustMeterBgEnd);
                 break;
             case DustMeterBgResult:
                 info.setBgOk(false);
-                addSendBuff(cmdDustMeterBgResult,cmd);
+                addSendBuff(controller.getBgResultCmd(),DustMeterController.DustMeterBgResult);
                 break;
             case DustMeterSpanStart:
                 info.setSpanOk(false);
-                addSendBuff(cmdDustMeterSpanStart,cmd);
+                addSendBuff(controller.getSpanStartCmd(),DustMeterController.DustMeterSpanStart);
                 break;
             case DustMeterSpanEnd:
-                addSendBuff(cmdDustMeterSpanEnd,cmd);
+                addSendBuff(controller.getSpanEndCmd(),DustMeterController.DustMeterSpanEnd);
                 break;
             case DustMeterSpanResult:
-                addSendBuff(cmdDustMeterSpanResult,cmd);
+                addSendBuff(controller.getSpanResult(),DustMeterController.DustMeterSpanResult);
                 break;
             case AirParameter:
                 addSendBuff(cmdAirData,cmd);
