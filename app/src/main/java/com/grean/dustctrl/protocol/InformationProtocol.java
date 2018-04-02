@@ -16,6 +16,7 @@ import com.grean.dustctrl.NoiseCalibrationListener;
 import com.grean.dustctrl.NoiseCommunication;
 import com.grean.dustctrl.ReadWriteConfig;
 import com.grean.dustctrl.SocketTask;
+import com.grean.dustctrl.dust.DustMeterLibs;
 import com.grean.dustctrl.model.OperateDustMeter;
 import com.grean.dustctrl.myApplication;
 import com.grean.dustctrl.presenter.NotifyDataInfo;
@@ -475,6 +476,21 @@ public class InformationProtocol extends Observable implements GeneralInfoProtoc
     @Override
     public int getCalibrationNoiseState() {
         return calibrationNoiseSate;
+    }
+
+    @Override
+    public String[] getDustMeterNames() {
+        return OperateDustMeter.DustMeters;
+    }
+
+    @Override
+    public int getDustMeter() {
+        return config.getConfigInt("DustMeter");
+    }
+
+    @Override
+    public void setDustMeter(int name) {
+        config.saveConfig("DustMeter",name);
     }
 
 

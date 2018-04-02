@@ -97,7 +97,7 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
         calcMean();
         DbTask helper = new DbTask(context,1);
         SQLiteDatabase db = helper.getReadableDatabase();
-        Log.d(tag,"存储数据"+tools.timestamp2string(now));
+        //Log.d(tag,"存储数据"+tools.timestamp2string(now));
         ContentValues values = new ContentValues();
         values.put("date",now);
         values.put("dust",minData[GeneralHistoryDataFormat.Dust]);

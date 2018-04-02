@@ -120,6 +120,9 @@ public class JSON {
         if(jsonObject.has("dustName")) {
             infoProtocol.setDustName(jsonObject.getInt("dustName"));
         }
+        if(jsonObject.has("dustMeter")){
+            infoProtocol.setDustMeter(jsonObject.getInt("dustMeter"));
+        }
         return insertFrame(object.toString());
     }
 
@@ -270,6 +273,15 @@ public class JSON {
         }
         object.put("dustNames",array);
         object.put("dustName",infoProtocol.getDustName());
+
+        names = infoProtocol.getDustMeterNames();
+        array = new JSONArray();
+        for(int i=0;i<names.length;i++){
+            array.put(names[i]);
+        }
+        object.put("dustMeterNames",array);
+        object.put("dustMeter",infoProtocol.getDustMeter());
+
         return insertFrame(object.toString());
     }
 

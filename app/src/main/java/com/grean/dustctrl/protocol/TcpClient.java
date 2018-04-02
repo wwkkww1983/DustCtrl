@@ -221,7 +221,7 @@ public class TcpClient implements GeneralClientProtocol{
                 if(now > lastProtocolMinDate){//发送分钟数据
                     dataBaseCtrl.saveMinData(now);//保存数据
                     if(addSendBuff(insertOneFrame(getMinDataString(now,dataBaseProtocol.getLastMinDate(),dataBaseProtocol.getNextMinDate())))) {
-                        Log.d(tag,"发送分钟数据");
+                        //Log.d(tag,"发送分钟数据");
                         lastMinDate = dataBaseProtocol.calcNextMinDate(now);
                         lastProtocolMinDate = lastMinDate;
                         while (now > lastMinDate){

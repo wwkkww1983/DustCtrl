@@ -147,4 +147,18 @@ public interface GeneralInfoProtocol {
      * @return =0 正在校准 =1 校准成功 =2校准失败
      */
     int getCalibrationNoiseState();
+
+    /**
+     * 获取粉尘仪型号名称集合
+     * @return
+     */
+    String[] getDustMeterNames();
+
+    /**
+     * 获取当前粉尘仪名称
+     * @return
+     */
+    int getDustMeter();
+
+    void setDustMeter(int name);
 }
