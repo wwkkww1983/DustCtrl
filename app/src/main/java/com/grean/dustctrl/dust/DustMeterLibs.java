@@ -1,10 +1,13 @@
 package com.grean.dustctrl.dust;
 
+import android.util.Log;
+
 /**
  * Created by weifeng on 2018/4/2.
  */
 
 public class DustMeterLibs {
+    private static final String tag = "DustMeterLibs";
     private DustMeterController dustMeterController;
     private int dustMeterName;
     private static DustMeterLibs instance = new DustMeterLibs();
@@ -14,6 +17,7 @@ public class DustMeterLibs {
     }
 
     private void selectController(int name){
+        Log.d(tag,String.valueOf(name));
         switch (name){
             case 0:
                 dustMeterController = new SibataLd8Gean();

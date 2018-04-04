@@ -23,6 +23,9 @@ public class SibataLd8Gean implements DustMeterController{
     private static final byte[] cmdDustMeterSpanStart={(byte) 0xdd,0x06,0x00,0x08,0x00,0x01, (byte) 0xda, (byte) 0x94};
     private static final byte[] cmdDustMeterSpanEnd={(byte) 0xdd,0x06,0x00,0x08,0x00,0x00,0x1b,0x54};
     private static final byte[] cmdDustMeterSpanResult={(byte) 0xdd,0x03,0x00,0x09,0x00,0x01,0x47,0x54};
+
+    private static final byte[] cmdAutoCalValveOn={ 0x55,0x06,0x10,0x01,0x00,0x01,0x10, (byte) 0xDE};
+    private static final byte[] cmdAutoCalValveOff={ 0x55,0x06,0x10,0x02,0x00,0x01, (byte) 0xE0, (byte) 0xDE};
     @Override
     public byte[] getReadCpmCmd() {
         return cmdDustMeterCpm;
@@ -76,6 +79,40 @@ public class SibataLd8Gean implements DustMeterController{
     @Override
     public byte[] getSpanResult() {
         return cmdDustMeterSpanResult;
+    }
+
+    @Override
+    public byte[] getValveOnCmd() {
+        return cmdAutoCalValveOn;
+    }
+
+    @Override
+    public byte[] getValveOffCmd() {
+        return cmdAutoCalValveOff;
+    }
+
+    @Override
+    public byte[] getMotorStop() {
+        byte[] cmdMotorState = {0x55,0x06,0x10,0x05,0x00,0x00,0x0d,0x0a};
+        cmdMotorState[5] = 0x00;
+        tools.addCrc16(cmdMotorState,0,6);
+        return cmdMotorState;
+    }
+
+    @Override
+    public byte[] getMotorForward() {
+        byte[] cmdMotorState = {0x55,0x06,0x10,0x05,0x00,0x00,0x0d,0x0a};
+        cmdMotorState[5] = 0x01;
+        tools.addCrc16(cmdMotorState,0,6);
+        return cmdMotorState;
+    }
+
+    @Override
+    public byte[] getMotorBackward() {
+        byte[] cmdMotorState = {0x55,0x06,0x10,0x05,0x00,0x00,0x0d,0x0a};
+        cmdMotorState[5] = 0x02;
+        tools.addCrc16(cmdMotorState,0,6);
+        return cmdMotorState;
     }
 
     @Override

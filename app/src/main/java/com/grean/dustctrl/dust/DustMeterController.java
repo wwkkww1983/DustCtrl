@@ -30,5 +30,10 @@ public interface DustMeterController {
     byte[] getSpanStartCmd();
     byte[] getSpanEndCmd();
     byte[] getSpanResult();
+    byte[] getValveOnCmd();
+    byte[] getValveOffCmd();
+    byte[] getMotorStop();
+    byte[] getMotorForward();
+    byte[] getMotorBackward();
     void handleProtocol(byte[] rec, int size, int state, SensorData data, DustMeterInfo info);
 }

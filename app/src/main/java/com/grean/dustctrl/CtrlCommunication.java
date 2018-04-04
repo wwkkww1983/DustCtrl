@@ -20,7 +20,7 @@ public class CtrlCommunication extends SerialCommunication{
     private static final String tag="CtrlCommunication";
     private static CtrlCommunication instance = new CtrlCommunication();
     private static final byte[] cmdInquire = {0x55,0x03,0x20,0x01,0x00,0x1f,0x53, (byte) 0xd6};
-    private static final byte[] cmdDustMeterCpm = {(byte) 0xdd,0x03,0x00,0x01,0x00,0x01, (byte) 0xc6, (byte) 0x96};
+   /* private static final byte[] cmdDustMeterCpm = {(byte) 0xdd,0x03,0x00,0x01,0x00,0x01, (byte) 0xc6, (byte) 0x96};
     private static final byte[] cmdStopDustMeter = {(byte) 0xdd,0x06,0x00,0x03,0x00,0x00,0x6a, (byte) 0x96};
     private static final byte[] cmdRunDustMeter = {(byte) 0xdd,0x06,0x00,0x03,0x00,0x01, (byte) 0xab,0x56};
     private static final byte[] cmdDustMeterPumpTime = {(byte) 0xdd,0x03,0x00,0x04,0x00,0x01, (byte) 0xd6, (byte) 0x97};
@@ -30,7 +30,7 @@ public class CtrlCommunication extends SerialCommunication{
     private static final byte[] cmdDustMeterBgResult={(byte) 0xdd,0x03,0x00,0x07,0x00,0x01,0x26, (byte) 0x97};
     private static final byte[] cmdDustMeterSpanStart={(byte) 0xdd,0x06,0x00,0x08,0x00,0x01, (byte) 0xda, (byte) 0x94};
     private static final byte[] cmdDustMeterSpanEnd={(byte) 0xdd,0x06,0x00,0x08,0x00,0x00,0x1b,0x54};
-    private static final byte[] cmdDustMeterSpanResult={(byte) 0xdd,0x03,0x00,0x09,0x00,0x01,0x47,0x54};
+    private static final byte[] cmdDustMeterSpanResult={(byte) 0xdd,0x03,0x00,0x09,0x00,0x01,0x47,0x54};*/
     private static final byte[] cmdAirData={(byte) 0xe3,0x03,0x00,0x00,0x00,0x03,0x12,0x49};
     private static final byte[] cmdWindForce = {(byte) 0xe1,0x03,0x00,0x00,0x00,0x01, (byte) 0x92,0x6a};
     private static final byte[] cmdWindDirection = {(byte) 0xe2,0x03,0x00,0x00,0x00,0x01, (byte) 0x92,0x59};
@@ -79,7 +79,7 @@ public class CtrlCommunication extends SerialCommunication{
     }
 
     public void setMotorSetting(int fun){
-        byte[] cmdMotorRounds = {0x55,0x06,0x10,0x03,0x00,0x0a,0x0d,0x0a},cmdMotorTime = {0x55,0x06,0x10,0x04,0x00, (byte) 0xa0,0x0d,0x0a},cmdMotorState = {0x55,0x06,0x10,0x05,0x00,0x00,0x0d,0x0a},buff=new byte[2];
+        byte[] cmdMotorRounds = {0x55,0x06,0x10,0x03,0x00,0x0a,0x0d,0x0a},cmdMotorTime = {0x55,0x06,0x10,0x04,0x00, (byte) 0xa0,0x0d,0x0a},buff=new byte[2];//,cmdMotorState = {0x55,0x06,0x10,0x05,0x00,0x00,0x0d,0x0a}
         buff = tools.int2byte(motorRounds);
         cmdMotorRounds[4] = buff[0];
         cmdMotorRounds[5] = buff[1];
@@ -92,22 +92,26 @@ public class CtrlCommunication extends SerialCommunication{
         tools.addCrc16(cmdMotorTime,0,6);
         addSendBuff(cmdMotorTime,Other);
         Log.d(tag,"Send"+tools.bytesToHexString(cmdMotorTime,cmdMotorTime.length));
+        DustMeterController controller = DustMeterLibs.getInstance().getDustMeterController();
         switch (fun){
             case MotorStop:
-                cmdMotorState[5] = 0x00;
+                //cmdMotorState[5] = 0x00;
+                addSendBuff(controller.getMotorStop(),Other);
                 break;
             case MotorForward:
-                cmdMotorState[5] = 0x01;
+                //cmdMotorState[5] = 0x01;
+                addSendBuff(controller.getMotorForward(),Other);
                 break;
             case MotorBackward:
-                cmdMotorState[5] = 0x02;
+                //cmdMotorState[5] = 0x02;
+                addSendBuff(controller.getMotorBackward(),Other);
                 break;
             default:
                 break;
         }
-        tools.addCrc16(cmdMotorState,0,6);
-        addSendBuff(cmdMotorState,Other);
-        Log.d(tag,"Send"+tools.bytesToHexString(cmdMotorState,cmdMotorState.length));
+        //tools.addCrc16(cmdMotorState,0,6);
+        //addSendBuff(cmdMotorState,Other);
+        //Log.d(tag,"Send"+tools.bytesToHexString(cmdMotorState,cmdMotorState.length));
     }
 
     public static CtrlCommunication getInstance() {
@@ -230,7 +234,9 @@ public class CtrlCommunication extends SerialCommunication{
                     break;
             }*/
 
-        }else if (checkFrameWithAddr(rec,size,(byte)0xe1)){//风速
+        }else if(checkFrameWithAddr(rec,size,(byte)0xde)){//校准装置
+            DustMeterLibs.getInstance().getDustMeterController().handleProtocol(rec,size,state,data,info);
+        }else if(checkFrameWithAddr(rec,size,(byte)0xe1)){//风速
             switch (state){
                 case WindForce:
                     int intDate = tools.byte2int(rec,3);
@@ -295,13 +301,22 @@ public class CtrlCommunication extends SerialCommunication{
         addSendBuff(buff,Other);
     }
 
+
     public void ctrlDo(int num,boolean key){
         final byte [] doNum = {0x00,0x01,0x02,0x03,0x04,0x05};
         byte [] cmd = {0x55,0x06,0x10,0x02,0x00,0x02,0x0d,0x0a};
         if (key){
             cmd[3] = 0x01;
         }
-        if (num <= 5){
+        if(num == 1) {//控制球阀
+            DustMeterController controller = DustMeterLibs.getInstance().getDustMeterController();
+            if(key){
+                addSendBuff(controller.getValveOnCmd(),Other);
+            }else{
+                addSendBuff(controller.getValveOffCmd(),Other);
+            }
+        }else if (num <= 5){
+            //Log.d(tag,"单控继电器");
             cmd[5] = doNum[num];
             tools.addCrc16(cmd,0,6);
             addSendBuff(cmd,Other);
