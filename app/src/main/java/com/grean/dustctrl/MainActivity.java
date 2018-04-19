@@ -24,6 +24,7 @@ import com.grean.dustctrl.presenter.FragmentOperate;
 import com.grean.dustctrl.presenter.FragmentVideo;
 import com.grean.dustctrl.process.ScanSensor;
 import com.grean.dustctrl.protocol.GetProtocols;
+import com.taobao.sophix.SophixManager;
 import com.tools;
 
 import java.net.Socket;

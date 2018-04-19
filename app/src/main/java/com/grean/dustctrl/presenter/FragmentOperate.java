@@ -26,6 +26,7 @@ import com.grean.dustctrl.R;
 import com.grean.dustctrl.model.OperateDustMeter;
 import com.grean.dustctrl.model.OperateSystem;
 import com.grean.dustctrl.model.OperateTcp;
+import com.taobao.sophix.SophixManager;
 
 import java.util.Calendar;
 
@@ -120,7 +121,7 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
             etAutoCalInterval.setVisibility(View.INVISIBLE);
             btnSaveAutoCal.setVisibility(View.INVISIBLE);
         }
-        tvSoftwareVersion.setText("当前软件版本:"+getString(R.string.software_version));
+        tvSoftwareVersion.setText("当前软件版本:"+system.getVersionName(getActivity()));
         ArrayAdapter<String> clientProtocolNames = new ArrayAdapter<String>(getActivity(),R.layout.my_spnner,system.getClientProtocolNames());
         spProtocol.setOnItemSelectedListener(this);
         spProtocol.setAdapter(clientProtocolNames);
@@ -311,10 +312,11 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
                 operateTcp.setTcpSocketClient(etServerIp.getText().toString(),Integer.valueOf(etServerPort.getText().toString()),etMnCode.getText().toString(),dialogFragment,clientProtocolName);
                 break;
             case R.id.btnOperateUpdateSoftware:
-                dialogFragment = new ProcessDialogFragment();
+                SophixManager.getInstance().queryAndLoadNewPatch();
+                /*dialogFragment = new ProcessDialogFragment();
                 dialogFragment.setCancelable(true);
                 dialogFragment.show(getFragmentManager(),"DownLoadSoftware");
-                system.startDownLoadSoftware(getActivity(),etUpdateSoftwareUrl.getText().toString(),dialogFragment,this);
+                system.startDownLoadSoftware(getActivity(),etUpdateSoftwareUrl.getText().toString(),dialogFragment,this);*/
                 break;
             case R.id.btnOperateCalcPraraK:
                 String string = dustMeter.calcParaK(etTargetValue.getText().toString());

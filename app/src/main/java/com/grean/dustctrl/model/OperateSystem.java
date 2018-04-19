@@ -2,6 +2,8 @@ package com.grean.dustctrl.model;
 
 import android.app.DownloadManager;
 import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
@@ -239,6 +241,24 @@ public class OperateSystem {
         calibrationNoiseThread = new CalibrationNoiseThread(upDateProcessFragment);
         NoiseCommunication.getInstance().sendCalibrationCmd(calibrationNoiseThread);
         calibrationNoiseThread.start();
+    }
+
+    public String getVersionName(Context context){
+        String versionName = "";
+        try {
+            // ---get the package info---
+            PackageManager pm = context.getPackageManager();
+            PackageInfo pi = pm.getPackageInfo(context.getPackageName(), 0);
+            versionName = pi.versionName;
+            //versioncode = pi.versionCode;
+            if (versionName == null || versionName.length() <= 0) {
+                return "";
+            }
+        } catch (Exception e) {
+            Log.e("VersionInfo", "Exception", e);
+        }
+        Log.d(tag,"versin Name="+versionName);
+        return versionName;
     }
 
     private class CalibrationNoiseThread extends Thread implements NoiseCalibrationListener{

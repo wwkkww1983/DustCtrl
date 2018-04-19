@@ -168,6 +168,8 @@ public class FragmentMain extends Fragment implements NotifyScanSensor{
         tvAlarm = v.findViewById(R.id.tvMainAlarm);
         tvHiDewPoint = v.findViewById(R.id.tvMainHiDewPoint);
         tvLoDewPoint = v.findViewById(R.id.tvMainLoDewPoint);
+
+        tvAlarm.setText("new app");
     }
 
     @Override

@@ -9,6 +9,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION"/>
 
     <application
@@ -19,6 +20,18 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
+        <meta-data
+            android:name="com.taobao.android.hotfix.IDSECRET"
+            android:value="24858398-1" />
+        <meta-data
+            android:name="com.taobao.android.hotfix.APPSECRET"
+            android:value="96316449402380de4f56447510865f45" />
+        <meta-data
+            android:name="com.taobao.android.hotfix.RSASECRET"
+            android:value="MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCN4OIlKGTu0CXqQTGa9J6ScJEwJtnLTi0aCoTuqirPHLE5ZIa9/Km6YNoHR1AZRFz0tOmkVmbOTI2knkwYYXSUVvBjA18NUayy/qE4TGhPayjNq8DT/FaiN5Bsb36anCAbOpGT40zDVzJ2rCfgwIn6ao03/NfhQl3BCuhdiPuQedNARpkKjOK3+xgm6UcVF96ZftV68L2nQKceqG8Lg42hlHwZ84FVQ6/uTuBTf2XnpQMv6IV9r3qLvlit8h5/rlMOUEJ4SoP+rCmQV6TqZa28x4E3ZnzQg7uGXCsbXjV5oGKI5a4JGk1WC09E5brzcT+YqugNGMJGgaxtKf4ja+i7AgMBAAECggEAJOb3Kx8EkbEGC5YFZv51ODWbLeENCPo+dOWDiegs1k3qMrlY6pWLN/T1AKulw8yqOOPNWXc3qjTzKnwZ4sWGYwbx427/DCHQP4ZHPLNy9iUzKbugngKmLe8x22JslZ5CI5LqRoL6dlx5vbAtdyHdQYrxTDyxkd+HLyy9H4b/l6YUsllJJc8hvvSFvc9zu2OPz2SadEDWbvPUGB3xGdHvoUqHZn74Rv9yXD/VQv7ptY0fDAj3dx+JL5bIn/GCWlQUAxdlVSP9KVXJkMZT9c/V6ev6rWDLrZD4SM2mK5v3sefUr27MUfkT/YLV9VMoWLQ1UzDfBWaV6GB24B4AcRCAgQKBgQDPgrSn5eMf1KJ+JsbWAmDuinDOpiYlxVKfbXbgKJPxX7SMLdUqZi4gKbTYZUDlz8Rot8jxRH7qzjVoiXKVZ96KEugShiXz2/5NEj7s8MIAgJ0A/UdIx3+deACCTpuR1oSyLypZFTXGxbTCZMGegp/UKwTYMmcpaYpB6JILtDQKGwKBgQCvCA+AZnf3uIKcqzQrhrnF7vhAqxyNX3pYIWD/UPGSLTzE7MYUw6fg3ukfxF7t1tYNOIlBJDWSqsM8RhtcGdkASp8tcd4figzSoddolkCH35h0fhJztPbvBcTFpVm7jEmiuZ2Ze++60Xl9laoEp2p0W68ZhZtKXRiWZHEC8D2F4QKBgCC1P3h/ec9Ymsw7nHe7JEA1Pha0harKcX2DqYsnmjoflbvKtaDbPkX/jOvW+eW/W/wNi/TLkR29pxl1IMR//MnStRXGY1EOygSn7Zc3U7z0iMrRIV1NZMYTVjEz5r2UDJJxcMFd4H4WR6mkbAhqGns81KSnPS9/3TUKTYreup0lAoGAeZ6eNtf8kDKy/u2vSHdK6pAMC9NZ+ZnYRxiab43s7WdljGgBkzgIlKYPUrV+SME45uLb7FmeqBTjqCQGqs6DDELNrCQs9blVA57VMKUGneLt6jQX2jJqSte1TKiCW2E1YU6chaOqhiM7ydmO08EIpWV3m8JMjzV0+js8k5AfD8ECgYAh5EouccHL4IyrVyH2eILiLjXvQyUUCNdUSDnP0Vt98zMIS038yWRhPn6jNCTP6MpN+Kk1TwOmxpJZwmLofUIdq9k0JyknEbuUvrF/SuyJDan52dKyT5/HYxpf52OIu97FLl2HB5HAWHrXDSYDgZKUTzahAoRXsSe4+GlPw49p2Q=="
+        />
+
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -34,6 +47,9 @@
                 <action android:name="android.intent.action.DOWNLOAD_COMPLETE"/>
             </intent-filter>
         </receiver>
+
+        <service android:name=".killSelfService"
+            android:process=":remote233"/>
     </application>
 
 </manifest>
