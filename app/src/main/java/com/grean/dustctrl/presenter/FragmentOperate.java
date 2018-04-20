@@ -312,11 +312,11 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
                 operateTcp.setTcpSocketClient(etServerIp.getText().toString(),Integer.valueOf(etServerPort.getText().toString()),etMnCode.getText().toString(),dialogFragment,clientProtocolName);
                 break;
             case R.id.btnOperateUpdateSoftware:
-                SophixManager.getInstance().queryAndLoadNewPatch();
-                /*dialogFragment = new ProcessDialogFragment();
+                //SophixManager.getInstance().queryAndLoadNewPatch();
+                dialogFragment = new ProcessDialogFragment();
                 dialogFragment.setCancelable(true);
                 dialogFragment.show(getFragmentManager(),"DownLoadSoftware");
-                system.startDownLoadSoftware(getActivity(),etUpdateSoftwareUrl.getText().toString(),dialogFragment,this);*/
+                system.startDownLoadSoftware(getActivity(),etUpdateSoftwareUrl.getText().toString(),dialogFragment,this);
                 break;
             case R.id.btnOperateCalcPraraK:
                 String string = dustMeter.calcParaK(etTargetValue.getText().toString());

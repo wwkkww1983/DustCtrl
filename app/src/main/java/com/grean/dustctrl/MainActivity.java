@@ -44,15 +44,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private FragmentData fragmentData;
     private FragmentVideo fragmentVideo;
     private android.app.FragmentManager fragmentManager;
-    private Timer autoCalibrationTimer;
+    private Timer autoCalibrationTimer,autoPatchTimer;
     //private Fragment lastFragment;
-    private static final int msgAutoCalibration = 1;
+    private static final int msgAutoCalibration = 1,msgAutoPatch =2;
     private Handler handler = new Handler(){
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what){
                 case msgAutoCalibration:
                     ScanSensor.getInstance().calibrationDustMeterWithAuto(MainActivity.this);
+                    break;
+                case msgAutoPatch:
+                    SophixManager.getInstance().queryAndLoadNewPatch();
+                    break;
+                default:
                     break;
             }
         }
@@ -108,11 +113,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Log.d(tag,"结束心跳");
     }
 
-    class AutoCalibrationTimerTask extends TimerTask{
+    private class AutoCalibrationTimerTask extends TimerTask{
 
         @Override
         public void run() {
             handler.sendEmptyMessage(msgAutoCalibration);
+        }
+    }
+
+    private class AutoPatchTimer extends TimerTask{
+
+        @Override
+        public void run() {
+            handler.sendEmptyMessage(msgAutoPatch);
         }
     }
 
@@ -162,7 +175,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         GetProtocols.getInstance().getClientProtocol().setMnCode(myApplication.getInstance().getConfigString("MnCode"));
         GetProtocols.getInstance().getClientProtocol().startHeartBeatPacket();
         //SocketTask.getInstance().setContext(this);
-
+        autoPatchTimer = new Timer();
+        long now = tools.nowtime2timestamp();
+        long next = tools.calcNextTime(now,1524069000000l,4*3600000l);
+        Date when = new Date(next);
+        autoPatchTimer.schedule(new AutoPatchTimer(),when,4*3600000l);
     }
 
     private void initView(){
@@ -282,66 +299,4 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    /*public SerialPort getSerialPort() throws SecurityException, IOException, InvalidParameterException {
-        if (mSerialPort == null) {
-
-            String path = "/dev/ttyS0";
-            Log.d(tag,path);
-            int baudrate = 9600;//Integer.decode("9600");
-
-			// Check parameters
-            if ( (path.length() == 0) || (baudrate == -1)) {
-                Log.d(tag,"error");
-                throw new InvalidParameterException();
-            }
-            Log.d(tag,"right");
-			// Open the serial port
-            mSerialPort = new SerialPort(new File(path), 9600, 0);
-        }
-        return mSerialPort;
-    }*/
-/*
-    private class  ReadThread extends  Thread{
-        @Override
-        public void run() {
-            super.run();
-            while(!isInterrupted()){
-                int size;
-                try {
-                    byte[] buffer = new byte[1024];
-                    if (mInputStream == null) {
-                        Log.d(tag,"end");
-                        return;
-                    }
-
-                    while (mInputStream.available()==0){
-                        try {
-                            Thread.sleep(200);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-
-                    }
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    size = mInputStream.read(buffer);
-                    if (size > 0) {
-                        //onDataReceived(buffer, size);
-                        Log.d(tag, "sizeof"+String.valueOf(size)+":"+tools.bytesToHexString(buffer,size));
-                    }
-                    else{
-                        Log.d(tag,"End Receive");
-                    }
-                    Log.d(tag,"rec");
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    return;
-                }
-            }
-
-        }
-    }*/
 }
