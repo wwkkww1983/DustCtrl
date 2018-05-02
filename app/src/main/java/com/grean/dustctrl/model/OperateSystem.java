@@ -14,6 +14,7 @@ import com.grean.dustctrl.NoiseCalibrationListener;
 import com.grean.dustctrl.NoiseCommunication;
 import com.grean.dustctrl.SocketServerTask;
 import com.grean.dustctrl.SocketTask;
+import com.grean.dustctrl.hardware.MainBoardLibs;
 import com.grean.dustctrl.myApplication;
 import com.grean.dustctrl.presenter.NotifyOperateInfo;
 import com.grean.dustctrl.presenter.NotifyProcessDialogInfo;
@@ -34,6 +35,19 @@ public class OperateSystem {
     private CalibrationNoiseThread calibrationNoiseThread;
     public OperateSystem(){
 
+    }
+
+    public String[] getMainBoardNames(){
+        return MainBoardLibs.getInstance().getNames();
+    }
+
+    public int getMainBoardName(){
+        return MainBoardLibs.getInstance().getName();
+    }
+
+    public void setMainBoardName(int name){
+        myApplication.getInstance().saveConfig("MainBoardName",name);
+        MainBoardLibs.getInstance().setName(name);
     }
 
     public void ctrlDo(int num,boolean key){

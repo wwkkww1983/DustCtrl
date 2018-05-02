@@ -70,7 +70,7 @@ public class SensorData {
     }
 
     public void setHiTemp(float hiTemp) {
-        this.hiTemp = airTemperature;
+        this.hiTemp = hiTemp;
     }
 
     public float getLoTemp() {
@@ -86,7 +86,7 @@ public class SensorData {
     }
 
     public void setHiHumidity(float hiHumidity) {
-        this.hiHumidity = airHumidity;
+        this.hiHumidity = hiHumidity;
     }
 
     public float getLoHumidity() {

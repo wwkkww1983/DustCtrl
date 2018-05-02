@@ -13,6 +13,7 @@ import com.grean.dustctrl.DbTask;
 import com.grean.dustctrl.LogFormat;
 import com.grean.dustctrl.NoiseCommunication;
 import com.grean.dustctrl.dust.DustMeterLibs;
+import com.grean.dustctrl.hardware.MainBoardLibs;
 import com.grean.dustctrl.myApplication;
 import com.grean.dustctrl.presenter.CalcNextAutoCalibration;
 import com.grean.dustctrl.presenter.NotifyOperateInfo;
@@ -498,6 +499,7 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
             run = true;
             super.run();
             DustMeterLibs.getInstance().setDustMeterName(myApplication.getInstance().getConfigInt("DustMeter"));
+            MainBoardLibs.getInstance().setName(myApplication.getInstance().getConfigInt("MainBoardName"));
             CtrlCommunication com;
             com = CtrlCommunication.getInstance();
             NoiseCommunication noiseCom;

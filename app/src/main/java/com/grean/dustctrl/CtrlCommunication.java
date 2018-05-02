@@ -6,6 +6,8 @@ import android.widget.Switch;
 import com.SerialCommunication;
 import com.grean.dustctrl.dust.DustMeterController;
 import com.grean.dustctrl.dust.DustMeterLibs;
+import com.grean.dustctrl.hardware.MainBoardController;
+import com.grean.dustctrl.hardware.MainBoardLibs;
 import com.grean.dustctrl.process.DustMeterInfo;
 import com.grean.dustctrl.process.SensorData;
 import com.tools;
@@ -16,10 +18,9 @@ import com.tools;
  * Created by Administrator on 2017/8/24.
  */
 
-public class CtrlCommunication extends SerialCommunication{
+public class CtrlCommunication extends SerialCommunication implements SerialCommunicationController{
     private static final String tag="CtrlCommunication";
     private static CtrlCommunication instance = new CtrlCommunication();
-    private static final byte[] cmdInquire = {0x55,0x03,0x20,0x01,0x00,0x1f,0x53, (byte) 0xd6};
    /* private static final byte[] cmdDustMeterCpm = {(byte) 0xdd,0x03,0x00,0x01,0x00,0x01, (byte) 0xc6, (byte) 0x96};
     private static final byte[] cmdStopDustMeter = {(byte) 0xdd,0x06,0x00,0x03,0x00,0x00,0x6a, (byte) 0x96};
     private static final byte[] cmdRunDustMeter = {(byte) 0xdd,0x06,0x00,0x03,0x00,0x01, (byte) 0xab,0x56};
@@ -31,9 +32,7 @@ public class CtrlCommunication extends SerialCommunication{
     private static final byte[] cmdDustMeterSpanStart={(byte) 0xdd,0x06,0x00,0x08,0x00,0x01, (byte) 0xda, (byte) 0x94};
     private static final byte[] cmdDustMeterSpanEnd={(byte) 0xdd,0x06,0x00,0x08,0x00,0x00,0x1b,0x54};
     private static final byte[] cmdDustMeterSpanResult={(byte) 0xdd,0x03,0x00,0x09,0x00,0x01,0x47,0x54};*/
-    private static final byte[] cmdAirData={(byte) 0xe3,0x03,0x00,0x00,0x00,0x03,0x12,0x49};
-    private static final byte[] cmdWindForce = {(byte) 0xe1,0x03,0x00,0x00,0x00,0x01, (byte) 0x92,0x6a};
-    private static final byte[] cmdWindDirection = {(byte) 0xe2,0x03,0x00,0x00,0x00,0x01, (byte) 0x92,0x59};
+
     private SensorData data = new SensorData();
     private DustMeterInfo info = new DustMeterInfo();
     private int motorRounds,motorTime;
@@ -152,43 +151,11 @@ public class CtrlCommunication extends SerialCommunication{
     @Override
     protected void communicationProtocol(byte[] rec, int size,int state) {
 
-        if (checkFrameWithAddr(rec,size,(byte)0x55)){//主板
+        if (checkFrameWithAddr(rec,size,MainBoardController.MainBoardAddress)){//主板
             //Log.d(tag,"board sync right check");
             switch (state){
                 case Inquire:
-                    if (rec[2]==0x3e) {
-                        for(int i=0;i<5;i++) {
-                            if (rec[4+i*2] == 0x00) {
-                                data.setCtrlDo(i, false);
-                            } else {
-                                data.setCtrlDo(i, true);
-                            }
-                        }
-                       /* data.setAirTemperature(tools.getFloat(rec,11));
-                        data.setAirHumidity(tools.getFloat(rec,15));
-                        data.setAirPressure(tools.getFloat(rec,23));
-                        data.setWindForce(tools.getFloat(rec,27));
-                        data.setWindDirection(tools.getFloat(rec,31));*/
-                        if(rec[38]==0x00){
-                            data.setAcIn(false);
-                        }else{
-                            data.setAcIn(true);
-                        }
-
-                        if(rec[40]==0x00){
-                            data.setBatteryLow(true);
-                        }else{
-                            data.setBatteryLow(false);
-                        }
-                        data.setHiTemp(tools.getFloat(rec,44));
-                        data.setLoTemp(tools.getFloat(rec,48));
-                        data.setHiHumidity(tools.getFloat(rec,52));
-                        data.setLoHumidity(tools.getFloat(rec,56));
-                        data.setHeatPwm(tools.byte2int(rec,57));
-                        data.setMotorState(tools.byte2int(rec,59));
-                        data.setMotorRounds(tools.byte2int(rec,61));
-                        data.setMotorTime(tools.byte2int(rec,63));
-                    }
+                    MainBoardLibs.getInstance().getController().inquireState(rec,size,data);
                     break;
                 default:
                     break;
@@ -236,46 +203,28 @@ public class CtrlCommunication extends SerialCommunication{
 
         }else if(checkFrameWithAddr(rec,size,(byte)0xde)){//校准装置
             DustMeterLibs.getInstance().getDustMeterController().handleProtocol(rec,size,state,data,info);
-        }else if(checkFrameWithAddr(rec,size,(byte)0xe1)){//风速
+        }else if(checkFrameWithAddr(rec,size,MainBoardController.WindForceAddress)){//风速
             switch (state){
                 case WindForce:
-                    int intDate = tools.byte2int(rec,3);
-                    float floatData = ((float)intDate)/10.0f;
-                    data.setWindForce(floatData);
+                    MainBoardLibs.getInstance().getController().inquireWindForce(rec,size,data);
                     break;
                 default:
                     break;
             }
 
-        }else if(checkFrameWithAddr(rec,size,(byte)0xe2)){//风向
+        }else if(checkFrameWithAddr(rec,size,MainBoardController.WindDirAddress)){//风向
             switch (state){
                 case WindDirection:
-                    int intDate = tools.byte2int(rec,3);
-                    float floatData = (float)intDate;
-                    data.setWindDirection(floatData);
+                    MainBoardLibs.getInstance().getController().inquireWindDir(rec,size,data);
                     break;
                 default:
                     break;
             }
 
-        }else if(checkFrameWithAddr(rec,size,(byte)0xe3)){//温湿度大气压
+        }else if(checkFrameWithAddr(rec,size,MainBoardController.AirParameter)){//温湿度大气压
             switch (state){
                 case AirParameter:
-                    int intDate = tools.byte2int(rec,3);
-                    float floatData = ((float)intDate)/10.0f;
-                    data.setAirPressure(floatData);
-                    intDate = tools.byte2int(rec,5);
-                   // intDate = 65532;
-                    //处理负数
-                    if(intDate >= 32768){
-                        intDate -= 65536;
-                    }
-                    floatData = ((float)intDate)/10.0f;
-                    data.setAirTemperature(floatData);
-                    intDate = tools.byte2int(rec,7);
-                    //Log.d(tag,"Humidity"+String.valueOf(intDate));
-                    floatData = ((float)intDate)/10.0f;
-                    data.setAirHumidity(floatData);
+                    MainBoardLibs.getInstance().getController().inquireAirParameter(rec,size,data);
                     break;
                 default:
                     break;
@@ -296,11 +245,6 @@ public class CtrlCommunication extends SerialCommunication{
         }
 
     }
-
-    public void send(byte[] buff) {
-        addSendBuff(buff,Other);
-    }
-
 
     public void ctrlDo(int num,boolean key){
         final byte [] doNum = {0x00,0x01,0x02,0x03,0x04,0x05};
@@ -329,10 +273,26 @@ public class CtrlCommunication extends SerialCommunication{
      */
     public void SendFrame(int cmd){
         DustMeterController controller = DustMeterLibs.getInstance().getDustMeterController();
+
         switch (cmd){
-            case Inquire:
+            /*case Inquire:
                 addSendBuff(cmdInquire,cmd);
             break;
+            case AirParameter:
+                addSendBuff(cmdAirData,cmd);
+                break;
+            case WindDirection:
+                addSendBuff(cmdWindDirection,cmd);
+                break;
+            case WindForce:
+                addSendBuff(cmdWindForce,cmd);
+                break;*/
+            case Inquire:
+            case AirParameter:
+            case WindDirection:
+            case WindForce:
+                MainBoardLibs.getInstance().getController().sendInquireCmd(cmd,this);
+                break;
             case Dust:
                 addSendBuff(controller.getReadCpmCmd(),DustMeterController.Dust);
                 break;
@@ -370,15 +330,7 @@ public class CtrlCommunication extends SerialCommunication{
             case DustMeterSpanResult:
                 addSendBuff(controller.getSpanResult(),DustMeterController.DustMeterSpanResult);
                 break;
-            case AirParameter:
-                addSendBuff(cmdAirData,cmd);
-                break;
-            case WindDirection:
-                addSendBuff(cmdWindDirection,cmd);
-                break;
-            case WindForce:
-                addSendBuff(cmdWindForce,cmd);
-                break;
+
             case Other:
             default:
                 break;
@@ -421,5 +373,10 @@ public class CtrlCommunication extends SerialCommunication{
         }
 
         return true;
+    }
+
+    @Override
+    public void send(byte[] buff, int state) {
+        addSendBuff(buff,state);
     }
 }

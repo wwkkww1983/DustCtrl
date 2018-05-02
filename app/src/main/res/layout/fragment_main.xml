@@ -217,7 +217,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="采样管进口温度:"
+            android:text="采样管温度:"
             android:textSize="30sp" />
 
         <TextView
@@ -249,7 +249,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="℃ 采样管进口湿度:"
+            android:text="℃ 采样管控制温度:"
             android:textSize="30sp" />
 
         <TextView

@@ -49,8 +49,8 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
     private TextView tvDustMeterInfo,tvNextAutoCalTime,tvLocalIp,tvSoftwareVersion;//tvParaK
     private EditText etMotorRounds,etMotorTime,etAutoCalInterval,etServerIp,etServerPort,etUpdateSoftwareUrl,etTargetValue,etMnCode,etAlarm,etSetParaK,etSetParaB;
     private Switch swDustMeterRun,swValve,swFan,swExt1,swExt2,swBackup,swAutoCalibrationEnable;
-    private Spinner spProtocol,spDustName,spDustMeter;
-    private int clientProtocolName;
+    private Spinner spProtocol,spDustName,spDustMeter,spMainBoard;
+    private int clientProtocolName,mainBoardName;
 
 
 
@@ -139,6 +139,11 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
         spDustMeter.setAdapter(dustMeters);
         spDustMeter.setSelection(dustMeter.getDustMeter(),true);
 
+        ArrayAdapter<String>mainBoards = new ArrayAdapter<String>(getActivity(),R.layout.my_spnner,system.getMainBoardNames());
+        spMainBoard.setOnItemSelectedListener(this);
+        spMainBoard.setAdapter(mainBoards);
+        mainBoardName = system.getMainBoardName();
+        spMainBoard.setSelection(mainBoardName);
 
         etAlarm.setText(system.getAlarmDust());
         swValve.setChecked(dustMeter.getCtrlDo(0));
@@ -151,6 +156,7 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
     private void initView(View v){
         spDustMeter = v.findViewById(R.id.spOperateDustMeter);
         spDustName = v.findViewById(R.id.spOperateDust);
+        spMainBoard = v.findViewById(R.id.spMainBoardType);
         btnDustMeterInquire = v.findViewById(R.id.btnOperateInquireDuster);
         btnDustMeterManCal = v.findViewById(R.id.btnOperateManCal);
         tvDustMeterInfo = v.findViewById(R.id.tvOperateDusterInfo);
@@ -344,6 +350,7 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
             case R.id.btnOperateSetParaK:
                 dustMeter.setParaK(etSetParaK.getText().toString());
                 dustMeter.setParaB(etSetParaB.getText().toString());
+                //system.setMainBoardName(mainBoardName);
                 break;
             case R.id.btnOperateNoiseCal:
                 processFragment = new ProcessFragment();
@@ -382,6 +389,10 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
                 break;
             case R.id.spOperateDustMeter:
                 dustMeter.setDustMeter(i);
+                break;
+            case R.id.spMainBoardType:
+                mainBoardName = i;
+                system.setMainBoardName(mainBoardName);
                 break;
             default:
 

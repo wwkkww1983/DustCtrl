@@ -8,7 +8,7 @@ import com.grean.dustctrl.process.SensorData;
  */
 
 public interface DustMeterController {
-    public static final int Dust = 2,
+    int Dust = 2,
             DustMeterStop =3,
             DustMeterRun=4,
             DustMeterPumpTime=5,
