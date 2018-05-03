@@ -120,15 +120,17 @@ public class myApplication extends Application implements ReadWriteConfig{
         SharedPreferences.Editor editor = sp.edit();
         if(!sp.getBoolean("FactorySetting",false)){
             editor.putBoolean("FactorySetting",true);
+            editor.putInt("MainBoardName",1);
+            editor.putInt("DustMeterName",0);
             editor.putFloat("DustParaK",1f);
-            editor.putInt("MotorRounds",10);
-            editor.putInt("MotorTime",1000);
+            editor.putInt("MotorRounds",1400);
+            editor.putInt("MotorTime",2000);
             editor.putLong("AutoCalTime",1483200000000l);
             editor.putLong("AutoCalInterval",86400000l);
             editor.putBoolean("AutoCalibrationEnable",true);
-            editor.putString("ServerIp","192.168.168.134");
-            editor.putInt("ServerPort",12803);
-            editor.putString("MnCode","888888");
+            editor.putString("ServerIp","117.149.30.221");
+            editor.putInt("ServerPort",203);
+            editor.putString("MnCode","3301000005");
             editor.putInt("ClientProtocolName",0);
             editor.putFloat("AlarmDust",50f);
             editor.commit();

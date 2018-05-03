@@ -18,14 +18,14 @@ import java.util.List;
 
 public class TcpClientHjt212_2017 implements GeneralClientProtocol,GeneralReturnProtocol{
     private static final String tag = "TcpClientHjt212_2017";
-    private String mnCode = "88888";
+    private String mnCode = "3301000005";
     GeneralDataBaseProtocol dataBaseProtocol;
     private boolean run;
     private HeartThread thread;
     private float [] realTimeData = new float[7];
-    private long lastMinDate,now;
+    private long lastMinDate,now,lastHourDate;
     private TcpClientCallBack callBack;
-    private GeneralCommandProtocol commandProtocol;
+    private GeneralCommandProtocol commandProtocol = GetProtocols.getInstance().getGeneralCommandProtocol();
     private GeneralInfoProtocol infoProtocol;
     private Handler handler = new Handler(Looper.getMainLooper()){
         @Override
@@ -42,6 +42,8 @@ public class TcpClientHjt212_2017 implements GeneralClientProtocol,GeneralReturn
                         realTimeData[GeneralHistoryDataFormat.WindDirection] = data.getWindDirection();
                         realTimeData[GeneralHistoryDataFormat.WindForce] = data.getWindForce();
                     }
+                    break;
+                case ClientDataBaseCtrl.UPDATE_HOUR_DATA:
 
                     break;
                 default:
@@ -65,8 +67,7 @@ public class TcpClientHjt212_2017 implements GeneralClientProtocol,GeneralReturn
         if(commandProtocol.checkRecString(rec,count)) {
             String recString = new String(rec, 6, count - 14);
             String[] item = recString.split(";");
-            for(int i=0;i<item.length;i++) {
-
+            for(int i=0;i<item.length;i++) {//解析协议，分解字段
                 if(commandProtocol.handleString(item[i])){
                     break;
                 }
@@ -207,7 +208,7 @@ public class TcpClientHjt212_2017 implements GeneralClientProtocol,GeneralReturn
         return "##"+lenString+body+crcString+"\r\n";
     }
 
-    private String getHOurDataString(long lastMinDate,long nexMinDate){
+    private String getHourDataString(long lastMinDate,long nexMinDate){
         return "ST=51;CN=2061;PW=123456;MN="+mnCode+";CP=&&DataTime="+tools.timeStamp2TcpString(lastMinDate)+";";
         /*float [] data = getMinAvgMaxData(GetProtocols.getInstance().getDataBaseProtocol().getData(lastMinDate ,nexMinDate));
         return "ST=51;CN=2061;PW=123456;MN="+mnCode+";CP=&&DataTime="+tools.timeStamp2TcpString(lastMinDate)+";"+
@@ -247,6 +248,7 @@ public class TcpClientHjt212_2017 implements GeneralClientProtocol,GeneralReturn
             dataBaseProtocol.loadMinDate();
             dataBaseProtocol.setMinDataInterval(60000l);//设置为1分钟间隔
             lastMinDate = dataBaseProtocol.getNextMinDate();
+            lastHourDate = dataBaseProtocol.getNextHourDate();
             Log.d(tag,"lastMinDate"+ tools.timestamp2string(lastMinDate));
             ClientDataBaseCtrl dataBaseCtrl = ScanSensor.getInstance();
             while (run&&!interrupted()) {
@@ -258,6 +260,14 @@ public class TcpClientHjt212_2017 implements GeneralClientProtocol,GeneralReturn
                     addSendBuff(insertOneFrame(getMinDataString(now,dataBaseProtocol.getLastMinDate(),dataBaseProtocol.getNextMinDate())));
                     lastMinDate = dataBaseProtocol.calcNextMinDate(now);
                 }
+
+                if(now > lastHourDate){
+                    dataBaseCtrl.saveHourData(lastHourDate);
+                    addSendBuff(insertOneFrame(getHourDataString(dataBaseProtocol.getLastHourDate(),dataBaseProtocol.getNextHourDate())));
+                    lastHourDate = dataBaseProtocol.calcNextHourDate(now);
+
+                }
+
 
                 try {
                     Thread.sleep(20000);

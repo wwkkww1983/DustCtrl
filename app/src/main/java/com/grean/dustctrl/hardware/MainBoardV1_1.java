@@ -26,10 +26,22 @@ public class MainBoardV1_1 implements MainBoardController {
             data.setAirPressure(tools.getFloat(rec,28));
             data.setWindForce(tools.getFloat(rec,32));
             data.setWindDirection(tools.getFloat(rec,36));
+            if(rec[37]==0x00){
+                data.setCalPos(false);
+            }else{
+                data.setCalPos(true);
+            }
+
             if(rec[38]==0x00){
                 data.setAcIn(false);
             }else{
                 data.setAcIn(true);
+            }
+
+            if(rec[39]==0x00){
+                data.setMeasurePos(false);
+            }else{
+                data.setMeasurePos(true);
             }
 
             if(rec[40]==0x00){
@@ -40,6 +52,7 @@ public class MainBoardV1_1 implements MainBoardController {
             data.setHiTemp(tools.getFloat(rec,44));
             data.setLoTemp(tools.getFloat(rec,48));
             data.setHiHumidity(tools.getFloat(rec,52));
+            data.setPipeTemp(tools.getFloat(rec,52));
             data.setLoHumidity(tools.getFloat(rec,56));
             data.setHeatPwm(tools.byte2int(rec,57));
             data.setMotorState(tools.byte2int(rec,59));

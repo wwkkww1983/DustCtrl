@@ -18,6 +18,9 @@ public class DbTask extends SQLiteOpenHelper{
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
+        //V0.0-->V3.0
+        sqLiteDatabase.execSQL("CREATE TABLE result_hour (date LONG,dust FLOAT,value FLOAT,temperature FLOAT,humidity FLOAT,pressure FLOAT,windforce FLOAT,winddirection FLOAT,noise FLOAT," +
+                "dust_1 FLOAT,value_1 FLOAT,dust_2 FLOAT,value_2 FLOAT)");
         //V0.0-->V2.0
         sqLiteDatabase.execSQL("CREATE TABLE result (date LONG,dust FLOAT,value FLOAT,temperature FLOAT,humidity FLOAT,pressure FLOAT,windforce FLOAT,winddirection FLOAT,noise FLOAT," +
                 "dust_1 FLOAT,value_1 FLOAT,dust_2 FLOAT,value_2 FLOAT)");//结果
@@ -29,6 +32,7 @@ public class DbTask extends SQLiteOpenHelper{
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
         //v1.0-->v2.0
+        Log.d("DbTask","升级数据库"+String.valueOf(i)+"-"+String.valueOf(i1));
         if((i==1)&&(i1==2)){
             sqLiteDatabase.execSQL("ALTER TABLE result ADD dust_1 FLOAT");
             sqLiteDatabase.execSQL("ALTER TABLE result ADD value_1 FLOAT");
@@ -37,6 +41,24 @@ public class DbTask extends SQLiteOpenHelper{
             sqLiteDatabase.execSQL("ALTER TABLE detail ADD block_pos BOOLEAN");//滑块位置
             sqLiteDatabase.execSQL("ALTER TABLE detail ADD pipe_temp FLOAT");//采样管温度
             Log.d("DbTask","升级数据库 v1->v2");
+        }
+
+        if((i==2)&&(i1==3)){
+            sqLiteDatabase.execSQL("CREATE TABLE result_hour (date LONG,dust FLOAT,value FLOAT,temperature FLOAT,humidity FLOAT,pressure FLOAT,windforce FLOAT,winddirection FLOAT,noise FLOAT," +
+                    "dust_1 FLOAT,value_1 FLOAT,dust_2 FLOAT,value_2 FLOAT)");
+            Log.d("DbTask","数据库升级v2->v3");
+        }
+
+        if((i==1)&&(i1==3)){
+            /*sqLiteDatabase.execSQL("ALTER TABLE result ADD dust_1 FLOAT");
+            sqLiteDatabase.execSQL("ALTER TABLE result ADD value_1 FLOAT");
+            sqLiteDatabase.execSQL("ALTER TABLE result ADD dust_2 FLOAT");
+            sqLiteDatabase.execSQL("ALTER TABLE result ADD value_2 FLOAT");
+            sqLiteDatabase.execSQL("ALTER TABLE detail ADD block_pos BOOLEAN");//滑块位置
+            sqLiteDatabase.execSQL("ALTER TABLE detail ADD pipe_temp FLOAT");//采样管温度*/
+            sqLiteDatabase.execSQL("CREATE TABLE result_hour (date LONG,dust FLOAT,value FLOAT,temperature FLOAT,humidity FLOAT,pressure FLOAT,windforce FLOAT,winddirection FLOAT,noise FLOAT," +
+                    "dust_1 FLOAT,value_1 FLOAT,dust_2 FLOAT,value_2 FLOAT)");
+            Log.d("DbTask","数据库升级v1->v3");
         }
     }
 

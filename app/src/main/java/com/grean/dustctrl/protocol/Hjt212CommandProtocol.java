@@ -21,8 +21,8 @@ public class Hjt212CommandProtocol implements GeneralCommandProtocol{
     }
 
     @Override
-    public void setPassWord(String stirng) {
-        this.passWord = stirng;
+    public void setPassWord(String string) {
+        this.passWord = string;
     }
 
 

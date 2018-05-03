@@ -32,7 +32,7 @@ public class SystemLog implements Observer{
     @Override
     public void update(Observable observable, Object o) {
         if (observable.hashCode()== ScanSensor.getInstance().hashCode()){
-            DbTask helperDbTask = new DbTask(context,1);
+            DbTask helperDbTask = new DbTask(context,3);
             SQLiteDatabase db = helperDbTask.getReadableDatabase();
             ContentValues values = new ContentValues();
 
@@ -54,7 +54,7 @@ public class SystemLog implements Observer{
             db.close();
             helperDbTask.close();
         }else {
-            DbTask helperDbTask = new DbTask(context,1);
+            DbTask helperDbTask = new DbTask(context,3);
             SQLiteDatabase db = helperDbTask.getReadableDatabase();
             ContentValues values = new ContentValues();
             Log.d(tag,"new log");

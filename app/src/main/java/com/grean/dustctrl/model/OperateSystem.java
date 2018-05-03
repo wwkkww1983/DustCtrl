@@ -12,6 +12,7 @@ import android.util.Log;
 import com.grean.dustctrl.CtrlCommunication;
 import com.grean.dustctrl.NoiseCalibrationListener;
 import com.grean.dustctrl.NoiseCommunication;
+import com.grean.dustctrl.R;
 import com.grean.dustctrl.SocketServerTask;
 import com.grean.dustctrl.SocketTask;
 import com.grean.dustctrl.hardware.MainBoardLibs;
@@ -258,7 +259,7 @@ public class OperateSystem {
     }
 
     public String getVersionName(Context context){
-        String versionName = "";
+        String versionName = "1.0.3";
         try {
             // ---get the package info---
             PackageManager pm = context.getPackageManager();
@@ -272,7 +273,7 @@ public class OperateSystem {
             Log.e("VersionInfo", "Exception", e);
         }
         Log.d(tag,"versin Name="+versionName);
-        return versionName;
+        return context.getResources().getString(R.string.software_version)+";补丁版本:"+versionName;
     }
 
     private class CalibrationNoiseThread extends Thread implements NoiseCalibrationListener{

@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 public interface GeneralDataBaseProtocol {
     boolean exportData2File(long start, long  end,ExportDataProcessListener listener);
-    GeneralHistoryDataFormat getHourData(long dateStart);
+    GeneralHistoryDataFormat getHourData(long dateStart,long dateEnd);
     ArrayList<String> getDayLog(long endDate);
     GeneralHistoryDataFormat getData(long start,long end);
     ArrayList<String> getLog(long start,long end);
@@ -44,4 +44,6 @@ public interface GeneralDataBaseProtocol {
     long calcNextMinDate(long now);
 
     void loadMinDate();
+
+
 }

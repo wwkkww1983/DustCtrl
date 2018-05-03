@@ -3,6 +3,7 @@ package com.grean.dustctrl.process;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Handler;
 import android.os.Message;
@@ -26,6 +27,7 @@ import com.grean.dustctrl.protocol.GetProtocols;
 import com.grean.dustctrl.protocol.InformationProtocol;
 import com.tools;
 
+import java.util.ArrayList;
 import java.util.Observable;
 
 /**
@@ -96,29 +98,29 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
     @Override
     public void saveMinData(long now) {
         calcMean();
-        DbTask helper = new DbTask(context,1);
+        DbTask helper = new DbTask(context,3);
         SQLiteDatabase db = helper.getReadableDatabase();
-        //Log.d(tag,"存储数据"+tools.timestamp2string(now));
-        ContentValues values = new ContentValues();
-        values.put("date",now);
-        values.put("dust",minData[GeneralHistoryDataFormat.Dust]);
+        ContentValues values;
         if(data!=null) {
+            values = new ContentValues();
+            values.put("date", now);
+            values.put("dust", minData[GeneralHistoryDataFormat.Dust]);
             values.put("value", data.getValue());
-        }
-        values.put("temperature",minData[GeneralHistoryDataFormat.Temperature]);
-        values.put("humidity",minData[GeneralHistoryDataFormat.Humidity]);
-        values.put("pressure",minData[GeneralHistoryDataFormat.Pressure]);
-        values.put("windforce",minData[GeneralHistoryDataFormat.WindForce]);
-        values.put("winddirection",minData[GeneralHistoryDataFormat.WindDirection]);
-        values.put("noise",minData[GeneralHistoryDataFormat.Noise]);
-        db.beginTransaction();
-        try{
-            db.insert("result",null,values);
-            db.setTransactionSuccessful();
-        }catch (Exception e){
+            values.put("temperature", minData[GeneralHistoryDataFormat.Temperature]);
+            values.put("humidity", minData[GeneralHistoryDataFormat.Humidity]);
+            values.put("pressure", minData[GeneralHistoryDataFormat.Pressure]);
+            values.put("windforce", minData[GeneralHistoryDataFormat.WindForce]);
+            values.put("winddirection", minData[GeneralHistoryDataFormat.WindDirection]);
+            values.put("noise", minData[GeneralHistoryDataFormat.Noise]);
+            db.beginTransaction();
+            try {
+                db.insert("result", null, values);
+                db.setTransactionSuccessful();
+            } catch (Exception e) {
 
-        }finally {
-            db.endTransaction();
+            } finally {
+                db.endTransaction();
+            }
         }
         if(data!=null) {
             values = new ContentValues();
@@ -157,6 +159,74 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
         msg.what = ClientDataBaseCtrl.UPDATE_REAL_TIME;
         msg.obj = data;
         handler.sendMessage(msg);
+    }
+
+    private float[] calcMean(GeneralHistoryDataFormat format){
+        float[] mean = {0f,0f,0f,0f,0f,0f,0f};
+        int size = format.getSize();
+        for(int i=0;i<size;i++){
+            ArrayList<Float> list = format.getItem(i);
+            for(int j=0;j<7;j++){
+                mean[j] += list.get(j)/size;
+            }
+        }
+        return mean;
+    }
+
+    @Override
+    public void saveHourData(long now) {
+        DbTask helper = new DbTask(context,3);
+        SQLiteDatabase db = helper.getReadableDatabase();
+        Log.d(tag,"存储小时数据"+tools.timestamp2string(now));
+        //提取分钟数据
+
+        GeneralHistoryDataFormat format = new GeneralHistoryDataFormat();
+        String statement;
+        statement = "date >"+ String.valueOf(now-3600000l)+" and date <="+String.valueOf(now);
+        Cursor cursor;
+        cursor = db.rawQuery("SELECT * FROM result WHERE "+statement+" ORDER BY date asc",new String[]{});
+        if(cursor.getCount()>0) {//有数据
+            ArrayList<Float> item;
+            while (cursor.moveToNext()) {
+                format.addDate(cursor.getLong(0));
+                item = new ArrayList<Float>();
+                item.add(cursor.getFloat(1));
+                item.add(cursor.getFloat(3));
+                item.add(cursor.getFloat(4));
+                item.add(cursor.getFloat(5));
+                item.add(cursor.getFloat(6));
+                item.add(cursor.getFloat(7));
+                item.add(cursor.getFloat(8));
+                format.addItem(item);
+            }
+            cursor.close();
+            //计算小时数据
+            float[] mean = calcMean(format);
+
+            ContentValues values = new ContentValues();
+            values.put("date",now);
+            values.put("dust",mean[GeneralHistoryDataFormat.Dust]);
+            values.put("temperature",mean[GeneralHistoryDataFormat.Temperature]);
+            values.put("humidity",mean[GeneralHistoryDataFormat.Humidity]);
+            values.put("pressure",mean[GeneralHistoryDataFormat.Pressure]);
+            values.put("windforce",mean[GeneralHistoryDataFormat.WindForce]);
+            values.put("winddirection",mean[GeneralHistoryDataFormat.WindDirection]);
+            values.put("noise",mean[GeneralHistoryDataFormat.Noise]);
+            db.beginTransaction();
+            try{
+                db.insert("result_hour",null,values);
+                db.setTransactionSuccessful();
+            }catch (Exception e){
+
+            }finally {
+                db.endTransaction();
+            }
+
+        }else{
+            cursor.close();
+        }
+        db.close();
+        helper.close();
     }
 
     private class CalibrationDustMeterZeroThread extends Thread{
@@ -254,7 +324,6 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
             if(calcNextAutoCalibration!=null){
                 calcNextAutoCalibration.onComplete();
             }
-
             restartScanSensor();
         }
     }

@@ -46,7 +46,7 @@ public class SearchData {
             statement = "date >"+ String.valueOf(start)+" and date <"+String.valueOf(end);
         }
 
-        DbTask helperDbTask = new DbTask(context,1);
+        DbTask helperDbTask = new DbTask(context,3);
         SQLiteDatabase db = helperDbTask.getReadableDatabase();
         Cursor cursor;
         cursor = db.rawQuery("SELECT * FROM log WHERE "+statement+" ORDER BY date desc",new String[]{});
@@ -75,7 +75,7 @@ public class SearchData {
             statement = "date >"+ String.valueOf(start)+" and date <"+String.valueOf(end);
         }
 
-        DbTask helperDbTask = new DbTask(context,1);
+        DbTask helperDbTask = new DbTask(context,3);
         SQLiteDatabase db = helperDbTask.getReadableDatabase();
         Cursor cursor;
         cursor = db.rawQuery("SELECT * FROM result WHERE "+statement+" ORDER BY date desc",new String[]{});

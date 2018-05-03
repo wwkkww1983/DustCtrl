@@ -45,7 +45,7 @@ public class TcpDataBase implements GeneralDataBaseProtocol{
         }else{
             statement = "date >="+ String.valueOf(start)+" and date <"+String.valueOf(end);
         }
-        DbTask helperDbTask = new DbTask(context,1);
+        DbTask helperDbTask = new DbTask(context,3);
         SQLiteDatabase db = helperDbTask.getReadableDatabase();
         Cursor cursor;
         cursor = db.rawQuery("SELECT * FROM result WHERE "+statement+" ORDER BY date desc",new String[]{});
@@ -76,7 +76,7 @@ public class TcpDataBase implements GeneralDataBaseProtocol{
         }else{
             statement = "date >="+ String.valueOf(start)+" and date <"+String.valueOf(end);
         }
-        DbTask helperDbTask = new DbTask(context,1);
+        DbTask helperDbTask = new DbTask(context,3);
         SQLiteDatabase db = helperDbTask.getReadableDatabase();
         Cursor cursor;
         cursor = db.rawQuery("SELECT * FROM result WHERE "+statement+" ORDER BY date desc",new String[]{});
@@ -243,14 +243,14 @@ public class TcpDataBase implements GeneralDataBaseProtocol{
     }
 
     @Override
-    public GeneralHistoryDataFormat getHourData(long dateStart) {
+    public GeneralHistoryDataFormat getHourData(long dateStart,long dateEnd) {
         GeneralHistoryDataFormat format = new GeneralHistoryDataFormat();
         String statement;
-        statement = "date >="+ String.valueOf(dateStart)+" and date <"+String.valueOf(dateStart + 3600000l);
-        DbTask helperDbTask = new DbTask(context,1);
+        statement = "date >="+ String.valueOf(dateStart)+" and date <="+String.valueOf(dateEnd);
+        DbTask helperDbTask = new DbTask(context,3);
         SQLiteDatabase db = helperDbTask.getReadableDatabase();
         Cursor cursor;
-        cursor = db.rawQuery("SELECT * FROM result WHERE "+statement+" ORDER BY date asc",new String[]{});
+        cursor = db.rawQuery("SELECT * FROM result_hour WHERE "+statement+" ORDER BY date asc",new String[]{});
         int index = 0;
         ArrayList<Float> item;
         while ((cursor.moveToNext())&&index < 100){
@@ -276,9 +276,9 @@ public class TcpDataBase implements GeneralDataBaseProtocol{
     public ArrayList<String> getDayLog(long endDate) {
         ArrayList<String> list = new ArrayList<String>();
         String statement;
-        statement = "date >="+ String.valueOf(endDate - 3600000l*24)+" and date <"+String.valueOf(endDate);
+        statement = "date >="+ String.valueOf(endDate - 3600000l*24)+" and date <="+String.valueOf(endDate);
 
-        DbTask helperDbTask = new DbTask(context,1);
+        DbTask helperDbTask = new DbTask(context,3);
         SQLiteDatabase db = helperDbTask.getReadableDatabase();
         Cursor cursor;
         cursor = db.rawQuery("SELECT * FROM log WHERE "+statement+" ORDER BY date desc",new String[]{});
@@ -298,7 +298,7 @@ public class TcpDataBase implements GeneralDataBaseProtocol{
         GeneralHistoryDataFormat format = new GeneralHistoryDataFormat();
         String statement;
         statement = "date >="+ String.valueOf(start)+" and date <"+String.valueOf(end);
-        DbTask helperDbTask = new DbTask(context,1);
+        DbTask helperDbTask = new DbTask(context,3);
         SQLiteDatabase db = helperDbTask.getReadableDatabase();
         Cursor cursor;
         cursor = db.rawQuery("SELECT * FROM result WHERE "+statement+" ORDER BY date asc",new String[]{});
@@ -329,7 +329,7 @@ public class TcpDataBase implements GeneralDataBaseProtocol{
         String statement;
         statement = "date >="+ String.valueOf(start)+" and date <"+String.valueOf(end);
 
-        DbTask helperDbTask = new DbTask(context,1);
+        DbTask helperDbTask = new DbTask(context,3);
         SQLiteDatabase db = helperDbTask.getReadableDatabase();
         Cursor cursor;
         cursor = db.rawQuery("SELECT * FROM log WHERE "+statement+" ORDER BY date desc",new String[]{});
@@ -375,6 +375,7 @@ public class TcpDataBase implements GeneralDataBaseProtocol{
         lastHourDate = nextHourDate;
         nextHourDate = tools.calcNextTime(now,lastHourDate,60*60000l);
         myApplication.getInstance().saveConfig("LastHourDate",lastHourDate);
+        Log.d(tag,"calcNextHourDate"+tools.timestamp2string(nextHourDate));
         return nextHourDate;
     }
 
@@ -403,6 +404,7 @@ public class TcpDataBase implements GeneralDataBaseProtocol{
         }
         nextMinDate = lastMinDate + minInterval;
         nextHourDate = lastHourDate + 3600000l;
+        Log.d(tag,"nextHourDate"+tools.timestamp2string(nextHourDate));
        // Log.d(tag,"next ="+tools.timestamp2string(nextMinDate)+";plan="+tools.timestamp2string(lastMinDate)+";interval = "+String.valueOf(minInterval/1000l));
     }
 }
