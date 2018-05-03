@@ -18,6 +18,8 @@ import java.util.List;
 
 public class TcpClientHjt212_2017 implements GeneralClientProtocol,GeneralReturnProtocol{
     private static final String tag = "TcpClientHjt212_2017";
+    //public static final int Dust=0,Temperature=1,Humidity=2,Pressure=3,WindForce=4,WindDirection=5,Noise=6;
+    private final String[] ElementCode={"103","106","105","107","108","109","104"};
     private String mnCode = "3301000005";
     GeneralDataBaseProtocol dataBaseProtocol;
     private boolean run;
@@ -108,25 +110,62 @@ public class TcpClientHjt212_2017 implements GeneralClientProtocol,GeneralReturn
 
     }
 
+    private String insertOneElement(String code,String field,String value,String flag){
+        return code+"-"+field+"="+value+";"+code+"-Flag="+flag;
+    }
+
     private String insertSensorData (float[] data){
-        String string = "103-Rtd="+tools.float2String3(data[GeneralHistoryDataFormat.Dust])+";103-Flag=N;";
-        string += "104-Rtd="+tools.float2String3(data[GeneralHistoryDataFormat.Noise])+";104-Flag=N;";
+        String string = insertOneElement(ElementCode[GeneralHistoryDataFormat.Dust],"Rtd",tools.float2String3(data[GeneralHistoryDataFormat.Dust]),"N");
+        string += insertOneElement(ElementCode[GeneralHistoryDataFormat.Noise],"Rtd",tools.float2String3(data[GeneralHistoryDataFormat.Noise]),"N");
+        string += insertOneElement(ElementCode[GeneralHistoryDataFormat.Humidity],"Rtd",tools.float2String3(data[GeneralHistoryDataFormat.Humidity]),"N");
+        string += insertOneElement(ElementCode[GeneralHistoryDataFormat.Temperature],"Rtd",tools.float2String3(data[GeneralHistoryDataFormat.Temperature]),"N");
+        string += insertOneElement(ElementCode[GeneralHistoryDataFormat.Pressure],"Rtd",tools.float2String3(data[GeneralHistoryDataFormat.Pressure]),"N");
+        string += insertOneElement(ElementCode[GeneralHistoryDataFormat.WindForce],"Rtd",tools.float2String3(data[GeneralHistoryDataFormat.WindForce]),"N");
+        string += insertOneElement(ElementCode[GeneralHistoryDataFormat.WindDirection],"Rtd",tools.float2String3(data[GeneralHistoryDataFormat.WindDirection]),"N");
+        //String string = ElementCode[GeneralHistoryDataFormat.Dust]+"-Rtd="+tools.float2String3(data[GeneralHistoryDataFormat.Dust])+";"+ElementCode[GeneralHistoryDataFormat.Dust]+"-Flag=N;";
+        /*string += "104-Rtd="+tools.float2String3(data[GeneralHistoryDataFormat.Noise])+";104-Flag=N;";
         string += "105-Rtd="+tools.float2String3(data[GeneralHistoryDataFormat.Humidity])+";105-Flag=N;";
         string += "106-Rtd="+tools.float2String3(data[GeneralHistoryDataFormat.Temperature])+";106-Flag=N;";
         string += "107-Rtd="+tools.float2String3(data[GeneralHistoryDataFormat.Pressure])+";107-Flag=N;";
         string += "108-Rtd="+tools.float2String3(data[GeneralHistoryDataFormat.WindForce])+";108-Flag=N;";
-        string += "109-Rtd="+tools.float2String3(data[GeneralHistoryDataFormat.WindDirection])+";109-Flag=N;";
+        string += "109-Rtd="+tools.float2String3(data[GeneralHistoryDataFormat.WindDirection])+";109-Flag=N;";*/
         return string;
     }
 
-    private String insertMinData(float[] data){
-        String string = "103-Cou="+tools.float2String3(data[GeneralHistoryDataFormat.Dust])+";103-Flag=N;";//=2
+    private String insertHourData(float []data){
+        String string = insertOneElement(ElementCode[GeneralHistoryDataFormat.Dust],"Cou",tools.float2String3(data[GeneralHistoryDataFormat.Dust]),"N");
+        string += insertOneElement(ElementCode[GeneralHistoryDataFormat.Noise],"Cou",tools.float2String3(data[GeneralHistoryDataFormat.Noise]),"N");
+        string += insertOneElement(ElementCode[GeneralHistoryDataFormat.Humidity],"Cou",tools.float2String3(data[GeneralHistoryDataFormat.Humidity]),"N");
+        string += insertOneElement(ElementCode[GeneralHistoryDataFormat.Temperature],"Cou",tools.float2String3(data[GeneralHistoryDataFormat.Temperature]),"N");
+        string += insertOneElement(ElementCode[GeneralHistoryDataFormat.Pressure],"Cou",tools.float2String3(data[GeneralHistoryDataFormat.Pressure]),"N");
+        string += insertOneElement(ElementCode[GeneralHistoryDataFormat.WindForce],"Cou",tools.float2String3(data[GeneralHistoryDataFormat.WindForce]),"N");
+        string += insertOneElement(ElementCode[GeneralHistoryDataFormat.WindDirection],"Cou",tools.float2String3(data[GeneralHistoryDataFormat.WindDirection]),"N");
+
+        /*String string = "103-Cou="+tools.float2String3(data[GeneralHistoryDataFormat.Dust])+";103-Flag=N;";//=2
         string += "104-Cou="+tools.float2String3(data[GeneralHistoryDataFormat.Noise])+";104-Flag=N;";
         string += "105-Cou="+tools.float2String3(data[GeneralHistoryDataFormat.Humidity])+";105-Flag=N;";
         string += "106-Cou="+tools.float2String3(data[GeneralHistoryDataFormat.Temperature])+";106-Flag=N;";
         string += "107-Cou="+tools.float2String3(data[GeneralHistoryDataFormat.Pressure])+";107-Flag=N;";
         string += "108-Cou="+tools.float2String3(data[GeneralHistoryDataFormat.WindForce])+";108-Flag=N;";
-        string += "109-Cou="+tools.float2String3(data[GeneralHistoryDataFormat.WindDirection])+";109-Flag=N;";
+        string += "109-Cou="+tools.float2String3(data[GeneralHistoryDataFormat.WindDirection])+";109-Flag=N;";*/
+        return string;
+    }
+
+    private String insertMinData(float[] data){
+        String string = insertOneElement(ElementCode[GeneralHistoryDataFormat.Dust],"Cou",tools.float2String3(data[GeneralHistoryDataFormat.Dust]),"N");
+        string += insertOneElement(ElementCode[GeneralHistoryDataFormat.Noise],"Cou",tools.float2String3(data[GeneralHistoryDataFormat.Noise]),"N");
+        string += insertOneElement(ElementCode[GeneralHistoryDataFormat.Humidity],"Cou",tools.float2String3(data[GeneralHistoryDataFormat.Humidity]),"N");
+        string += insertOneElement(ElementCode[GeneralHistoryDataFormat.Temperature],"Cou",tools.float2String3(data[GeneralHistoryDataFormat.Temperature]),"N");
+        string += insertOneElement(ElementCode[GeneralHistoryDataFormat.Pressure],"Cou",tools.float2String3(data[GeneralHistoryDataFormat.Pressure]),"N");
+        string += insertOneElement(ElementCode[GeneralHistoryDataFormat.WindForce],"Cou",tools.float2String3(data[GeneralHistoryDataFormat.WindForce]),"N");
+        string += insertOneElement(ElementCode[GeneralHistoryDataFormat.WindDirection],"Cou",tools.float2String3(data[GeneralHistoryDataFormat.WindDirection]),"N");
+        /*String string = "103-Cou="+tools.float2String3(data[GeneralHistoryDataFormat.Dust])+";103-Flag=N;";//=2
+        string += "104-Cou="+tools.float2String3(data[GeneralHistoryDataFormat.Noise])+";104-Flag=N;";
+        string += "105-Cou="+tools.float2String3(data[GeneralHistoryDataFormat.Humidity])+";105-Flag=N;";
+        string += "106-Cou="+tools.float2String3(data[GeneralHistoryDataFormat.Temperature])+";106-Flag=N;";
+        string += "107-Cou="+tools.float2String3(data[GeneralHistoryDataFormat.Pressure])+";107-Flag=N;";
+        string += "108-Cou="+tools.float2String3(data[GeneralHistoryDataFormat.WindForce])+";108-Flag=N;";
+        string += "109-Cou="+tools.float2String3(data[GeneralHistoryDataFormat.WindDirection])+";109-Flag=N;";*/
         return string;
     }
 
@@ -208,11 +247,12 @@ public class TcpClientHjt212_2017 implements GeneralClientProtocol,GeneralReturn
         return "##"+lenString+body+crcString+"\r\n";
     }
 
-    private String getHourDataString(long lastMinDate,long nexMinDate){
-        return "ST=51;CN=2061;PW=123456;MN="+mnCode+";CP=&&DataTime="+tools.timeStamp2TcpString(lastMinDate)+";";
-        /*float [] data = getMinAvgMaxData(GetProtocols.getInstance().getDataBaseProtocol().getData(lastMinDate ,nexMinDate));
-        return "ST=51;CN=2061;PW=123456;MN="+mnCode+";CP=&&DataTime="+tools.timeStamp2TcpString(lastMinDate)+";"+
-                insertMinData(data[0],data[1],data[2])+"&&";*/
+    private String getHourDataString(long now,long lastDate,long nextDate){
+        String qnString = tools.timeStamp2TcpString(now);
+        return "QN="+qnString+";ST=21;CN=2061;PW=123456;MN="+mnCode+";Flag=9;CP=&&DataTime="+tools.timeStamp2TcpStringWithoutMs(lastDate)+";"+
+                insertHourData(getMeanData(dataBaseProtocol.getHourData(lastDate ,nextDate)))+"&&";
+
+
     }
 
     @Override
@@ -263,7 +303,7 @@ public class TcpClientHjt212_2017 implements GeneralClientProtocol,GeneralReturn
 
                 if(now > lastHourDate){
                     dataBaseCtrl.saveHourData(lastHourDate);
-                    addSendBuff(insertOneFrame(getHourDataString(dataBaseProtocol.getLastHourDate(),dataBaseProtocol.getNextHourDate())));
+                    addSendBuff(insertOneFrame(getHourDataString(now,dataBaseProtocol.getLastHourDate(),dataBaseProtocol.getNextHourDate())));
                     lastHourDate = dataBaseProtocol.calcNextHourDate(now);
 
                 }

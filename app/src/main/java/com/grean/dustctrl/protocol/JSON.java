@@ -303,6 +303,33 @@ public class JSON {
         return insertFrame(object.toString());
     }
 
+    private static byte[] handleHistoryHourData(JSONObject jsonObject,GeneralInfoProtocol infoProtocol)throws JSONException{
+        JSONObject object = new JSONObject();
+        object.put("protocolType","historyHourData");
+        GeneralHistoryDataFormat format;
+        format = infoProtocol.getHistoryData(jsonObject.getLong("startDate"),jsonObject.getLong("endDate"));
+        int size = format.getSize();
+        object.put("DateSize",size);
+        JSONArray array = new JSONArray();
+        ArrayList<Float> itemData;
+        for(int i=0;i<size;i++){
+            itemData = format.getItem(i);
+            long date = format.getDate(i);
+            JSONObject item = new JSONObject();
+            item.put("date",date);
+            item.put("dust",itemData.get(0));
+            item.put("temperature",itemData.get(1));
+            item.put("humidity",itemData.get(2));
+            item.put("pressure",itemData.get(3));
+            item.put("windForce",itemData.get(4));
+            item.put("windDirection",itemData.get(5));
+            item.put("noise",itemData.get(6));
+            array.put(item);
+        }
+        object.put("ArrayData",array);
+        return insertFrame(object.toString());
+    }
+
     private static byte[] handleHistoryData(JSONObject jsonObject,GeneralInfoProtocol infoProtocol) throws JSONException {
         JSONObject object = new JSONObject();
         object.put("protocolType","historyData");
@@ -351,6 +378,8 @@ public class JSON {
             return handleOperate(jsonObject,infoProtocol);
         }else if(jsonObject.getString("protocolType").equals("historyData")){
             return handleHistoryData(jsonObject,infoProtocol);
+        }else if(jsonObject.getString("protocolType").equals("historyHourData")) {
+            return handleHistoryHourData(jsonObject,infoProtocol);
         }else if(jsonObject.getString("protocolType").equals("log")){
             return handleLog(jsonObject,infoProtocol);
         }else if(jsonObject.getString("protocolType").equals("operateInit")){

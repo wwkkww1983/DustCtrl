@@ -72,6 +72,7 @@ public interface GeneralInfoProtocol {
 
     GeneralHistoryDataFormat getHistoryData(long endDate);
     GeneralHistoryDataFormat getHistoryData(long startDate,long endDate);
+    GeneralHistoryDataFormat getHistoryHourData(long startDate,long endDate);
 
     ArrayList<String> getLog(long dateStart);
     ArrayList<String> getLog(long startDate,long endDate);

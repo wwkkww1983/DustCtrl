@@ -245,6 +245,11 @@ public class InformationProtocol extends Observable implements GeneralInfoProtoc
     }
 
     @Override
+    public GeneralHistoryDataFormat getHistoryHourData(long startDate, long endDate) {
+        return GetProtocols.getInstance().getDataBaseProtocol().getHourData(startDate,endDate);
+    }
+
+    @Override
     public ArrayList<String> getLog(long endDate) {
         return GetProtocols.getInstance().getDataBaseProtocol().getDayLog(endDate);
     }
