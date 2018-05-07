@@ -29,6 +29,7 @@ import jxl.write.biff.RowsExceededException;
  */
 
 public class TcpDataBase implements GeneralDataBaseProtocol{
+    public static final int ResultMin=0,ResultHour=1;
     private static final String tag = "TcpDataBase";
     private Context context;
     long lastMinDate,minInterval=60000l,nextMinDate,lastHourDate,nextHourDate;
@@ -37,7 +38,7 @@ public class TcpDataBase implements GeneralDataBaseProtocol{
         this.context = context;
     }
 
-    private ArrayList<HistoryDataFormat> exportDataFormat(long start,long end){
+    private ArrayList<HistoryDataFormat> exportDataFormat(int tableName,long start,long end){
         ArrayList<HistoryDataFormat> list = new ArrayList<>();
         String statement;
         if (start > end){
@@ -48,7 +49,13 @@ public class TcpDataBase implements GeneralDataBaseProtocol{
         DbTask helperDbTask = new DbTask(context,3);
         SQLiteDatabase db = helperDbTask.getReadableDatabase();
         Cursor cursor;
-        cursor = db.rawQuery("SELECT * FROM result WHERE "+statement+" ORDER BY date desc",new String[]{});
+        if(tableName == ResultHour) {
+            cursor = db.rawQuery("SELECT * FROM result_hour WHERE " + statement + " ORDER BY date desc", new String[]{});
+        }else if(tableName == ResultMin){
+            cursor = db.rawQuery("SELECT * FROM result WHERE " + statement + " ORDER BY date desc", new String[]{});
+        }else{
+            cursor = db.rawQuery("SELECT * FROM result WHERE " + statement + " ORDER BY date desc", new String[]{});
+        }
         HistoryDataFormat format;
         long date;
         float[] data = new float[7];
@@ -163,16 +170,17 @@ public class TcpDataBase implements GeneralDataBaseProtocol{
             OutputStream os = new FileOutputStream(file);
             wwb = Workbook.createWorkbook(os);
 
-            ArrayList<HistoryDataFormat> list = exportDataFormat(start,end);
+            ArrayList<HistoryDataFormat> list = exportDataFormat(ResultMin,start,end);
             WritableSheet sheet;
             //每个sheet最多65534行
             int elementMax = list.size();
+            int sheetMax;
             if(elementMax > 0) {
-                int sheetMax = elementMax / 65534;
+                sheetMax = elementMax / 65534;
                 sheetMax += 1;
                 int index = 0;
                 for(int i=0;i<sheetMax;i++){
-                    sheet = wwb.createSheet("Sheet"+String.valueOf(i+1),i);
+                    sheet = wwb.createSheet("分钟数据"+String.valueOf(i+1),i);
                     addTitle(sheet);
                     if((elementMax-index)>= 65534){
                         addOneSheet(sheet,list,index,index+65534);
@@ -183,12 +191,38 @@ public class TcpDataBase implements GeneralDataBaseProtocol{
                     }
                 }
             }else{
-                sheet = wwb.createSheet("Sheet1",0);
+                sheetMax = 1;
+                sheet = wwb.createSheet("分钟数据1",0);
                 addTitle(sheet);
             }
-
+            /*wwb.write();
+            os.flush();*/
+            //写小时数据
+            Log.d(tag,"写小时数据");
+            list = exportDataFormat(ResultHour,start,end);
+            elementMax = list.size();
+            if(elementMax > 0) {
+                int hourSheetMax = elementMax / 65534;
+                hourSheetMax += 1;
+                int index = 0;
+                for(int i=0;i<hourSheetMax;i++){
+                    sheet = wwb.createSheet("小时数据"+String.valueOf(i+1),i+sheetMax);
+                    addTitle(sheet);
+                    if((elementMax-index)>= 65534){
+                        addOneSheet(sheet,list,index,index+65534);
+                        index += 65534;
+                    }else{
+                        addOneSheet(sheet,list,index,elementMax);
+                        break;
+                    }
+                }
+            }else{
+                sheet = wwb.createSheet("小时数据1",0);
+                addTitle(sheet);
+            }
             wwb.write();
             os.flush();
+
             wwb.close();
             //需要关闭输出流，结束占用，否则系统会 结束 app
             os.close();

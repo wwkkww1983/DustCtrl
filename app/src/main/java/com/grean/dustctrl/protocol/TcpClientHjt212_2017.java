@@ -287,8 +287,12 @@ public class TcpClientHjt212_2017 implements GeneralClientProtocol,GeneralReturn
             run = true;
             dataBaseProtocol.loadMinDate();
             dataBaseProtocol.setMinDataInterval(60000l);//设置为1分钟间隔
+            now = tools.nowtime2timestamp();
+            /*
             lastMinDate = dataBaseProtocol.getNextMinDate();
-            lastHourDate = dataBaseProtocol.getNextHourDate();
+            lastHourDate = dataBaseProtocol.getNextHourDate();*/
+            lastMinDate = dataBaseProtocol.calcNextMinDate(now);
+            lastHourDate = dataBaseProtocol.calcNextHourDate(now);
             Log.d(tag,"lastMinDate"+ tools.timestamp2string(lastMinDate));
             ClientDataBaseCtrl dataBaseCtrl = ScanSensor.getInstance();
             while (run&&!interrupted()) {
@@ -296,7 +300,7 @@ public class TcpClientHjt212_2017 implements GeneralClientProtocol,GeneralReturn
                 dataBaseCtrl.getRealTimeData(handler);
                 addSendBuff(insertOneFrame(getRealTimeDataString(now)));
                 if(now > lastMinDate){//发送分钟数据
-                    dataBaseCtrl.saveMinData(now);
+                    dataBaseCtrl.saveMinData(lastMinDate);
                     addSendBuff(insertOneFrame(getMinDataString(now,dataBaseProtocol.getLastMinDate(),dataBaseProtocol.getNextMinDate())));
                     lastMinDate = dataBaseProtocol.calcNextMinDate(now);
                 }
