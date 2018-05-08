@@ -236,6 +236,8 @@ public class JSON {
         object.put("serverConnected",infoProtocol.isServerConnected());
         object.put("acOk",data.isAcIn());
         object.put("batteryLow",data.isBatteryLow());
+        object.put("calPos",data.isCalPos());
+        object.put("measurePos",data.isMeasurePos());
         object.put("heatPwm",data.getHeatPwm());
         object.put("relay1",data.getCtrlDo(0));
         object.put("relay2",data.getCtrlDo(1));

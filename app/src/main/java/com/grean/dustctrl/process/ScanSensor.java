@@ -508,6 +508,8 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
             notifyObservers(new LogFormat("结束校准"));
             infoProtocol.setDustCalMeterProcess(100);
             infoProtocol.notifySystemState("校准结束");
+            SensorData data = com.getData();
+            notifyObservers(new LogFormat("散光板:限位"+String.valueOf(data.isCalPos()))+";测量位置"+String.valueOf(data.isMeasurePos()));
             com.SendFrame(CtrlCommunication.DustMeterRun);
             if(info!=null) {
                 info.cancelDialog();

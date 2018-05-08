@@ -85,16 +85,24 @@ public class FragmentMain extends Fragment implements NotifyScanSensor{
                     tvHiDewPoint.setText(String.valueOf(data.getHiDewPoint()));
                     tvLoDewPoint.setText(String.valueOf(data.getLoDewPoint()));
                     tvPwm.setText(String.valueOf(data.getHeatPwm()));
+                    String string;
                     if(data.isAcIn()){
-                        tvPowerIn.setText("外接电源:正常");
+                        string = "电源:外部电源正常,";
+                        //tvPowerIn.setText("外接电源:正常");
                     }else{
-                        tvPowerIn.setText("外接电源:异常");
+                        string = "电源:外部电源异常,";
+                        //tvPowerIn.setText("外接电源:异常");
                     }
                     if(data.isBatteryLow()){
-                        tvBatteryOk.setText("电池电压:低");
+                        string+="电池电压低";
+                        //tvBatteryOk.setText("电池电压:低");
                     }else{
-                        tvBatteryOk.setText("电池电压:正常");
+                        string+="电池电压正常";
+                        //tvBatteryOk.setText("电池电压:正常");
                     }
+                    tvPowerIn.setText(string);
+                    string = "散光板:限位:"+String.valueOf(data.isCalPos())+"测量:"+String.valueOf(data.isMeasurePos());
+                    tvBatteryOk.setText(string);
                     break;
                 case msgUpdateNextCal:
                     tvNextCal.setText("自动校准:"+nextCalString);
