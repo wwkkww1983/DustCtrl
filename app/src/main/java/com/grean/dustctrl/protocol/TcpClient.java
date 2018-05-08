@@ -235,6 +235,7 @@ public class TcpClient implements GeneralClientProtocol{
                                 Log.d(tag,"补发分钟数据"+tools.timestamp2string(lastMinDate));
                                 lastMinDate = dataBaseProtocol.calcNextMinDate(now);
                                 lastProtocolMinDate = lastMinDate;
+                                dataBaseProtocol.saveMinDate();
                             }else{
                                 Log.d(tag,"补发中断");
                                 break;
