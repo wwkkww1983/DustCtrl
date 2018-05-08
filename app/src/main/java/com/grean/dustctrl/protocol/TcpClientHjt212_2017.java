@@ -288,11 +288,16 @@ public class TcpClientHjt212_2017 implements GeneralClientProtocol,GeneralReturn
             dataBaseProtocol.loadMinDate();
             dataBaseProtocol.setMinDataInterval(60000l);//设置为1分钟间隔
             now = tools.nowtime2timestamp();
-            /*
-            lastMinDate = dataBaseProtocol.getNextMinDate();
-            lastHourDate = dataBaseProtocol.getNextHourDate();*/
-            lastMinDate = dataBaseProtocol.calcNextMinDate(now);
-            lastHourDate = dataBaseProtocol.calcNextHourDate(now);
+            if(now > dataBaseProtocol.getNextMinDate()) {
+                lastMinDate = dataBaseProtocol.calcNextMinDate(now);
+            }else{
+                lastMinDate = dataBaseProtocol.getNextMinDate();
+            }
+            if(now > dataBaseProtocol.getNextHourDate()) {
+                lastHourDate = dataBaseProtocol.calcNextHourDate(now);
+            }else{
+                lastHourDate = dataBaseProtocol.getNextHourDate();
+            }
             Log.d(tag,"lastMinDate"+ tools.timestamp2string(lastMinDate));
             ClientDataBaseCtrl dataBaseCtrl = ScanSensor.getInstance();
             while (run&&!interrupted()) {
@@ -303,15 +308,15 @@ public class TcpClientHjt212_2017 implements GeneralClientProtocol,GeneralReturn
                     dataBaseCtrl.saveMinData(lastMinDate);
                     addSendBuff(insertOneFrame(getMinDataString(now,dataBaseProtocol.getLastMinDate(),dataBaseProtocol.getNextMinDate())));
                     lastMinDate = dataBaseProtocol.calcNextMinDate(now);
+                    dataBaseProtocol.saveMinDate();
                 }
 
                 if(now > lastHourDate){
                     dataBaseCtrl.saveHourData(lastHourDate);
                     addSendBuff(insertOneFrame(getHourDataString(now,dataBaseProtocol.getLastHourDate(),dataBaseProtocol.getNextHourDate())));
                     lastHourDate = dataBaseProtocol.calcNextHourDate(now);
-
+                    dataBaseProtocol.saveHourDate();
                 }
-
 
                 try {
                     Thread.sleep(20000);

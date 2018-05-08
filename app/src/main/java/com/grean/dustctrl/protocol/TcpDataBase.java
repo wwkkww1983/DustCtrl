@@ -280,7 +280,7 @@ public class TcpDataBase implements GeneralDataBaseProtocol{
     public GeneralHistoryDataFormat getHourData(long dateStart,long dateEnd) {
         GeneralHistoryDataFormat format = new GeneralHistoryDataFormat();
         String statement;
-        statement = "date >="+ String.valueOf(dateStart)+" and date <="+String.valueOf(dateEnd);
+        statement = "date >="+ String.valueOf(dateStart)+" and date <"+String.valueOf(dateEnd);
         DbTask helperDbTask = new DbTask(context,3);
         SQLiteDatabase db = helperDbTask.getReadableDatabase();
         Cursor cursor;
@@ -408,7 +408,7 @@ public class TcpDataBase implements GeneralDataBaseProtocol{
     public long calcNextHourDate(long now) {
         lastHourDate = nextHourDate;
         nextHourDate = tools.calcNextTime(now,lastHourDate,60*60000l);
-        myApplication.getInstance().saveConfig("LastHourDate",lastHourDate);
+        //myApplication.getInstance().saveConfig("LastHourDate",lastHourDate);
         Log.d(tag,"calcNextHourDate"+tools.timestamp2string(nextHourDate));
         return nextHourDate;
     }
@@ -418,7 +418,7 @@ public class TcpDataBase implements GeneralDataBaseProtocol{
        // Log.d(tag,"now="+tools.timestamp2string(now)+";plan="+tools.timestamp2string(lastMinDate)+";interval = "+String.valueOf(minInterval/1000l));
         lastMinDate = nextMinDate;
         nextMinDate = tools.calcNextTime(now,lastMinDate,minInterval);
-        myApplication.getInstance().saveConfig("LastMinDate",lastMinDate);
+        //myApplication.getInstance().saveConfig("LastMinDate",lastMinDate);
         return nextMinDate;
     }
 
@@ -440,5 +440,15 @@ public class TcpDataBase implements GeneralDataBaseProtocol{
         nextHourDate = lastHourDate + 3600000l;
         Log.d(tag,"nextHourDate"+tools.timestamp2string(nextHourDate));
        // Log.d(tag,"next ="+tools.timestamp2string(nextMinDate)+";plan="+tools.timestamp2string(lastMinDate)+";interval = "+String.valueOf(minInterval/1000l));
+    }
+
+    @Override
+    public void saveMinDate() {
+        myApplication.getInstance().saveConfig("LastMinDate",lastMinDate);
+    }
+
+    @Override
+    public void saveHourDate() {
+        myApplication.getInstance().saveConfig("LastHourDate",lastHourDate);
     }
 }

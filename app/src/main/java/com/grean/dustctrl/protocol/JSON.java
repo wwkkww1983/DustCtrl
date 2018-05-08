@@ -307,7 +307,7 @@ public class JSON {
         JSONObject object = new JSONObject();
         object.put("protocolType","historyHourData");
         GeneralHistoryDataFormat format;
-        format = infoProtocol.getHistoryData(jsonObject.getLong("startDate"),jsonObject.getLong("endDate"));
+        format = infoProtocol.getHistoryHourData(jsonObject.getLong("startDate"),jsonObject.getLong("endDate"));
         int size = format.getSize();
         object.put("DateSize",size);
         JSONArray array = new JSONArray();

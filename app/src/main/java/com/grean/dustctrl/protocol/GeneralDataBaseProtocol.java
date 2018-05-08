@@ -45,5 +45,10 @@ public interface GeneralDataBaseProtocol {
 
     void loadMinDate();
 
+    /**
+     * 存储上一次分钟数据发送时间
+     */
+    void saveMinDate();
 
+    void saveHourDate();
 }

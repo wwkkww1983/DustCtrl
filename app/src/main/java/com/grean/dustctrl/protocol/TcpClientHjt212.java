@@ -204,6 +204,7 @@ public class TcpClientHjt212 implements GeneralClientProtocol{
                     addSendBuff(string);
                     // addSendBuff(insertOneFrame(getMinDataString(now,dataBaseProtocol.getLastMinDate(),dataBaseProtocol.getNextMinDate())));
                     lastMinDate = dataBaseProtocol.calcNextMinDate(now);
+                    dataBaseProtocol.saveMinDate();
                 }
                 try {
                     Thread.sleep(20000);
