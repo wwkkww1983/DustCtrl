@@ -76,8 +76,13 @@ public class InformationProtocol extends Observable implements GeneralInfoProtoc
         this.data.calcLoDewPoint();
         this.data.setAcIn(data.isAcIn());
         this.data.setBatteryLow(data.isBatteryLow());
+        this.data.setCalPos(data.isCalPos());
+        this.data.setMeasurePos(data.isMeasurePos());
         this.data.setHeatPwm(data.getHeatPwm());
         this.data.setCtrlDo(data.getCtrlDo());
+        this.data.setPipeTemp(data.getPipeTemp());
+        this.data.setHiHumidity(data.getHiHumidity());
+        this.data.setHiTemp(data.getHiTemp());
     }
 
     @Override
