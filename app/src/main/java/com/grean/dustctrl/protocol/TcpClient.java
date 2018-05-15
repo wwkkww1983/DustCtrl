@@ -25,7 +25,7 @@ public class TcpClient implements GeneralClientProtocol{
     private HeartThread thread;
     private float [] realTimeData = new float[7];
     //private static String realTimeDataBody = "&&";
-    private long lastMinDate,minInterval,now;
+    private long lastMinDate,now,lastHourDate;
     private Handler handler = new Handler(Looper.getMainLooper()){
         @Override
         public void handleMessage(Message msg) {
@@ -210,15 +210,27 @@ public class TcpClient implements GeneralClientProtocol{
             GeneralDataBaseProtocol dataBaseProtocol = GetProtocols.getInstance().getDataBaseProtocol();
             dataBaseProtocol.loadMinDate();
             dataBaseProtocol.setMinDataInterval(INTERVAL);//设置为1分钟间隔
-            lastMinDate = dataBaseProtocol.getNextMinDate();
+
+            now = tools.nowtime2timestamp();
+            if(now > dataBaseProtocol.getNextMinDate()) {
+                lastMinDate = dataBaseProtocol.calcNextMinDate(now);
+            }else{
+                lastMinDate = dataBaseProtocol.getNextMinDate();
+            }
+            if(now > dataBaseProtocol.getNextHourDate()) {
+                lastHourDate = dataBaseProtocol.calcNextHourDate(now);
+            }else{
+                lastHourDate = dataBaseProtocol.getNextHourDate();
+            }
+
             Log.d(tag,"lastMinDate"+tools.timestamp2string(lastMinDate));
             ClientDataBaseCtrl dataBaseCtrl = ScanSensor.getInstance();
-            long lastProtocolMinDate = lastMinDate;
+            //long lastProtocolMinDate = lastMinDate;
             while (run&&!interrupted()) {
                 now = tools.nowtime2timestamp();
                 dataBaseCtrl.getRealTimeData(handler);
                 addSendBuff(insertOneFrame(getRealTimeDataString(now)));
-                if(now > lastProtocolMinDate){//发送分钟数据
+                /*if(now > lastProtocolMinDate){//发送分钟数据
                     dataBaseCtrl.saveMinData(now);//保存数据
                     if(addSendBuff(insertOneFrame(getMinDataString(now,dataBaseProtocol.getLastMinDate(),dataBaseProtocol.getNextMinDate())))) {
                         //Log.d(tag,"发送分钟数据");
@@ -249,9 +261,21 @@ public class TcpClient implements GeneralClientProtocol{
                         }
                     }
 
+                }*/
+                if(now > lastMinDate){//发送分钟数据
+                    dataBaseCtrl.saveMinData(lastMinDate);
+                    addSendBuff(insertOneFrame(getMinDataString(now,dataBaseProtocol.getLastMinDate(),dataBaseProtocol.getNextMinDate())));
+                    lastMinDate = dataBaseProtocol.calcNextMinDate(now);
+                    dataBaseProtocol.saveMinDate();
                 }
 
 
+                if(now > lastHourDate){
+                    dataBaseCtrl.saveHourData(lastHourDate);
+                    //addSendBuff(insertOneFrame(getHourDataString(now,dataBaseProtocol.getLastHourDate(),dataBaseProtocol.getNextHourDate())));
+                    lastHourDate = dataBaseProtocol.calcNextHourDate(now);
+                    dataBaseProtocol.saveHourDate();
+                }
 
                 try {
                     Thread.sleep(20000);
