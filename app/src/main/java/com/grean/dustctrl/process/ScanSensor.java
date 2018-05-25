@@ -234,8 +234,8 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
         @Override
         public void run() {
             Log.d(tag,"开始校准");
-            setChanged();
             notifyObservers(new LogFormat("开始校准"));
+            setChanged();
             sendMainFragmentString("停止测量,开始校准");
             CtrlCommunication com;
             com = CtrlCommunication.getInstance();
@@ -280,8 +280,6 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
                 e.printStackTrace();
             }
             DustMeterInfo dustMeterInfo = com.getInfo();
-
-            setChanged();
             if (dustMeterInfo.isBgOk()){
                 notifyObservers(new LogFormat("校零成功"));
                 sendMainFragmentString("校零成功");
@@ -291,6 +289,7 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
                 sendMainFragmentString("校零失败");
                 infoProtocol.notifySystemState("校零失败");
             }
+            setChanged();
             infoProtocol.setDustCalMeterProcess(80);
 
             com.SendFrame(CtrlCommunication.DustMeterBgEnd);
@@ -313,8 +312,8 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            setChanged();
             notifyObservers(new LogFormat("结束校准"));
+            setChanged();
             infoProtocol.setDustCalMeterProcess(100);
             infoProtocol.notifySystemState("校准结束");
             com.SendFrame(CtrlCommunication.DustMeterRun);
@@ -334,8 +333,9 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
         public void run() {
             super.run();
             Log.d(tag,"开始校准");
-            setChanged();
+
             notifyObservers(new LogFormat("开始校准"));
+            setChanged();
             sendMainFragmentString("停止测量,开始校准");
             CtrlCommunication com;
             com = CtrlCommunication.getInstance();
@@ -403,8 +403,6 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
             }
 
             DustMeterInfo dustMeterInfo = com.getInfo();
-
-            setChanged();
             String zeroResultString;
             if (dustMeterInfo.isBgOk()){
                 notifyObservers(new LogFormat("校零成功"));
@@ -416,6 +414,7 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
                 sendMainFragmentString("校零失败");
                 zeroResultString = "校零失败";
             }
+            setChanged();
             infoProtocol.notifySystemState(zeroResultString);
             infoProtocol.setDustCalMeterProcess(50);
 
@@ -467,7 +466,6 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            setChanged();
             String spanResultString;
             if (dustMeterInfo.isSpanOk()){
                 notifyObservers(new LogFormat("校跨成功"));
@@ -478,6 +476,7 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
                 sendMainFragmentString("校跨失败");
                 spanResultString = "校跨失败";
             }
+            setChanged();
             infoProtocol.notifySystemState(zeroResultString+","+spanResultString);
             infoProtocol.setDustMeterResult(dustMeterInfo.isBgOk(),dustMeterInfo.isSpanOk());
             infoProtocol.setDustCalMeterProcess(90);
@@ -504,12 +503,14 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+            notifyObservers(new LogFormat("校准结束"));
             setChanged();
-            notifyObservers(new LogFormat("结束校准"));
             infoProtocol.setDustCalMeterProcess(100);
             infoProtocol.notifySystemState("校准结束");
             SensorData data = com.getData();
-            notifyObservers(new LogFormat("散光板:限位"+String.valueOf(data.isCalPos()))+";测量位置"+String.valueOf(data.isMeasurePos()));
+            notifyObservers(new LogFormat("散光板:限位"+String.valueOf(data.isCalPos())+";测量位置"+String.valueOf(data.isMeasurePos())));
+            //Log.d(tag,"散光板:限位"+String.valueOf(data.isCalPos())+";测量位置"+String.valueOf(data.isMeasurePos()));
+            setChanged();
             com.SendFrame(CtrlCommunication.DustMeterRun);
             if(info!=null) {
                 info.cancelDialog();
@@ -587,8 +588,9 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
             GeneralClientProtocol clientProtocol = GetProtocols.getInstance().getClientProtocol();
             //infoProtocol.
             //int i=0;
-            setChanged();
+
             notifyObservers(new LogFormat("开始测量"));
+            setChanged();
             infoProtocol.notifySystemState("正在测量");
             clientProtocol.setRealTimeAlarm(GeneralClientProtocol.AlARM_N);
             scanTimes = 0;
@@ -612,9 +614,9 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
             String string = "泵运行累计时间:"+String.valueOf(dustMeterInfo.getPumpTime())+"h;激光运行累计时间:"+String.valueOf(dustMeterInfo.getLaserTime())+"h;";
             infoProtocol.setDustMeterPumpTime(dustMeterInfo.getPumpTime());
             infoProtocol.setDustMeterLaserTime(dustMeterInfo.getLaserTime());
-            setChanged();
-            notifyObservers(new LogFormat("查询粉尘仪:"+string));
 
+            notifyObservers(new LogFormat("查询粉尘仪:"+string));
+            setChanged();
             try {
                 Thread.sleep(16000);
             } catch (InterruptedException e) {
@@ -748,8 +750,8 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
             infoProtocol.setDustMeterPumpTime(dustMeterInfo.getPumpTime());
             infoProtocol.setDustMeterLaserTime(dustMeterInfo.getLaserTime());
             ScanSensor.getInstance().restartScanSensor();
-            setChanged();
             notifyObservers(new LogFormat("查询粉尘仪:"+string));
+            setChanged();
         }
     }
 }
