@@ -261,6 +261,8 @@ public class JSON {
         array.put(putItem("highDew",data.getHiDewPoint()));
         array.put(putItem("lowDew",data.getLoDewPoint()));
         array.put(putItem("value",data.getValue()));
+        array.put(putItem("targetTemperature",data.getPipeTemp()));
+        array.put(putItem("pipeTemperature",data.getHiTemp()));
         object.put("realTimeData",array);
         return insertFrame(object.toString());
     }

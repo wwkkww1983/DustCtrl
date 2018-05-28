@@ -100,6 +100,7 @@ public class NoiseCommunication extends SerialCommunication{
     protected void asyncCommunicationProtocol(byte[] rec, int size) {
        // Log.d(tag,new String(rec,0,size));
         String cmd = new String(rec,0,4);
+        String cmdRsTech = new String(rec,0,2);
         if(cmd.equals("AWAV")){
             calInfo = new String(rec,0,size);
             String[]strings = calInfo.split(",");
@@ -117,8 +118,14 @@ public class NoiseCommunication extends SerialCommunication{
                 }
             }
            // Log.d(tag,calInfo);
-        }else{
+        }else if(cmdRsTech.equals("aa")&&(size==6)) {//支持北京瑞森新谱声级计
+            try {
+                noiseData = Float.valueOf(new String(rec,2,4))/10f;
+            }catch (Exception e){
 
+            }
+        }else{
+            Log.d(tag,new String(rec,0,size));
         }
     }
 
