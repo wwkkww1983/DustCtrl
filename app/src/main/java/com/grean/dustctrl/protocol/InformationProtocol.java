@@ -9,26 +9,19 @@ import android.util.Log;
 
 import com.SystemDateTime;
 import com.grean.dustctrl.CtrlCommunication;
-import com.grean.dustctrl.DbTask;
 import com.grean.dustctrl.LogFormat;
-import com.grean.dustctrl.MainActivity;
 import com.grean.dustctrl.NoiseCalibrationListener;
 import com.grean.dustctrl.NoiseCommunication;
 import com.grean.dustctrl.ReadWriteConfig;
-import com.grean.dustctrl.SocketTask;
-import com.grean.dustctrl.dust.DustMeterLibs;
+import com.grean.dustctrl.UploadingProtocol.ProtocolTcpServer;
+import com.grean.dustctrl.UploadingProtocol.UploadingConfigFormat;
 import com.grean.dustctrl.model.OperateDustMeter;
 import com.grean.dustctrl.myApplication;
-import com.grean.dustctrl.presenter.NotifyDataInfo;
 import com.grean.dustctrl.process.ScanSensor;
 import com.grean.dustctrl.process.SensorData;
-import com.tools;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
+import org.json.JSONException;
 import java.io.IOException;
-import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Observable;
 
@@ -92,14 +85,18 @@ public class InformationProtocol extends Observable implements GeneralInfoProtoc
 
     public void loadSetting(ReadWriteConfig config){
         this.config = config;
-        serverIp = config.getConfigString("ServerIp");
-        serverPort = config.getConfigInt("ServerPort");
+        //serverIp = config.getConfigString("ServerIp");
+        //serverPort = config.getConfigInt("ServerPort");
         autoCalEnable = config.getConfigBoolean("AutoCalibrationEnable");
         autoCalTime = config.getConfigLong("AutoCalTime");
         autoCalInterval = config.getConfigLong("AutoCalInterval");
         paraK = config.getConfigFloat("DustParaK");
         paraB = config.getConfigFloat("DustParaB");
-        mnCode = config.getConfigString("MnCode");
+        //mnCode = config.getConfigString("MnCode");
+        UploadingConfigFormat format = ProtocolTcpServer.getInstance().getFormat();
+        serverIp = format.getServerAddress();
+        serverPort = format.getServerPort();
+        mnCode = format.getMnCode();
     }
 
     private void getAvailableContext(){
@@ -119,10 +116,16 @@ public class InformationProtocol extends Observable implements GeneralInfoProtoc
             serverIp = ip;
             serverPort = port;
             if(config!=null){
-                config.saveConfig("ServerIp",ip);
-                config.saveConfig("ServerPort",port);
+                UploadingConfigFormat format = ProtocolTcpServer.getInstance().getFormat();
+                format.setServerAddress(ip);
+                format.setServerPort(port);
+                try {
+                    config.saveConfig("UploadConfig",format.getConfigString());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
-            SocketTask.getInstance().resetSocketClient(ip, port, null, null);
+            ProtocolTcpServer.getInstance().reconnectServer(context,null,null);
         }
     }
 
@@ -292,8 +295,14 @@ public class InformationProtocol extends Observable implements GeneralInfoProtoc
     @Override
     public void setMnCode(String code) {
         mnCode = code;
-        config.saveConfig("MnCode",code);
-        GetProtocols.getInstance().getClientProtocol().setMnCode(code);
+        UploadingConfigFormat format = ProtocolTcpServer.getInstance().getFormat();
+        format.setMnCode(code);
+        try {
+            config.saveConfig("UploadConfig",format.getConfigString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        //GetProtocols.getInstance().getClientProtocol().setMnCode(code);
     }
 
     @Override
@@ -389,7 +398,7 @@ public class InformationProtocol extends Observable implements GeneralInfoProtoc
 
     @Override
     public boolean isServerConnected() {
-        return SocketTask.getInstance().isConnected();
+        return ProtocolTcpServer.getInstance().isConnected();
     }
 
     @Override

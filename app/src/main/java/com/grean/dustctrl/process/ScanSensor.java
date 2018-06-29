@@ -13,6 +13,8 @@ import com.grean.dustctrl.CtrlCommunication;
 import com.grean.dustctrl.DbTask;
 import com.grean.dustctrl.LogFormat;
 import com.grean.dustctrl.NoiseCommunication;
+import com.grean.dustctrl.UploadingProtocol.ProtocolState;
+import com.grean.dustctrl.UploadingProtocol.ProtocolTcpServer;
 import com.grean.dustctrl.dust.DustMeterLibs;
 import com.grean.dustctrl.hardware.MainBoardLibs;
 import com.grean.dustctrl.myApplication;
@@ -21,6 +23,7 @@ import com.grean.dustctrl.presenter.NotifyOperateInfo;
 import com.grean.dustctrl.presenter.NotifyProcessDialogInfo;
 import com.grean.dustctrl.protocol.ClientDataBaseCtrl;
 import com.grean.dustctrl.protocol.GeneralClientProtocol;
+import com.grean.dustctrl.protocol.GeneralDataBaseProtocol;
 import com.grean.dustctrl.protocol.GeneralHistoryDataFormat;
 import com.grean.dustctrl.protocol.GeneralInfoProtocol;
 import com.grean.dustctrl.protocol.GetProtocols;
@@ -38,7 +41,7 @@ import java.util.Observable;
 public class ScanSensor extends Observable implements ClientDataBaseCtrl {
     private static final String tag = "ScanSensor";
     private static ScanSensor instance = new ScanSensor();
-    private boolean run = false;
+    private boolean run = false,minUploadRun =false;
     private ScanSensorThread scanSensorThread;
     private NotifyScanEnd notifyScanEnd;
     private NotifyScanSensor notifyScanSensor;
@@ -242,8 +245,8 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
             GeneralInfoProtocol infoProtocol = GetProtocols.getInstance().getInfoProtocol();
             infoProtocol.notifySystemState("停止测量，开始校准");
             infoProtocol.setDustCalMeterProcess(2);
-            GeneralClientProtocol clientProtocol = GetProtocols.getInstance().getClientProtocol();
-            clientProtocol.setRealTimeAlarm(GeneralClientProtocol.ALARM_C);
+            //GeneralClientProtocol clientProtocol = GetProtocols.getInstance().getClientProtocol();
+            //clientProtocol.setRealTimeAlarm(GeneralClientProtocol.ALARM_C);
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
@@ -342,8 +345,8 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
             GeneralInfoProtocol infoProtocol = GetProtocols.getInstance().getInfoProtocol();
             infoProtocol.notifySystemState("停止测量，开始校准");
             infoProtocol.setDustCalMeterProcess(2);
-            GeneralClientProtocol clientProtocol = GetProtocols.getInstance().getClientProtocol();
-            clientProtocol.setRealTimeAlarm(GeneralClientProtocol.ALARM_C);
+            //GeneralClientProtocol clientProtocol = GetProtocols.getInstance().getClientProtocol();
+            //clientProtocol.setRealTimeAlarm(GeneralClientProtocol.ALARM_C);
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
@@ -523,6 +526,62 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
         }
     }
 
+    private class MinUploadThread extends Thread{
+        private ProtocolState protocolState;
+
+        public MinUploadThread(ProtocolState state){
+            this.protocolState = state;
+        }
+        @Override
+        public void run() {
+            minUploadRun = true;
+            GeneralDataBaseProtocol dataBaseProtocol = GetProtocols.getInstance().getDataBaseProtocol();
+            dataBaseProtocol.loadMinDate();
+            dataBaseProtocol.setMinDataInterval(60000l);//设置为1分钟间隔
+            long now = tools.nowtime2timestamp();
+            long lastMinDate;
+            long lastHourDate;
+            if(now > dataBaseProtocol.getNextMinDate()) {
+                lastMinDate = dataBaseProtocol.calcNextMinDate(now);
+            }else{
+                lastMinDate = dataBaseProtocol.getNextMinDate();
+            }
+            if(now > dataBaseProtocol.getNextHourDate()) {
+                lastHourDate = dataBaseProtocol.calcNextHourDate(now);
+            }else{
+                lastHourDate = dataBaseProtocol.getNextHourDate();
+            }
+            protocolState.uploadSystemTime(now,lastMinDate,lastHourDate);
+
+            while (minUploadRun&&(!interrupted())) {
+                now = tools.nowtime2timestamp();
+                //Log.d(tag,"loop");
+                protocolState.uploadSecondDate(now);
+                if(now >  lastMinDate){//发送分钟数据
+                    Log.d(tag,"发送分钟数据"+String.valueOf(protocolState==null));
+                    saveMinData(lastMinDate);
+
+                    protocolState.uploadMinDate(now,lastMinDate);
+                    lastMinDate = dataBaseProtocol.calcNextMinDate(now);
+                    dataBaseProtocol.saveMinDate();
+                }else if(now > lastHourDate){
+                    saveHourData(lastHourDate);
+                    protocolState.uploadHourDate(now,lastHourDate);
+                    lastHourDate = dataBaseProtocol.calcNextHourDate(now);
+                    dataBaseProtocol.saveHourDate();
+                }
+
+                try {
+                    sleep(10000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+            }
+            minUploadRun = false;
+        }
+    }
+
     public static ScanSensor getInstance() {
         return instance;
     }
@@ -585,14 +644,14 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
             com.setMotorRounds(myApplication.getInstance().getConfigInt("MotorRounds"));
             com.setMotorTime(myApplication.getInstance().getConfigInt("MotorTime"));
             GeneralInfoProtocol infoProtocol = GetProtocols.getInstance().getInfoProtocol();
-            GeneralClientProtocol clientProtocol = GetProtocols.getInstance().getClientProtocol();
+            //GeneralClientProtocol clientProtocol = GetProtocols.getInstance().getClientProtocol();
             //infoProtocol.
             //int i=0;
 
             notifyObservers(new LogFormat("开始测量"));
             setChanged();
             infoProtocol.notifySystemState("正在测量");
-            clientProtocol.setRealTimeAlarm(GeneralClientProtocol.AlARM_N);
+            //clientProtocol.setRealTimeAlarm(GeneralClientProtocol.AlARM_N);
             scanTimes = 0;
             for(int i=0;i<7;i++){
                 sumData[i] = 0;
@@ -622,6 +681,11 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+
+            if(!minUploadRun){
+                new MinUploadThread(GetProtocols.getInstance().getProtocolState()).start();
+            }
+
             while (run){
                 com.SendFrame(CtrlCommunication.Inquire);
                 com.SendFrame(CtrlCommunication.WindForce);
@@ -640,13 +704,13 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
                 data.setNoise(noiseCom.getNoiseData());
                 if(data.getDust()>=alarmDust){
                     alarm = true;
-                    clientProtocol.setRealTimeAlarm(GeneralClientProtocol.ALARM_ADD);
+                    //clientProtocol.setRealTimeAlarm(GeneralClientProtocol.ALARM_ADD);
                 }else{
                     alarm = false;
-                    clientProtocol.setRealTimeAlarm(GeneralClientProtocol.AlARM_N);
+                    //clientProtocol.setRealTimeAlarm(GeneralClientProtocol.AlARM_N);
                 }
                 infoProtocol.notifySenorData(data);
-                clientProtocol.setRealTimeData(data);
+                //clientProtocol.setRealTimeData(data);
                 infoProtocol.setAlarmMark(alarm);
                 calcSum(data);
                /* if(i>29){//1min一条数据

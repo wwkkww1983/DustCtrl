@@ -2,6 +2,7 @@ package com.grean.dustctrl.protocol;
 
 import android.util.Log;
 
+import com.grean.dustctrl.SystemConfig;
 import com.grean.dustctrl.myApplication;
 import com.grean.dustctrl.process.ScanSensor;
 import com.grean.dustctrl.process.SensorData;
@@ -129,7 +130,7 @@ public class JSON {
     private static byte[] handleDownloadSetting(GeneralInfoProtocol infoProtocol) throws JSONException {
         JSONObject object = new JSONObject();
         object.put("protocolType","downloadSetting");
-        infoProtocol.loadSetting(myApplication.getInstance());
+        infoProtocol.loadSetting(SystemConfig.getInstance(GetProtocols.getInstance().getContext()));
         object.put("autoCalEnable",infoProtocol.getAutoCalEnable());
         object.put("autoCalTime",infoProtocol.getAutoCalTime());
         object.put("autoCalInterval",infoProtocol.getAutoCalInterval());

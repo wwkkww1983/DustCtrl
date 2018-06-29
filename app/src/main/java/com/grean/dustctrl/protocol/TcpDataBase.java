@@ -331,7 +331,7 @@ public class TcpDataBase implements GeneralDataBaseProtocol{
     public GeneralHistoryDataFormat getData(long start, long end) {
         GeneralHistoryDataFormat format = new GeneralHistoryDataFormat();
         String statement;
-        statement = "date >="+ String.valueOf(start)+" and date <"+String.valueOf(end);
+        statement = "date >"+ String.valueOf(start)+" and date <="+String.valueOf(end);
         DbTask helperDbTask = new DbTask(context,3);
         SQLiteDatabase db = helperDbTask.getReadableDatabase();
         Cursor cursor;

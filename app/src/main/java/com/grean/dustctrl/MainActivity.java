@@ -17,6 +17,8 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 
+import com.grean.dustctrl.UploadingProtocol.ProtocolTcpServer;
+import com.grean.dustctrl.UploadingProtocol.UploadingConfigFormat;
 import com.grean.dustctrl.presenter.CalcNextAutoCalibration;
 import com.grean.dustctrl.presenter.FragmentData;
 import com.grean.dustctrl.presenter.FragmentMain;
@@ -27,13 +29,15 @@ import com.grean.dustctrl.protocol.GetProtocols;
 import com.taobao.sophix.SophixManager;
 import com.tools;
 
+import org.json.JSONException;
+
 import java.net.Socket;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener,CalcNextAutoCalibration ,SocketClientCtrl{
+public class MainActivity extends AppCompatActivity implements View.OnClickListener,CalcNextAutoCalibration {
     private final static  String tag = "MainActivity";
     private View layoutMain;
     private View layoutOperate;
@@ -108,10 +112,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    @Override
-    public void endHeartThread() {
-        Log.d(tag,"结束心跳");
-    }
 
     private class AutoCalibrationTimerTask extends TimerTask{
 
@@ -162,19 +162,36 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 CtrlCommunication.getInstance().SendFrame(CtrlCommunication.Cmd.Inquire);
             }
         });*/
+        SystemConfig config = SystemConfig.getInstance(this);
+        String string = config.getConfigString("UploadConfig");
+        UploadingConfigFormat configFormat = new UploadingConfigFormat();
+        Log.d(tag,"UploadConfig="+string);
+        if(string.equals(" ")){//读取TCP配置
+            try {
+                string = UploadingConfigFormat.getDefaultConfig();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }
+        Log.d(tag,string);
+        try {
+            configFormat.loadConfig(string);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        ProtocolTcpServer.getInstance().setConfig(configFormat);
         GetProtocols.getInstance().setContext(this);
-        GetProtocols.getInstance().setClientProtocol(myApplication.getInstance().getConfigInt("ClientProtocol"));
-        GetProtocols.getInstance().getInfoProtocol().loadSetting(myApplication.getInstance());
+        GetProtocols.getInstance().setClientProtocol(SystemConfig.getInstance(this).getConfigInt("ClientProtocol"));
+        GetProtocols.getInstance().getInfoProtocol().loadSetting(SystemConfig.getInstance(this));
         GetProtocols.getInstance().getInfoProtocol().setContext(this);
         ScanSensor.getInstance().addObserver(SystemLog.getInstance(this));
         ScanSensor.getInstance().startScan(this);
+        ProtocolTcpServer.getInstance().setState(GetProtocols.getInstance().getProtocolState());
+        ProtocolTcpServer.getInstance().connectServer(this);//启动外网服务
 
-        SocketTask.getInstance().addObserver(SystemLog.getInstance(this));
-        SocketTask.getInstance().startSocketHeart(myApplication.getInstance().getConfigString("ServerIp"),myApplication.getInstance().getConfigInt("ServerPort"),this,this,GetProtocols.getInstance().getClientProtocol());
-        SocketServerTask.getInstance().startSocketServer(GetProtocols.getInstance().getServerProtocol(),8888);
-        GetProtocols.getInstance().getClientProtocol().setMnCode(myApplication.getInstance().getConfigString("MnCode"));
-        GetProtocols.getInstance().getClientProtocol().startHeartBeatPacket();
-        //SocketTask.getInstance().setContext(this);
+        SocketServerTask.getInstance().startSocketServer(GetProtocols.getInstance().getServerProtocol(),8888);//启动内网服务
+
         autoPatchTimer = new Timer();
         long now = tools.nowtime2timestamp();
         long next = tools.calcNextTime(now,1524069000000l,4*3600000l);

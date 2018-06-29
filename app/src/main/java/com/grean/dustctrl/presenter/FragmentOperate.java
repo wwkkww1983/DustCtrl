@@ -315,7 +315,7 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
                 dialogFragment = new ProcessDialogFragment();
                 dialogFragment.setCancelable(true);
                 dialogFragment.show(getFragmentManager(),"TcpSocket");
-                operateTcp.setTcpSocketClient(etServerIp.getText().toString(),Integer.valueOf(etServerPort.getText().toString()),etMnCode.getText().toString(),dialogFragment,clientProtocolName);
+                operateTcp.setTcpSocketClient(getActivity(),etServerIp.getText().toString(),Integer.valueOf(etServerPort.getText().toString()),etMnCode.getText().toString(),dialogFragment,clientProtocolName);
                 break;
             case R.id.btnOperateUpdateSoftware:
                 //SophixManager.getInstance().queryAndLoadNewPatch();

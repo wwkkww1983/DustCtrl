@@ -25,7 +25,7 @@ import java.util.Objects;
  * Created by Administrator on 2017/8/24.
  */
 
-public class myApplication extends Application implements ReadWriteConfig{
+public class myApplication extends Application {
     private static final String appVersion = "1.0.1";
     private static  final String tag = "myApplication";
     private static myApplication instance;
@@ -110,12 +110,12 @@ public class myApplication extends Application implements ReadWriteConfig{
     public void onCreate() {
         super.onCreate();
         this.instance = this;
-        loadConfig();
+        //loadConfig();
 
         Log.d(tag,"start");
     }
 
-    private void loadConfig(){
+   /* private void loadConfig(){
         SharedPreferences sp = getSharedPreferences("config",MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         if(!sp.getBoolean("FactorySetting",false)){
@@ -136,7 +136,7 @@ public class myApplication extends Application implements ReadWriteConfig{
             editor.commit();
         }
 
-    }
+    }*/
 
     public void saveConfig(String key,float data){
         SharedPreferences sp = getSharedPreferences("config",MODE_PRIVATE);

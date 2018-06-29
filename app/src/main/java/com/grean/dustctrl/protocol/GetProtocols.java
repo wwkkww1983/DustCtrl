@@ -2,8 +2,10 @@ package com.grean.dustctrl.protocol;
 
 import android.content.Context;
 
-import com.grean.dustctrl.SocketTask;
 import com.grean.dustctrl.SystemLog;
+import com.grean.dustctrl.UploadingProtocol.DefaultProtocolState;
+import com.grean.dustctrl.UploadingProtocol.ProtocolState;
+import com.grean.dustctrl.UploadingProtocol.ProtocolTcpServer;
 import com.grean.dustctrl.myApplication;
 
 /**
@@ -13,6 +15,7 @@ import com.grean.dustctrl.myApplication;
 
 public class GetProtocols {
     private static GetProtocols instance = new GetProtocols();
+    private ProtocolState protocolState;
     private GeneralClientProtocol clientProtocol;
     private GeneralServerProtocol serverProtocol;
     private GeneralInfoProtocol infoProtocol;
@@ -20,13 +23,24 @@ public class GetProtocols {
     private GeneralCommandProtocol commandProtocol;
     private int clientProtocolName =0;
     public static final int CLIENT_PROTOCOL_DEFAULT=0,CLIENT_PROTOCOL_HJT212 = 1,
-            CLIENT_PROTOCOL_DB12T725 = 2,CLIENT_PROTOCOL_SH_LOCAL = 3,CLIENT_PROTOCOL_HJT212_2017=4,
-            CLIENT_PROTOCOL_MAX = 5;
-    public static final String[] CLIENT_PROTOCOL_DEFAULT_NAMES ={"Default","HJ/T-212","DB12T 725-2017","上海市建筑工程颗粒物与噪声在线监测规范","HJ/T212-2017"};
+            CLIENT_PROTOCOL_MAX = 2;
+    public static final String[] CLIENT_PROTOCOL_DEFAULT_NAMES ={"Default","HJ/T-212-2017"};
     private Context context;
 
     private GetProtocols(){
 
+    }
+
+    public synchronized ProtocolState getProtocolState(){
+        if(protocolState==null){
+
+            if(clientProtocolName == CLIENT_PROTOCOL_DEFAULT) {
+                protocolState = new DefaultProtocolState(ProtocolTcpServer.getInstance());
+            }else{
+                protocolState = new DefaultProtocolState(ProtocolTcpServer.getInstance());
+            }
+        }
+        return protocolState;
     }
 
     synchronized public GeneralDataBaseProtocol getDataBaseProtocol() {
@@ -37,6 +51,13 @@ public class GetProtocols {
             dataBaseProtocol = new TcpDataBase(context);
         }
         return dataBaseProtocol;
+    }
+
+    public Context getContext() {
+        if(context == null){
+            context = myApplication.getInstance().getApplicationContext();
+        }
+        return context;
     }
 
     public void setContext(Context context) {
@@ -58,6 +79,11 @@ public class GetProtocols {
 
     public void setClientProtocol (int name){
         clientProtocolName = name;
+        /*if(clientProtocolName == CLIENT_PROTOCOL_DEFAULT) {
+            protocolState = new DefaultProtocolState(ProtocolTcpServer.getInstance());
+        }else{
+            protocolState = new DefaultProtocolState(ProtocolTcpServer.getInstance());
+        }*/
     }
 
     /**
@@ -68,24 +94,6 @@ public class GetProtocols {
         return clientProtocolName;
     }
 
-    synchronized public GeneralClientProtocol getClientProtocol() {
-        if(clientProtocol==null){
-            if(clientProtocolName == CLIENT_PROTOCOL_DEFAULT) {
-                clientProtocol = new TcpClient(SocketTask.getInstance());
-            }else if(clientProtocolName == CLIENT_PROTOCOL_HJT212){
-                clientProtocol = new TcpClientHjt212(SocketTask.getInstance());
-            }else if(clientProtocolName == CLIENT_PROTOCOL_DB12T725){
-                clientProtocol = new TcpClientDB12t725(SocketTask.getInstance());
-            }else if(clientProtocolName == CLIENT_PROTOCOL_SH_LOCAL){
-                clientProtocol = new TcpClientShanghaiLocal(SocketTask.getInstance());
-            }else if(clientProtocolName == CLIENT_PROTOCOL_HJT212_2017){
-                clientProtocol = new TcpClientHjt212_2017(SocketTask.getInstance());
-            }else{
-                clientProtocol = new TcpClient(SocketTask.getInstance());
-            }
-        }
-        return clientProtocol;
-    }
 
     public GeneralCommandProtocol getGeneralCommandProtocol(){
         if(commandProtocol==null){
