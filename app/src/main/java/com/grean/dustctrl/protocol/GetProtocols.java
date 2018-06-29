@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.grean.dustctrl.SystemLog;
 import com.grean.dustctrl.UploadingProtocol.DefaultProtocolState;
+import com.grean.dustctrl.UploadingProtocol.HJT212_2017ProtocolState;
 import com.grean.dustctrl.UploadingProtocol.ProtocolState;
 import com.grean.dustctrl.UploadingProtocol.ProtocolTcpServer;
 import com.grean.dustctrl.myApplication;
@@ -36,6 +37,8 @@ public class GetProtocols {
 
             if(clientProtocolName == CLIENT_PROTOCOL_DEFAULT) {
                 protocolState = new DefaultProtocolState(ProtocolTcpServer.getInstance());
+            }else if(clientProtocolName == CLIENT_PROTOCOL_HJT212){
+                protocolState = new HJT212_2017ProtocolState(ProtocolTcpServer.getInstance());
             }else{
                 protocolState = new DefaultProtocolState(ProtocolTcpServer.getInstance());
             }
