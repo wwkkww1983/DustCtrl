@@ -38,7 +38,7 @@ public class OperateTcp {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
+        SystemConfig.getInstance(context).saveConfig("ClientProtocol",clientProtocolName);
         GetProtocols.getInstance().setClientProtocol(clientProtocolName);
         ProtocolTcpServer.getInstance().reconnectServer(context,info,notifyProcessDialogInfo);
     }

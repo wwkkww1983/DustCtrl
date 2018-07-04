@@ -280,7 +280,7 @@ public class TcpDataBase implements GeneralDataBaseProtocol{
     public GeneralHistoryDataFormat getHourData(long dateStart,long dateEnd) {
         GeneralHistoryDataFormat format = new GeneralHistoryDataFormat();
         String statement;
-        statement = "date >="+ String.valueOf(dateStart)+" and date <"+String.valueOf(dateEnd);
+        statement = "date >"+ String.valueOf(dateStart)+" and date <="+String.valueOf(dateEnd);
         DbTask helperDbTask = new DbTask(context,3);
         SQLiteDatabase db = helperDbTask.getReadableDatabase();
         Cursor cursor;

@@ -1,6 +1,7 @@
 package com.grean.dustctrl.protocol;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.grean.dustctrl.SystemLog;
 import com.grean.dustctrl.UploadingProtocol.DefaultProtocolState;
@@ -15,6 +16,7 @@ import com.grean.dustctrl.myApplication;
  */
 
 public class GetProtocols {
+    private static final String tag = "GetProtocols";
     private static GetProtocols instance = new GetProtocols();
     private ProtocolState protocolState;
     private GeneralClientProtocol clientProtocol;
@@ -38,6 +40,7 @@ public class GetProtocols {
             if(clientProtocolName == CLIENT_PROTOCOL_DEFAULT) {
                 protocolState = new DefaultProtocolState(ProtocolTcpServer.getInstance());
             }else if(clientProtocolName == CLIENT_PROTOCOL_HJT212){
+                Log.d(tag,"CLIENT_PROTOCOL_HJT212");
                 protocolState = new HJT212_2017ProtocolState(ProtocolTcpServer.getInstance());
             }else{
                 protocolState = new DefaultProtocolState(ProtocolTcpServer.getInstance());

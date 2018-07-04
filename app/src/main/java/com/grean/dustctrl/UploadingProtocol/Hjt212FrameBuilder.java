@@ -43,7 +43,7 @@ public class Hjt212FrameBuilder {
         crcFormatBuff[1] = crcBuff[3];
         String crcString = tools.bytesToHexString(crcFormatBuff,crcFormatBuff.length);
         String lenString = String.format("%04d",bodyBuff.length);
-        Log.d(tag,"##"+lenString+body+crcString+"\r\n");
+        //Log.d(tag,"##"+lenString+body+crcString+"\r\n");
         return "##"+lenString+body+crcString+"\r\n";
     }
 
@@ -79,6 +79,11 @@ public class Hjt212FrameBuilder {
 
     public Hjt212FrameBuilder addContentFactor(String factor,String value,String flag){
         content = content+factor+"="+value+","+factor+"-Flag="+flag+";";
+        return this;
+    }
+
+    public Hjt212FrameBuilder addContentFactor(String factor,String key,String value,String flag){
+        content = content+factor+"-"+key+"="+value+","+factor+"-Flag="+flag+";";
         return this;
     }
 

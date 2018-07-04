@@ -39,5 +39,9 @@ public interface ProtocolState {
      */
     void uploadHourDate(long now,long date);
 
+    /**
+     * 设置协议因子编码
+     * @param format
+     */
     void setConfig(UploadingConfigFormat format);
 }

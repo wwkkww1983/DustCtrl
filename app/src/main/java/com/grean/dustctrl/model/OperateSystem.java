@@ -13,6 +13,7 @@ import com.grean.dustctrl.CtrlCommunication;
 import com.grean.dustctrl.NoiseCalibrationListener;
 import com.grean.dustctrl.NoiseCommunication;
 import com.grean.dustctrl.R;
+import com.grean.dustctrl.UploadingProtocol.ProtocolTcpServer;
 import com.grean.dustctrl.hardware.MainBoardLibs;
 import com.grean.dustctrl.myApplication;
 import com.grean.dustctrl.presenter.NotifyOperateInfo;
@@ -166,11 +167,11 @@ public class OperateSystem {
     }
 
     public String getServerIp(){
-        return myApplication.getInstance().getConfigString("ServerIp");
+        return ProtocolTcpServer.getInstance().getFormat().getServerAddress();
     }
 
     public String getServerPort(){
-        return String.valueOf(myApplication.getInstance().getConfigInt("ServerPort"));
+        return String.valueOf(ProtocolTcpServer.getInstance().getFormat().getServerPort());
     }
 
     public String getAutoCalNextTime(){

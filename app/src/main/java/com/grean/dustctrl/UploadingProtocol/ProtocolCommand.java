@@ -13,4 +13,9 @@ public interface ProtocolCommand {
     boolean executeSendTask(byte[] buff);
 
     boolean isConnected();
+
+    /**
+     * 重连
+     */
+    void reconnect();
 }

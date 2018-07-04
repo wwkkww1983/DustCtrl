@@ -117,6 +117,28 @@ public class ProtocolTcpServer extends Observable implements  ProtocolCommand{
         return connected;
     }
 
+    @Override
+    public void reconnect() {
+        if(run){
+            if(socketClient!=null){
+                if(socketClient.isConnected()){
+                    try {
+                        socketClient.shutdownInput();
+                        socketClient.shutdownOutput();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+        }else{
+            /*connectThread = new ConnectThread(context);
+            connectThread.start();*/
+
+        }
+    }
+
+
     private class ConnectThread extends Thread{
         private Context context;
         public ConnectThread(Context context){

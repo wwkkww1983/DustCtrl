@@ -556,11 +556,10 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
             while (minUploadRun&&(!interrupted())) {
                 now = tools.nowtime2timestamp();
                 //Log.d(tag,"loop");
-                protocolState.uploadSecondDate(now);
-                if(now >  lastMinDate){//发送分钟数据
-                    Log.d(tag,"发送分钟数据"+String.valueOf(protocolState==null));
-                    saveMinData(lastMinDate);
 
+                if(now >  lastMinDate){//发送分钟数据
+                    //Log.d(tag,"发送分钟数据"+String.valueOf(protocolState==null));
+                    saveMinData(lastMinDate);
                     protocolState.uploadMinDate(now,lastMinDate);
                     lastMinDate = dataBaseProtocol.calcNextMinDate(now);
                     dataBaseProtocol.saveMinDate();
@@ -569,6 +568,8 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
                     protocolState.uploadHourDate(now,lastHourDate);
                     lastHourDate = dataBaseProtocol.calcNextHourDate(now);
                     dataBaseProtocol.saveHourDate();
+                }else{
+                    protocolState.uploadSecondDate(now);
                 }
 
                 try {
