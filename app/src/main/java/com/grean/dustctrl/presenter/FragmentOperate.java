@@ -45,9 +45,10 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
     private ProcessFragment processFragment;
     private String dustMeterInfo,autoCalTime,toastString,NoiseCalibrationInfo;
     private Button btnDustMeterManCal,btnDustMeterInquire,btnMotorSet,btnSaveAutoCal,btnSaveServer,btnUpdateSoftware,btnCalcParaK,btnSetAlarm
-            ,btnDustMeterManCalZero,btnMotorTestUp,btnMotorTestDown,btnUpdateSetting,btnSetParaK,btnNoiseCal,btnResetResetCom;
+            ,btnDustMeterManCalZero,btnMotorTestUp,btnMotorTestDown,btnUpdateSetting,btnSetParaK,btnNoiseCal,btnResetResetCom,btnSaveLocation;
     private TextView tvDustMeterInfo,tvNextAutoCalTime,tvLocalIp,tvSoftwareVersion;//tvParaK
-    private EditText etMotorRounds,etMotorTime,etAutoCalInterval,etServerIp,etServerPort,etUpdateSoftwareUrl,etTargetValue,etMnCode,etAlarm,etSetParaK,etSetParaB;
+    private EditText etMotorRounds,etMotorTime,etAutoCalInterval,etServerIp,etServerPort,etUpdateSoftwareUrl,etTargetValue,etMnCode,etAlarm
+            ,etSetParaK,etSetParaB,etLng,etLat;
     private Switch swDustMeterRun,swValve,swFan,swExt1,swExt2,swBackup,swAutoCalibrationEnable;
     private Spinner spProtocol,spDustName,spDustMeter,spMainBoard;
     private int clientProtocolName,mainBoardName;
@@ -151,6 +152,9 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
         swExt1.setChecked(dustMeter.getCtrlDo(2));
         swExt2.setChecked(dustMeter.getCtrlDo(3));
         swBackup.setChecked(dustMeter.getCtrlDo(4));
+
+        etLng.setText(operateTcp.getLng());
+        etLat.setText(operateTcp.getLat());
     }
 
     private void initView(View v){
@@ -195,7 +199,11 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
         btnMotorTestDown = v.findViewById(R.id.btnOperateTestDown);
         btnMotorTestUp = v.findViewById(R.id.btnOperateTestUp);
         btnNoiseCal = v.findViewById(R.id.btnOperateNoiseCal);
+        etLng = v.findViewById(R.id.etOperateLng);
+        etLat = v.findViewById(R.id.etoperateLat);
         btnResetResetCom = v.findViewById(R.id.btnOperateResetCom);
+        btnSaveLocation = v.findViewById(R.id.btnOperateSaveLocation);
+        btnSaveLocation.setOnClickListener(this);
         btnResetResetCom.setOnClickListener(this);
         btnNoiseCal.setOnClickListener(this);
         btnMotorTestDown.setOnClickListener(this);
@@ -360,6 +368,9 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
                 break;
             case R.id.btnOperateResetCom:
                 system.resetComFlag();
+                break;
+            case R.id.btnOperateSaveLocation:
+                operateTcp.setLocation(getActivity(),etLng.getText().toString(),etLat.getText().toString());
                 break;
             default:
                 break;

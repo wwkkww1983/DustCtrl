@@ -2,7 +2,6 @@ package com.grean.dustctrl.UploadingProtocol;
 
 import android.util.Log;
 
-import com.grean.dustctrl.SystemConfig;
 import com.grean.dustctrl.protocol.GeneralHistoryDataFormat;
 import com.grean.dustctrl.protocol.GetProtocols;
 import com.tools;
@@ -147,7 +146,7 @@ public class HJT212_2017ProtocolState implements ProtocolState{
                 if(isCnAvailable(cn)){
                     rh.handleRequest(map);
                 }else{
-                    Log.d(tag,"不支持CN命令");
+                    Log.d(tag,"不支持的CN命令");
                 }
 
             }
@@ -156,50 +155,157 @@ public class HJT212_2017ProtocolState implements ProtocolState{
 
     private class CpRequestHandle implements RequestHandle{
         private void handleParameter(int num,String string){
+            HashMap<String,String> hashMap;
             switch (num){
-                case 1000:
-
+                case 1000://设置超时及重发次数
+                    hashMap = getString(string);
+                    if((hashMap.get("OverTime")!=null)&&(hashMap.get("ReCount")!=null)) {
+                        int overTime  = Integer.valueOf(hashMap.get("OverTime"));
+                        int reCount = Integer.valueOf(hashMap.get("ReCount"));
+                        format.setTimeoutLimit(overTime);
+                        format.setTimeoutRepetition(reCount);
+                        //存储
+                        sendQnRtn(qnReceived);
+                        sendExeRtn(qnReceived);
+                    }
                     break;
-                case 1011:
-
+                case 1011://提取仪表时间
+                    hashMap = getString(string);
+                    if(hashMap.get("PolId")!=null){
+                        sendQnRtn(qnReceived);
+                        frameBuilder.cleanContent();;
+                        frameBuilder.addContentField("SystemTime",tools.timeStamp2TcpStringWithoutMs(tools.nowtime2timestamp()));
+                        command.executeSendTask(frameBuilder.setQn(qnReceived).setSt("21")
+                                .setCn("1011").setPw(format.getPassword()).setMn(format.getMnCode())
+                                .setFlag("8").insertOneFrame().getBytes());
+                        sendExeRtn(qnReceived);
+                    }
                     break;
                 case 1012:
-
+                case 1015:
+                    hashMap = getString(string);
+                    if(hashMap.get("SystemTime")!=null) {
+                        String systemTime = hashMap.get("SystemTime");
+                        int year, month, day, hour, min, second;
+                        year = Integer.valueOf(systemTime.substring(0, 4));
+                        month = Integer.valueOf(systemTime.substring(4, 6));
+                        day = Integer.valueOf(systemTime.substring(6, 8));
+                        hour = Integer.valueOf(systemTime.substring(8, 10));
+                        min = Integer.valueOf(systemTime.substring(10, 12));
+                        second = Integer.valueOf(systemTime.substring(12, 14));
+                        Log.d(tag, String.valueOf(year) + "-" + String.valueOf(month) + "-" + String.valueOf(day) + " " + String.valueOf(hour) + ":" + String.valueOf(min) + ":" + String.valueOf(second));
+                        GetProtocols.getInstance().getInfoProtocol().setSystemDate(year, month, day, hour, min, second);
+                        sendQnRtn(qnReceived);
+                        sendExeRtn(qnReceived);
+                    }
                     break;
                 case 1014:
-
-                    break;
-                case 1015:
-
+                    sendQnRtn(qnReceived);
+                    frameBuilder.cleanContent();
+                    frameBuilder.addContentField("SystemTime",tools.timeStamp2TcpStringWithoutMs(tools.nowtime2timestamp()));
+                    command.executeSendTask(frameBuilder.setQn(qnReceived).setSt("21")
+                            .setCn("1014").setPw(format.getPassword()).setMn(format.getMnCode())
+                            .setFlag("8").insertOneFrame().getBytes());
+                    sendExeRtn(qnReceived);
                     break;
                 case 1061:
-
+                    sendQnRtn(qnReceived);
+                    frameBuilder.cleanContent();;
+                    frameBuilder.addContentField("RtdInterval",String.valueOf(format.getRealTimeInterval()));
+                    command.executeSendTask(frameBuilder.setQn(qnReceived).setSt("21")
+                            .setCn("1061").setPw(format.getPassword()).setMn(format.getMnCode())
+                            .setFlag("8").insertOneFrame().getBytes());
+                    sendExeRtn(qnReceived);
                     break;
                 case 1062:
-
+                    hashMap = getString(string);
+                    if(hashMap.get("RtdInterval")!=null){
+                        int rtdInterval = Integer.valueOf(hashMap.get("RtdInterval"));
+                        format.setRealTimeInterval(rtdInterval);
+                        sendQnRtn(qnReceived);
+                        sendExeRtn(qnReceived);
+                    }
                     break;
                 case 1072:
-
+                    //设置数采仪访问密码
+                    sendQnRtn(qnReceived);
+                    sendExeRtn(qnReceived);
                     break;
             }
         }
 
+
+
+        private HashMap<String , String> getCode(String string){
+            HashMap<String,String> hashMap = new HashMap<>();
+            String[] strings = string.split(";");
+            for(int i=0;i<strings.length;i++){
+                String[] strings1 = strings[i].split(",");
+                for(int j=0;j<strings1.length;j++){
+                    String[] strings2 = strings1[j].split("=");
+                    if(strings2.length==2){
+                        hashMap.put(strings2[0],strings2[1]);
+                    }
+                }
+            }
+            return hashMap;
+        }
+
         private void handleControl(int num,String string){
+            HashMap<String,String> hashMap;
             switch (num){
-                case 3020:
+                case 3020://提取信息/日志
+                    hashMap = getCode(string);
+                    if((hashMap.get("InfoId")!=null)&&(hashMap.get("PolId")!=null)){
+                        String code = hashMap.get("InfoId");
+                        if(code.equals("i21001")){//日志
+                            if((hashMap.get("BeginTime")!=null)&&(hashMap.get("EndTime")!=null)) {
+                                long begin = Long.valueOf(hashMap.get("BeginTime"))*1000l;
+                                long end = Long.valueOf(hashMap.get("EndTime"))*1000l;
+                                ArrayList<String> logList = GetProtocols.getInstance().getDataBaseProtocol().getLog(begin,end );
+                            }
+                        }else if(code.equals("i13007")){//截距
+                            sendQnRtn(qnReceived);
+                            frameBuilder.cleanContent();
+                            frameBuilder.addContentField("PolId="+hashMap.get("PolId")+",i13007-Info"
+                                    ,String.valueOf(GetProtocols.getInstance().getInfoProtocol().getParaB()));
+                            command.executeSendTask(frameBuilder.setQn(qnReceived).setSt("21")
+                                    .setCn("3020").setPw(format.getPassword()).setMn(format.getMnCode())
+                                    .setFlag("8").insertOneFrame().getBytes());
+                            sendExeRtn(qnReceived);
+                        }else if(code.equals("i13008")){//斜率
+                            sendQnRtn(qnReceived);
+                            frameBuilder.cleanContent();
+                            frameBuilder.addContentField("PolId="+hashMap.get("PolId")+",i13008-Info"
+                                    ,String.valueOf(GetProtocols.getInstance().getInfoProtocol().getParaK()));
+                            command.executeSendTask(frameBuilder.setQn(qnReceived).setSt("21")
+                                    .setCn("3020").setPw(format.getPassword()).setMn(format.getMnCode())
+                                    .setFlag("8").insertOneFrame().getBytes());
+                            sendExeRtn(qnReceived);
+                        }else{
+
+                        }
+                    }
 
                     break;
-                case 3021:
+                case 3021://设置参数
 
                     break;
-                case 3040:
+                case 3040://提取现场信息 状态 时间
 
                     break;
-                case 3041:
-
+                case 3041://提取经纬度及环境信息
+                    sendQnRtn(qnReceived);
+                    frameBuilder.cleanContent();
+                    frameBuilder.addContentField("DataTime",tools.timeStamp2TcpStringWithoutMs(tools.nowtime2timestamp()));
+                    frameBuilder.addContentField("Lng",String.valueOf(format.getLng()));
+                    frameBuilder.addContentField("Lat",String.valueOf(format.getLat()));
+                    command.executeSendTask(frameBuilder.setQn(qnReceived).setSt("21")
+                            .setPw(format.getPassword()).setMn(format.getMnCode()).setFlag("8")
+                            .insertOneFrame().getBytes());
+                    sendExeRtn(qnReceived);
                     break;
                 default:
-
                     break;
             }
         }
@@ -207,42 +313,23 @@ public class HJT212_2017ProtocolState implements ProtocolState{
         private void handleData(int num,String string){
             long begin=0,end=0;
             String[] factors;
+            HashMap<String,String> hashMap;
             switch (num){
                 case 2011://提取分钟数据
-                    factors = string.split(";");
-                    for(int i=0;i<factors.length;i++){
-                        String[] fields = factors[i].split("=");
-                        if(fields.length == 2){
-                            if(fields[0].equals("BeginTime")){
-                                begin = Long.valueOf(fields[1])*1000l;
-                            }else if(fields[0].equals("EndTime")){
-                                end = Long.valueOf(fields[1])*1000l;
-                            }else{
-
-                            }
-                        }
-                    }
-                    if((begin!=0)&&(end!=0)){
+                    hashMap = getString(string);
+                    if((hashMap.get("BeginTime")!=null)&&(hashMap.get("EndTime")!=null)){
+                        begin = Long.valueOf(hashMap.get("BeginTime"))*1000l;
+                        end = Long.valueOf(hashMap.get("EndTime"))*1000l;
                         sendQnRtn(qnReceived);
                         sendMinData(qnReceived,begin,end);
                         sendExeRtn(qnReceived);
                     }
                     break;
                 case 2061://提取小时数据
-                    factors = string.split(";");
-                    for(int i=0;i<factors.length;i++){
-                        String[] fields = factors[i].split("=");
-                        if(fields.length == 2){
-                            if(fields[0].equals("BeginTime")){
-                                begin = Long.valueOf(fields[1])*1000l;
-                            }else if(fields[0].equals("EndTime")){
-                                end = Long.valueOf(fields[1])*1000l;
-                            }else{
-
-                            }
-                        }
-                    }
-                    if((begin!=0)&&(end!=0)){
+                    hashMap = getString(string);
+                    if((hashMap.get("BeginTime")!=null)&&(hashMap.get("EndTime")!=null)) {
+                        begin = Long.valueOf(hashMap.get("BeginTime")) * 1000l;
+                        end = Long.valueOf(hashMap.get("EndTime")) * 1000l;
                         sendQnRtn(qnReceived);
                         sendHourData(qnReceived,begin,end);
                         sendExeRtn(qnReceived);
@@ -506,9 +593,7 @@ public class HJT212_2017ProtocolState implements ProtocolState{
                         }else{
                             Log.d(tag,"帧长"+String.valueOf(tempLength)+"/"+String.valueOf(frameLength)+"过短需要拼接");
                         }
-
                     }
-
                 }else{
                     Log.d(tag,"首次接收异常帧头，舍弃");
                 }
@@ -517,8 +602,6 @@ public class HJT212_2017ProtocolState implements ProtocolState{
                     receiveBuff=new byte[1];
                 }
             }
-
-
             receiveBuff=new byte[1];//清空
         }
     }
@@ -566,6 +649,7 @@ public class HJT212_2017ProtocolState implements ProtocolState{
                 hasSendMinData = true;
                 qnSend = tools.timeStamp2TcpString(now);
                 sendMinData(qnSend,lastUploadMinDate,date);
+                lastUploadMinDate = uploadMinDate;//测试用
             }
         }
     }
@@ -593,7 +677,8 @@ public class HJT212_2017ProtocolState implements ProtocolState{
         }
         if(noResponseTimes > 5){
             noResponseTimes = 0;
-            command.reconnect();
+            Log.d(tag,"无响应重连");
+            //command.reconnect();
         }
 
     }
@@ -625,6 +710,7 @@ public class HJT212_2017ProtocolState implements ProtocolState{
                 hasSendHourData = true;
                 qnSend = tools.timeStamp2TcpString(now);
                 sendHourData(qnSend,lastUploadHourDate,date);
+                lastUploadHourDate = uploadHourDate;//测试用
             }
         }
     }

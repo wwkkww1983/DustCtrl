@@ -46,4 +46,24 @@ public class OperateTcp {
     public String getTcpMnCode(){
         return myApplication.getInstance().getConfigString("MnCode");
     }
+
+    public String getLng(){
+        return String.valueOf(ProtocolTcpServer.getInstance().getFormat().getLng());
+    }
+
+    public String getLat(){
+        return String.valueOf(ProtocolTcpServer.getInstance().getFormat().getLat());
+    }
+
+    public void setLocation(Context context,String lngString,String latString){
+        Double lng = Double.valueOf(lngString),lat = Double.valueOf(latString);
+        UploadingConfigFormat format = ProtocolTcpServer.getInstance().getFormat();
+        format.setLat(lat);
+        format.setLng(lng);
+        try {
+            SystemConfig.getInstance(context).saveConfig("UploadConfig",format.getConfigString());//固化
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
 }

@@ -87,8 +87,8 @@ public class Hjt212FrameBuilder {
         return this;
     }
 
-    public Hjt212FrameBuilder addContentField(String feild,String value){
-        content = content + feild + "="+value+";";
+    public Hjt212FrameBuilder addContentField(String field,String value){
+        content = content + field + "="+value+";";
         return this;
     }
 

@@ -361,7 +361,7 @@ public class TcpDataBase implements GeneralDataBaseProtocol{
     public ArrayList<String> getLog(long start, long end) {
         ArrayList<String> list = new ArrayList<String>();
         String statement;
-        statement = "date >="+ String.valueOf(start)+" and date <"+String.valueOf(end);
+        statement = "date >"+ String.valueOf(start)+" and date <="+String.valueOf(end);
 
         DbTask helperDbTask = new DbTask(context,3);
         SQLiteDatabase db = helperDbTask.getReadableDatabase();
