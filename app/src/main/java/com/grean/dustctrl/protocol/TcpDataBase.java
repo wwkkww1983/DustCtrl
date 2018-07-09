@@ -451,4 +451,24 @@ public class TcpDataBase implements GeneralDataBaseProtocol{
     public void saveHourDate() {
         myApplication.getInstance().saveConfig("LastHourDate",lastHourDate);
     }
+
+    @Override
+    public GeneralLogFormat getLogFormat(long begin, long end) {
+        GeneralLogFormat format = new GeneralLogFormat();
+        String statement;
+        statement = "date >"+ String.valueOf(begin)+" and date <="+String.valueOf(end);
+
+        DbTask helperDbTask = new DbTask(context,3);
+        SQLiteDatabase db = helperDbTask.getReadableDatabase();
+        Cursor cursor;
+        cursor = db.rawQuery("SELECT * FROM log WHERE "+statement+" ORDER BY date desc",new String[]{});
+
+        while (cursor.moveToNext()){
+            format.addOneLog(cursor.getLong(1),cursor.getString(2));
+        }
+        cursor.close();
+        db.close();
+        helperDbTask.close();
+        return format;
+    }
 }

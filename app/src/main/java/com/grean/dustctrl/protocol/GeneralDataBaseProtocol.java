@@ -51,4 +51,12 @@ public interface GeneralDataBaseProtocol {
     void saveMinDate();
 
     void saveHourDate();
+
+    /**
+     *
+     * @param begin
+     * @param end
+     * @return
+     */
+    GeneralLogFormat getLogFormat(long begin,long end);
 }

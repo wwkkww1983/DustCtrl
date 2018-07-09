@@ -92,6 +92,11 @@ public class Hjt212FrameBuilder {
         return this;
     }
 
+    public Hjt212FrameBuilder addContentInfo(String polId,String field,String info){
+        content = content + "PolId="+ polId+","+field+"-Info="+info;
+        return this;
+    }
+
     public Hjt212FrameBuilder contentQnRtn(){
         content = "QnRtn=1";
         return this;

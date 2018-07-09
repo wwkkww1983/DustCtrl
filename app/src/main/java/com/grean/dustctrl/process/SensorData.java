@@ -82,7 +82,7 @@ public class SensorData {
     }
 
     public float getHiHumidity() {
-        return hiHumidity;
+        return hiHumidity;//采样管目标温度
     }
 
     public void setHiHumidity(float hiHumidity) {

@@ -3,6 +3,7 @@ package com.grean.dustctrl.UploadingProtocol;
 import android.util.Log;
 
 import com.grean.dustctrl.protocol.GeneralHistoryDataFormat;
+import com.grean.dustctrl.protocol.GeneralLogFormat;
 import com.grean.dustctrl.protocol.GetProtocols;
 import com.tools;
 
@@ -121,7 +122,7 @@ public class HJT212_2017ProtocolState implements ProtocolState{
             case 2061:
             case 3020:
             case 3021:
-            case 3040:
+            //case 3040:
             case 3041:
             case 3042:
             case 9013:
@@ -251,6 +252,16 @@ public class HJT212_2017ProtocolState implements ProtocolState{
             return hashMap;
         }
 
+        private void sendPolIdInfo(String polId,String code,String info){
+            sendQnRtn(qnReceived);
+            frameBuilder.cleanContent();
+            frameBuilder.addContentInfo(polId,code,info);
+            command.executeSendTask(frameBuilder.setQn(qnReceived).setSt("21")
+                    .setCn("3020").setPw(format.getPassword()).setMn(format.getMnCode())
+                    .setFlag("8").insertOneFrame().getBytes());
+            sendExeRtn(qnReceived);
+        }
+
         private void handleControl(int num,String string){
             HashMap<String,String> hashMap;
             switch (num){
@@ -258,42 +269,103 @@ public class HJT212_2017ProtocolState implements ProtocolState{
                     hashMap = getCode(string);
                     if((hashMap.get("InfoId")!=null)&&(hashMap.get("PolId")!=null)){
                         String code = hashMap.get("InfoId");
+                        String polId = hashMap.get("PolId");
                         if(code.equals("i21001")){//日志
                             if((hashMap.get("BeginTime")!=null)&&(hashMap.get("EndTime")!=null)) {
                                 long begin = Long.valueOf(hashMap.get("BeginTime"))*1000l;
                                 long end = Long.valueOf(hashMap.get("EndTime"))*1000l;
-                                ArrayList<String> logList = GetProtocols.getInstance().getDataBaseProtocol().getLog(begin,end );
+                                GeneralLogFormat logFormat = GetProtocols.getInstance().getDataBaseProtocol().getLogFormat(begin,end );
+                                sendQnRtn(qnReceived);
+                                for (int i=0;i<logFormat.getSize();i++){
+                                    frameBuilder.cleanContent();
+                                    frameBuilder.addContentField("DataTime",tools.timeStamp2TcpStringWithoutMs(logFormat.getDate(i)));
+                                    frameBuilder.addContentInfo(hashMap.get("PolId"),hashMap.get("InfoId"),logFormat.getLog(i));
+                                    command.executeSendTask(frameBuilder.setQn(qnReceived).setSt("21")
+                                            .setCn("3020").setPw(format.getPassword()).setMn(format.getMnCode())
+                                            .setFlag("8").insertOneFrame().getBytes());
+                                }
+                                sendExeRtn(qnReceived);
                             }
                         }else if(code.equals("i13007")){//截距
-                            sendQnRtn(qnReceived);
-                            frameBuilder.cleanContent();
-                            frameBuilder.addContentField("PolId="+hashMap.get("PolId")+",i13007-Info"
-                                    ,String.valueOf(GetProtocols.getInstance().getInfoProtocol().getParaB()));
-                            command.executeSendTask(frameBuilder.setQn(qnReceived).setSt("21")
-                                    .setCn("3020").setPw(format.getPassword()).setMn(format.getMnCode())
-                                    .setFlag("8").insertOneFrame().getBytes());
-                            sendExeRtn(qnReceived);
+                            sendPolIdInfo(polId,code,String.valueOf(GetProtocols.getInstance().getInfoProtocol().getParaB()));
                         }else if(code.equals("i13008")){//斜率
-                            sendQnRtn(qnReceived);
-                            frameBuilder.cleanContent();
-                            frameBuilder.addContentField("PolId="+hashMap.get("PolId")+",i13008-Info"
-                                    ,String.valueOf(GetProtocols.getInstance().getInfoProtocol().getParaK()));
-                            command.executeSendTask(frameBuilder.setQn(qnReceived).setSt("21")
-                                    .setCn("3020").setPw(format.getPassword()).setMn(format.getMnCode())
-                                    .setFlag("8").insertOneFrame().getBytes());
-                            sendExeRtn(qnReceived);
-                        }else{
-
+                            sendPolIdInfo(polId,code,String.valueOf(GetProtocols.getInstance().getInfoProtocol().getParaK()));
+                        }else if(code.equals("i13100")){
+                            sendPolIdInfo(polId,code,String.valueOf(GetProtocols.getInstance().getInfoProtocol().getSensorData().getValue()));
+                        }else if(code.equals("i13101")){
+                            sendPolIdInfo(polId,code,String.valueOf(GetProtocols.getInstance().getInfoProtocol().getSensorData().getHiTemp()));
+                        }else if(code.equals("i13102")){
+                            sendPolIdInfo(polId,code,String.valueOf(GetProtocols.getInstance().getInfoProtocol().getSensorData().getHiHumidity()));
+                        }else if(code.equals("i13103")){
+                            sendPolIdInfo(polId,code,String.valueOf(GetProtocols.getInstance().getInfoProtocol().getSensorData().getLoTemp()));
+                        }else if(code.equals("i13104")){
+                            sendPolIdInfo(polId,code,String.valueOf(GetProtocols.getInstance().getInfoProtocol().getSensorData().getLoHumidity()));
+                        }else if(code.equals("i13105")){
+                            sendPolIdInfo(polId,code,String.valueOf(GetProtocols.getInstance().getInfoProtocol().getSensorData().getLoDewPoint()));
+                        }else if(code.equals("i13106")){
+                            sendPolIdInfo(polId,code,String.valueOf(GetProtocols.getInstance().getInfoProtocol().getSensorData().getHiDewPoint()));
+                        }else if(code.equals("13107")){
+                            sendPolIdInfo(polId,code,String.valueOf(GetProtocols.getInstance().getInfoProtocol().getSensorData().getHeatPwm()));
+                        }else if(code.equals("i13108")){
+                            if(GetProtocols.getInstance().getInfoProtocol().getSensorData().isCalPos()) {
+                                sendPolIdInfo(polId, code, "1");
+                            }else{
+                                sendPolIdInfo(polId, code, "0");
+                            }
+                        }else if(code.equals("i13109")){
+                            if(GetProtocols.getInstance().getInfoProtocol().getSensorData().isMeasurePos()) {
+                                sendPolIdInfo(polId, code, "1");
+                            }else{
+                                sendPolIdInfo(polId, code, "0");
+                            }
+                        }else if(code.equals("i13110")){
+                            if(GetProtocols.getInstance().getInfoProtocol().getSensorData().isAcIn()) {
+                                sendPolIdInfo(polId, code, "1");
+                            }else{
+                                sendPolIdInfo(polId, code, "0");
+                            }
+                        }else if(code.equals("i13111")){
+                            if(GetProtocols.getInstance().getInfoProtocol().getSensorData().isBatteryLow()) {
+                                sendPolIdInfo(polId, code, "1");
+                            }else{
+                                sendPolIdInfo(polId, code, "0");
+                            }
                         }
                     }
 
                     break;
                 case 3021://设置参数
+                    hashMap = getCode(string);
+                    if((hashMap.get("InfoId")!=null)&&(hashMap.get("PolId")!=null)){
+
+                        if(hashMap.get("PooId").equals("a01010")){
+
+                            String infoId = hashMap.get("InfoId");
+                            if(infoId.equals("i3007")){
+                                if(hashMap.get("i3007-Info")!=null) {
+                                    float para = Float.valueOf(hashMap.get("i3007-Info"));
+                                    GetProtocols.getInstance().getInfoProtocol().setDustParaB(para);
+                                    sendQnRtn(qnReceived);
+                                    sendExeRtn(qnReceived);
+                                }
+                            }else if(infoId.equals("i3008")){
+                                if(hashMap.get("i3008-Info")!=null) {
+                                    float para = Float.valueOf(hashMap.get("i3008-Info"));
+                                    GetProtocols.getInstance().getInfoProtocol().setDustParaK(para);
+                                    sendQnRtn(qnReceived);
+                                    sendExeRtn(qnReceived);
+                                }
+                            }else {
+
+                            }
+
+                        }
+                    }
 
                     break;
-                case 3040://提取现场信息 状态 时间
+                //case 3040://提取现场信息 状态 时间
 
-                    break;
+                  //  break;
                 case 3041://提取经纬度及环境信息
                     sendQnRtn(qnReceived);
                     frameBuilder.cleanContent();
