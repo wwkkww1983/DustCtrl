@@ -10,7 +10,7 @@ import com.tools;
 
 public class Hjt212FrameBuilder {
     private final static String tag = "Hjt212FrameBuilder";
-    private static String qn,st,cn,pw,mn,flag,content;
+    private static String qn,st,cn,pw,mn,flag,content="";
 
     public void cleanContent(){
         qn="";
@@ -78,22 +78,39 @@ public class Hjt212FrameBuilder {
     }
 
     public Hjt212FrameBuilder addContentFactor(String factor,String value,String flag){
-        content = content+factor+"="+value+","+factor+"-Flag="+flag+";";
+        if(content.equals("")){
+            content = factor+"="+value+","+factor+"-Flag="+flag;
+        }else {
+            content = content+ ";" + factor + "=" + value + "," + factor + "-Flag=" + flag ;
+        }
         return this;
     }
 
     public Hjt212FrameBuilder addContentFactor(String factor,String key,String value,String flag){
-        content = content+factor+"-"+key+"="+value+","+factor+"-Flag="+flag+";";
+        if(content.equals("")){
+            content = factor+"-"+key+"="+value+","+factor+"-Flag="+flag;
+        }else{
+            content = content+";"+factor+"-"+key+"="+value+","+factor+"-Flag="+flag;
+        }
+
         return this;
     }
 
     public Hjt212FrameBuilder addContentField(String field,String value){
-        content = content + field + "="+value+";";
+        if(content.equals("")){
+            content = field + "="+value;
+        }else{
+            content = content+";" + field + "="+value;
+        }
         return this;
     }
 
     public Hjt212FrameBuilder addContentInfo(String polId,String field,String info){
-        content = content + "PolId="+ polId+","+field+"-Info="+info;
+        if(content.equals("")){
+            content = "PolId="+ polId+","+field+"-Info="+info;
+        }else{
+            content = content+";" + "PolId="+ polId+","+field+"-Info="+info;
+        }
         return this;
     }
 
