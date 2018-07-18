@@ -44,7 +44,8 @@ public class OperateTcp {
     }
 
     public String getTcpMnCode(){
-        return myApplication.getInstance().getConfigString("MnCode");
+
+        return ProtocolTcpServer.getInstance().getFormat().getMnCode();
     }
 
     public String getLng(){
