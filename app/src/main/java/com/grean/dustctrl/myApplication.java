@@ -6,20 +6,12 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.util.Log;
-import android.util.StringBuilderPrinter;
 
-import com.grean.dustctrl.protocol.GeneralClientProtocol;
-import com.grean.dustctrl.protocol.GeneralServerProtocol;
-import com.grean.dustctrl.protocol.GetProtocols;
-import com.grean.dustctrl.protocol.InformationProtocol;
-import com.grean.dustctrl.protocol.TcpClient;
-import com.grean.dustctrl.protocol.TcpServer;
 import com.taobao.sophix.PatchStatus;
 import com.taobao.sophix.SophixManager;
 import com.taobao.sophix.listener.PatchLoadStatusListener;
 
 import java.util.HashMap;
-import java.util.Objects;
 
 /**
  * Created by Administrator on 2017/8/24.

@@ -19,11 +19,9 @@ public class GetProtocols {
     private static final String tag = "GetProtocols";
     private static GetProtocols instance = new GetProtocols();
     private ProtocolState protocolState;
-    private GeneralClientProtocol clientProtocol;
     private GeneralServerProtocol serverProtocol;
     private GeneralInfoProtocol infoProtocol;
     private GeneralDataBaseProtocol dataBaseProtocol;
-    private GeneralCommandProtocol commandProtocol;
     private int clientProtocolName =0;
     public static final int CLIENT_PROTOCOL_DEFAULT=0,CLIENT_PROTOCOL_HJT212 = 1,
             CLIENT_PROTOCOL_MAX = 2;
@@ -101,12 +99,7 @@ public class GetProtocols {
     }
 
 
-    public GeneralCommandProtocol getGeneralCommandProtocol(){
-        if(commandProtocol==null){
-           commandProtocol = new Hjt212CommandProtocol();
-        }
-        return commandProtocol;
-    }
+
 
     synchronized public GeneralServerProtocol getServerProtocol() {
         if (serverProtocol == null){
