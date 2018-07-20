@@ -92,8 +92,8 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         View messageLayout = inflater.inflate(R.layout.fragment_operate,container,false);
         initView(messageLayout);
-        dustMeter = new OperateDustMeter(this);
-        system = new OperateSystem();
+        dustMeter = new OperateDustMeter(this,getActivity());
+        system = new OperateSystem(getActivity());
         operateTcp = new OperateTcp(this);
         onShow();
         return messageLayout;

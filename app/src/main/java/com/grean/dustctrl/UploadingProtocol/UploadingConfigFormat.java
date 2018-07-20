@@ -35,6 +35,10 @@ public class UploadingConfigFormat implements Cloneable {
         object.put("MnCode","3301000005");
         object.put("Password","123456");
         object.put("ServerPort",203);
+        object.put("TimeoutLimit",5);
+        object.put("RealTimeInterval",3);
+        object.put("Lng",0);
+        object.put("Lat",0);
         return object.toString();
     }
 

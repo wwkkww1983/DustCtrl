@@ -13,6 +13,7 @@ import com.grean.dustctrl.CtrlCommunication;
 import com.grean.dustctrl.NoiseCalibrationListener;
 import com.grean.dustctrl.NoiseCommunication;
 import com.grean.dustctrl.R;
+import com.grean.dustctrl.SystemConfig;
 import com.grean.dustctrl.UploadingProtocol.ProtocolTcpServer;
 import com.grean.dustctrl.hardware.MainBoardLibs;
 import com.grean.dustctrl.myApplication;
@@ -33,8 +34,9 @@ public class OperateSystem {
     private CtrlCommunication com = CtrlCommunication.getInstance();
     private long interval = 24*3600000l,date;
     private CalibrationNoiseThread calibrationNoiseThread;
-    public OperateSystem(){
-
+    private Context context;
+    public OperateSystem(Context context){
+        this.context = context;
     }
 
     public String[] getMainBoardNames(){
@@ -46,7 +48,7 @@ public class OperateSystem {
     }
 
     public void setMainBoardName(int name){
-        myApplication.getInstance().saveConfig("MainBoardName",name);
+        SystemConfig.getInstance(context).saveConfig("MainBoardName",name);
         MainBoardLibs.getInstance().setName(name);
     }
 
@@ -162,7 +164,7 @@ public class OperateSystem {
 
     public void setAlarmDust(String alarmString){
         float alarm = Float.valueOf(alarmString);
-        myApplication.getInstance().saveConfig("AlarmDust",alarm);
+        SystemConfig.getInstance(context).saveConfig("AlarmDust",alarm);
         ScanSensor.getInstance().setAlarmDust(alarm);
     }
 
@@ -176,22 +178,22 @@ public class OperateSystem {
 
     public String getAutoCalNextTime(){
         String string;
-        date = myApplication.getInstance().getConfigLong("AutoCalTime");
+        date = SystemConfig.getInstance(context).getConfigLong("AutoCalTime");
         string = tools.timestamp2string(date);
         return string;
     }
 
     public boolean getAutoCalibrationEnable(){
-        return myApplication.getInstance().getConfigBoolean("AutoCalibrationEnable");
+        return SystemConfig.getInstance(context).getConfigBoolean("AutoCalibrationEnable");
     }
 
     public void setAutoCalibrationEnable(boolean key){
-        myApplication.getInstance().saveConfig("AutoCalibrationEnable",key);
+        SystemConfig.getInstance(context).saveConfig("AutoCalibrationEnable",key);
     }
 
     public void setAutoTime(String string){
         date = tools.string2timestamp(string);
-        myApplication.getInstance().saveConfig("AutoCalTime",date);
+        SystemConfig.getInstance(context).saveConfig("AutoCalTime",date);
     }
 
     public long getAutoTimeDate(){
@@ -200,17 +202,15 @@ public class OperateSystem {
 
     public String getAutoCalInterval(){
         String string;
-        interval = myApplication.getInstance().getConfigLong("AutoCalInterval");
-        //string = String.valueOf(interval / 3600000l);
+        interval = SystemConfig.getInstance(context).getConfigLong("AutoCalInterval");
         string = String.valueOf(interval / 60000l);
         return  string;
     }
 
     public void setAutoCalInterval(String string){
-        //long l = Integer.valueOf(string)*3600000l;
         long l = Integer.valueOf(string)*60000l;
         interval = l;
-        myApplication.getInstance().saveConfig("AutoCalInterval",l);
+        SystemConfig.getInstance(context).saveConfig("AutoCalInterval",l);
     }
 
     public String calNexTime(String string){
@@ -239,8 +239,8 @@ public class OperateSystem {
     public void setMotorSetting(int rounds,int time){
         com.setMotorTime(time);
         com.setMotorRounds(rounds);
-        myApplication.getInstance().saveConfig("MotorRounds",rounds);
-        myApplication.getInstance().saveConfig("MotorTime",time);
+        SystemConfig.getInstance(context).saveConfig("MotorRounds",rounds);
+        SystemConfig.getInstance(context).saveConfig("MotorTime",time);
     }
 
     public void testMotor(boolean forward){

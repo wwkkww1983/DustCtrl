@@ -13,6 +13,7 @@ import com.grean.dustctrl.CtrlCommunication;
 import com.grean.dustctrl.DbTask;
 import com.grean.dustctrl.LogFormat;
 import com.grean.dustctrl.NoiseCommunication;
+import com.grean.dustctrl.SystemConfig;
 import com.grean.dustctrl.UploadingProtocol.ProtocolState;
 import com.grean.dustctrl.UploadingProtocol.ProtocolTcpServer;
 import com.grean.dustctrl.dust.DustMeterLibs;
@@ -630,20 +631,21 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
         public void run() {
             run = true;
             super.run();
-            DustMeterLibs.getInstance().setDustMeterName(myApplication.getInstance().getConfigInt("DustMeter"));
-            MainBoardLibs.getInstance().setName(myApplication.getInstance().getConfigInt("MainBoardName"));
+            SystemConfig config = SystemConfig.getInstance(context);
+            DustMeterLibs.getInstance().setDustMeterName(config.getConfigInt("DustMeter"));
+            MainBoardLibs.getInstance().setName(config.getConfigInt("MainBoardName"));
             CtrlCommunication com;
             com = CtrlCommunication.getInstance();
             NoiseCommunication noiseCom;
             noiseCom = NoiseCommunication.getInstance();
-            float paraK = myApplication.getInstance().getConfigFloat("DustParaK");
-            float paraB = myApplication.getInstance().getConfigFloat("DustParaB");
-            alarmDust = myApplication.getInstance().getConfigFloat("AlarmDust");
+            float paraK = config.getConfigFloat("DustParaK");
+            float paraB = config.getConfigFloat("DustParaB");
+            alarmDust = config.getConfigFloat("AlarmDust");
             boolean alarm;
             com.setDustParaK(paraK);
             com.setDustParaB(paraB);
-            com.setMotorRounds(myApplication.getInstance().getConfigInt("MotorRounds"));
-            com.setMotorTime(myApplication.getInstance().getConfigInt("MotorTime"));
+            com.setMotorRounds(config.getConfigInt("MotorRounds"));
+            com.setMotorTime(config.getConfigInt("MotorTime"));
             GeneralInfoProtocol infoProtocol = GetProtocols.getInstance().getInfoProtocol();
             //GeneralClientProtocol clientProtocol = GetProtocols.getInstance().getClientProtocol();
             //infoProtocol.

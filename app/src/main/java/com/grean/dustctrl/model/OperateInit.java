@@ -3,6 +3,7 @@ package com.grean.dustctrl.model;
 import android.content.Context;
 import android.content.Intent;
 
+import com.grean.dustctrl.SystemConfig;
 import com.grean.dustctrl.myApplication;
 import com.tools;
 
@@ -17,10 +18,10 @@ public class OperateInit {
     private String dustName = "TSP:";
 
     public String getAutoNextTime(){
-        myApplication app = myApplication.getInstance();
-        autoCalEnable = app.getConfigBoolean("AutoCalibrationEnable");
-        nextCalTime = app.getConfigLong("AutoCalTime");
-        interval = app.getConfigLong("AutoCalInterval");
+        SystemConfig config = SystemConfig.getInstance(context);
+        autoCalEnable = config.getConfigBoolean("AutoCalibrationEnable");
+        nextCalTime = config.getConfigLong("AutoCalTime");
+        interval = config.getConfigLong("AutoCalInterval");
         if (autoCalEnable){
             return "下次自动校准时间:"+ tools.timestamp2string(nextCalTime);
 
@@ -36,7 +37,7 @@ public class OperateInit {
 
     public OperateInit (Context context){
         this.context = context;
-        int name = myApplication.getInstance().getConfigInt("DustName");
+        int name = SystemConfig.getInstance(context).getConfigInt("DustName");
         dustName = OperateDustMeter.DustNames[name]+":";
     }
 
@@ -45,7 +46,7 @@ public class OperateInit {
             long now = tools.nowtime2timestamp();
             long next = tools.calcNextTime(now,nextCalTime,interval);
             nextCalTime = next;
-            myApplication.getInstance().saveConfig("AutoCalTime",next);
+            SystemConfig.getInstance(context).saveConfig("AutoCalTime",next);
             Intent intent = new Intent();
             intent.setAction("autoCalibration");
             intent.putExtra("enable",autoCalEnable);

@@ -1,6 +1,9 @@
 package com.grean.dustctrl.model;
 
+import android.content.Context;
+
 import com.grean.dustctrl.CtrlCommunication;
+import com.grean.dustctrl.SystemConfig;
 import com.grean.dustctrl.dust.DustMeterLibs;
 import com.grean.dustctrl.myApplication;
 import com.grean.dustctrl.presenter.NotifyOperateInfo;
@@ -23,11 +26,13 @@ public class OperateDustMeter implements NotifyScanEnd{
     public static final String[] DustMeters = {"LD-8-G","LD-8-J"};
     public static final int TSP=0,PM10=1,PM2_5=2;
     private int dustName,dustMeter;
+    private Context context;
 
-    public OperateDustMeter(NotifyOperateInfo info){
+    public OperateDustMeter(NotifyOperateInfo info, Context context){
         dustMeterRun = com.isDustMeterRun();
         this.info = info;
-        dustName = myApplication.getInstance().getConfigInt("DustName");
+        this.context = context;
+        dustName = SystemConfig.getInstance(context).getConfigInt("DustName");
     }
 
     public boolean isDustMeterRun() {
@@ -80,41 +85,41 @@ public class OperateDustMeter implements NotifyScanEnd{
         float t = Float.valueOf(target);
         float k = t / com.getData().getValue();
         com.getData().setParaK(k);
-        myApplication.getInstance().saveConfig("DustParaK",k);
+        SystemConfig.getInstance(context).saveConfig("DustParaK",k);
         return String.valueOf(k);
     }
 
     public void setParaK(String paraK){
         float k = Float.valueOf(paraK);
         com.getData().setParaK(k);
-        myApplication.getInstance().saveConfig("DustParaK",k);
+        SystemConfig.getInstance(context).saveConfig("DustParaK",k);
     }
 
     public void setParaB(String paraB){
         float b = Float.valueOf(paraB);
         com.getData().setParaB(b);
-        myApplication.getInstance().saveConfig("DustParaB",b);
+        SystemConfig.getInstance(context).saveConfig("DustParaB",b);
     }
 
     public int getDustName(){
-        return myApplication.getInstance().getConfigInt("DustName");
+        return SystemConfig.getInstance(context).getConfigInt("DustName");
     }
 
     public int getDustMeter(){
-        return myApplication.getInstance().getConfigInt("DustMeter");
+        return SystemConfig.getInstance(context).getConfigInt("DustMeter");
     }
 
     public void setDustName(int name){
         if(name <DustNames.length){
             dustName = name;
-            myApplication.getInstance().saveConfig("DustName",name);
+            SystemConfig.getInstance(context).saveConfig("DustName",name);
         }
     }
 
     public void setDustMeter(int name){
         if(name <DustMeters.length){
             DustMeterLibs.getInstance().setDustMeterName(name);
-            myApplication.getInstance().saveConfig("DustMeter",name);
+            SystemConfig.getInstance(context).saveConfig("DustMeter",name);
         }
     }
 

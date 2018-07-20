@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.grean.dustctrl.DbTask;
+import com.grean.dustctrl.SystemConfig;
 import com.grean.dustctrl.myApplication;
 import com.tools;
 
@@ -391,7 +392,7 @@ public class TcpDataBase implements GeneralDataBaseProtocol{
     @Override
     public void setMinDataInterval(long min) {
         this.minInterval = min;
-        myApplication.getInstance().saveConfig("MinInterval",min);
+        SystemConfig.getInstance(context).saveConfig("MinInterval",min);
     }
 
     @Override
@@ -424,9 +425,10 @@ public class TcpDataBase implements GeneralDataBaseProtocol{
 
     @Override
     public void loadMinDate() {
-        lastMinDate = myApplication.getInstance().getConfigLong("LastMinDate");
-        minInterval = myApplication.getInstance().getConfigLong("MinInterval");
-        lastHourDate = myApplication.getInstance().getConfigLong("LastHourDate");
+        SystemConfig config = SystemConfig.getInstance(context);
+        lastMinDate = config.getConfigLong("LastMinDate");
+        minInterval = config.getConfigLong("MinInterval");
+        lastHourDate = config.getConfigLong("LastHourDate");
         if(lastMinDate == 0l){
             lastMinDate = 1505923200000l;
         }
@@ -444,12 +446,12 @@ public class TcpDataBase implements GeneralDataBaseProtocol{
 
     @Override
     public void saveMinDate() {
-        myApplication.getInstance().saveConfig("LastMinDate",lastMinDate);
+        SystemConfig.getInstance(context).saveConfig("LastMinDate",lastMinDate);
     }
 
     @Override
     public void saveHourDate() {
-        myApplication.getInstance().saveConfig("LastHourDate",lastHourDate);
+        SystemConfig.getInstance(context).saveConfig("LastHourDate",lastHourDate);
     }
 
     @Override

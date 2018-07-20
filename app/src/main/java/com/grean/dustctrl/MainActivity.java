@@ -74,14 +74,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Intent mainFragmentIntent = new Intent();
                 mainFragmentIntent.setAction("autoCalNextString");
                 if (intent.getBooleanExtra("enable",true)){
-                    myApplication.getInstance().saveConfig("AutoCalibrationEnable",true);
+                    SystemConfig.getInstance(MainActivity.this).saveConfig("AutoCalibrationEnable",true);
                     cancelAutoCalibrationTimer();
                     autoCalibrationTimer = new Timer();
                     Date when = new Date(intent.getLongExtra("date",0l));
                     mainFragmentIntent.putExtra("content",tools.timestamp2string(intent.getLongExtra("date",0l)));
                     autoCalibrationTimer.schedule(new AutoCalibrationTimerTask(),when);
                 }else {
-                    myApplication.getInstance().saveConfig("AutoCalibrationEnable",false);
+                    SystemConfig.getInstance(MainActivity.this).saveConfig("AutoCalibrationEnable",false);
                     cancelAutoCalibrationTimer();
                     mainFragmentIntent.putExtra("content","-");
                 }
@@ -94,13 +94,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onComplete() {
         Log.d(tag,"计算下次测量时间");
+        SystemConfig config = SystemConfig.getInstance(this);
         long now = tools.nowtime2timestamp();
-        long plan = myApplication.getInstance().getConfigLong("AutoCalTime");
-        long interval = myApplication.getInstance().getConfigLong("AutoCalInterval");
+        long plan = config.getConfigLong("AutoCalTime");
+        long interval = config.getConfigLong("AutoCalInterval");
         long next = tools.calcNextTime(now,plan,interval);
-        myApplication.getInstance().saveConfig("AutoCalTime",next);
+        config.saveConfig("AutoCalTime",next);
         cancelAutoCalibrationTimer();
-        if(myApplication.getInstance().getConfigBoolean("AutoCalibrationEnable")) {
+        if(config.getConfigBoolean("AutoCalibrationEnable")) {
             autoCalibrationTimer = new Timer();
             Date when = new Date(next);
             autoCalibrationTimer.schedule(new AutoCalibrationTimerTask(), when);
@@ -163,6 +164,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });*/
         SystemConfig config = SystemConfig.getInstance(this);
+        config.loadConfig();
         String string = config.getConfigString("UploadConfig");
         UploadingConfigFormat configFormat = new UploadingConfigFormat();
         Log.d(tag,"UploadConfig="+string);

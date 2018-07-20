@@ -130,7 +130,7 @@ public class myApplication extends Application {
 
     }*/
 
-    public void saveConfig(String key,float data){
+    /*public void saveConfig(String key,float data){
         SharedPreferences sp = getSharedPreferences("config",MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.putFloat(key,data);
@@ -188,5 +188,5 @@ public class myApplication extends Application {
     public String getConfigString(String key){
         SharedPreferences sp = getSharedPreferences("config",MODE_PRIVATE);
         return sp.getString(key," ");
-    }
+    }*/
 }
