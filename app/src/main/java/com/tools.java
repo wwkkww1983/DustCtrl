@@ -33,7 +33,23 @@ import android.annotation.SuppressLint;
 	 */  
 	public static int calcCrc16(byte[] data) {  
 	    return calcCrc16(data, 0, data.length);  
-	}  
+	}
+
+	public static int getCrc16CheckOut(byte[] data){
+		int i,j,crc_reg,check;
+		crc_reg = 0xFFFF;
+		for(i=0;i<data.length;i++){
+			crc_reg = (crc_reg>>8) ^ data[i];
+			for(j=0;j<8;j++){
+				check = crc_reg & 0x0001;
+				crc_reg >>= 1;
+				if(check==0x0001){
+					crc_reg ^= 0xA001;
+				}
+			}
+		}
+		return crc_reg;
+	}
 	
 	/** 
 	 * 计算CRC16校验 

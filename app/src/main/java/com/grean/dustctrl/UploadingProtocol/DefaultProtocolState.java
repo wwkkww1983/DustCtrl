@@ -16,12 +16,12 @@ import java.util.Map;
 public class DefaultProtocolState implements ProtocolState{
     private UploadingConfigFormat format;
     private ProtocolCommand command;
-    private Hjt212FrameBuilder frameBuilder;
+    private DefaultFrameBuilder frameBuilder;
     private long lastUploadMinDate;
 
     public DefaultProtocolState(ProtocolCommand command){
         this.command = command;
-        frameBuilder = new Hjt212FrameBuilder();
+        frameBuilder = new DefaultFrameBuilder();
     }
 
     @Override

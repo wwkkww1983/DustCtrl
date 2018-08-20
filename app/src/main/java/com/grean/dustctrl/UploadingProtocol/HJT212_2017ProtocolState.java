@@ -1,5 +1,6 @@
 package com.grean.dustctrl.UploadingProtocol;
 
+import android.content.pm.PackageManager;
 import android.util.Log;
 
 import com.grean.dustctrl.protocol.GeneralHistoryDataFormat;
@@ -7,6 +8,7 @@ import com.grean.dustctrl.protocol.GeneralLogFormat;
 import com.grean.dustctrl.protocol.GetProtocols;
 import com.tools;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -172,12 +174,15 @@ public class HJT212_2017ProtocolState implements ProtocolState{
                 case 1000://设置超时及重发次数
                     getField(string,hashMap);
                     if((hashMap.get("OverTime")!=null)&&(hashMap.get("ReCount")!=null)) {
-                        Log.d(tag,"设置超时及重发次数");
-                        int overTime  = Integer.valueOf(hashMap.get("OverTime"));
-                        int reCount = Integer.valueOf(hashMap.get("ReCount"));
-                        format.setTimeoutLimit(overTime);
-                        format.setTimeoutRepetition(reCount);
-                        //存储
+                        try {
+                            Log.d(tag, "设置超时及重发次数");
+                            int overTime = Integer.valueOf(hashMap.get("OverTime"));
+                            int reCount = Integer.valueOf(hashMap.get("ReCount"));
+                            format.setTimeoutLimit(overTime);
+                            format.setTimeoutRepetition(reCount);
+                        }catch (NumberFormatException e){
+                            Log.d(tag,"数字转换错误");
+                        }//存储
                         sendQnRtn(qnReceived);
                         sendExeRtn(qnReceived);
                     }
@@ -233,8 +238,13 @@ public class HJT212_2017ProtocolState implements ProtocolState{
                 case 1062:
                     getField(string,hashMap);
                     if(hashMap.get("RtdInterval")!=null){
-                        int rtdInterval = Integer.valueOf(hashMap.get("RtdInterval"));
-                        format.setRealTimeInterval(rtdInterval);
+                        try {
+                            int rtdInterval = Integer.valueOf(hashMap.get("RtdInterval"));
+                            format.setRealTimeInterval(rtdInterval);
+                        }catch (NumberFormatException e){
+                            Log.d(tag,"数字转换错误");
+                        }
+
                         sendQnRtn(qnReceived);
                         sendExeRtn(qnReceived);
                     }
@@ -406,7 +416,7 @@ public class HJT212_2017ProtocolState implements ProtocolState{
 
                     if((hashMap.get("BeginTime")!=null)&&(hashMap.get("EndTime")!=null)){
                         //Log.d(tag,"提取分钟数据2");
-                        begin = tools.tcpTimeString2timestamp(hashMap.get("BeginTime"));
+                        begin = tools.tcpTimeString2timestamp(hashMap.get("BeginTime"))-60000l;
                         end = tools.tcpTimeString2timestamp(hashMap.get("EndTime"));
                         Log.d(tag,tools.timestamp2string(begin)+"->"+tools.timestamp2string(end));
                         sendQnRtn(qnReceived);
@@ -445,6 +455,7 @@ public class HJT212_2017ProtocolState implements ProtocolState{
                         }
 
                         if(hasSendHourData){
+                            Log.d(tag,"接收到小时数据");
                             hasSendHourData = false;
                             lastUploadHourDate = uploadHourDate;
                         }
@@ -530,7 +541,11 @@ public class HJT212_2017ProtocolState implements ProtocolState{
     }
 
     private int getFrameProtocolLength(byte[] buff,int index){
-        return Integer.parseInt(new String(buff,index+2,4));
+        try {
+            return Integer.valueOf(new String(buff, index + 2, 4));
+        }catch (NumberFormatException e){
+            return 0;
+        }
     }
 
     private boolean checkFrame(byte[] buff,int length){
@@ -538,11 +553,16 @@ public class HJT212_2017ProtocolState implements ProtocolState{
             return false;
         }
         String string = new String(buff,2,4);
-        int len = Integer.parseInt(string);
-        if(len!=(length-12)){//帧长
-            Log.d(tag,"length error");
+        try {
+            int len = Integer.valueOf(string);
+            if (len != (length - 12)) {//帧长
+                Log.d(tag, "length error");
+                return false;
+            }
+        }catch (NumberFormatException e){
             return false;
         }
+
 
         string = new String(buff,0,2);
         if(!string.equals("##")){//帧头
@@ -788,6 +808,7 @@ public class HJT212_2017ProtocolState implements ProtocolState{
     @Override
     public void uploadHourDate(long now, long date) {
         if(command.isConnected()) {
+            Log.d(tag,"lastUploadHourDate="+tools.timestamp2string(lastUploadHourDate)+";"+tools.timestamp2string(date));
             if(lastUploadHourDate <= date) {
                 uploadHourDate = date;
                 hasSendHourData = true;

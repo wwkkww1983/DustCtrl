@@ -547,12 +547,14 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
             }else{
                 lastMinDate = dataBaseProtocol.getNextMinDate();
             }
+            //Log.d(tag,"加载下次小时数据时间1 now="+tools.timestamp2string(now)+tools.timestamp2string(dataBaseProtocol.getNextHourDate()));
             if(now > dataBaseProtocol.getNextHourDate()) {
                 lastHourDate = dataBaseProtocol.calcNextHourDate(now);
             }else{
                 lastHourDate = dataBaseProtocol.getNextHourDate();
             }
-            protocolState.uploadSystemTime(now,lastMinDate,lastHourDate);
+            //Log.d(tag,"加载下次小时数据时间2 now="+tools.timestamp2string(now)+tools.timestamp2string(lastHourDate));
+            protocolState.uploadSystemTime(now,lastMinDate,lastHourDate-60*60*1000l);
 
             while (minUploadRun&&(!interrupted())) {
                 now = tools.nowtime2timestamp();
@@ -565,6 +567,7 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
                     lastMinDate = dataBaseProtocol.calcNextMinDate(now);
                     dataBaseProtocol.saveMinDate();
                 }else if(now > lastHourDate){
+                    Log.d(tag,"发送小时数据"+tools.timestamp2string(lastHourDate));
                     saveHourData(lastHourDate);
                     protocolState.uploadHourDate(now,lastHourDate);
                     lastHourDate = dataBaseProtocol.calcNextHourDate(now);

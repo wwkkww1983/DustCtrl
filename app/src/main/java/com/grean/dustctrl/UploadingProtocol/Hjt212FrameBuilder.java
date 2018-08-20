@@ -10,7 +10,7 @@ import com.tools;
 
 public class Hjt212FrameBuilder {
     private final static String tag = "Hjt212FrameBuilder";
-    private static String qn,st,cn,pw,mn,flag,content="";
+    protected static String qn,st,cn,pw,mn,flag,content="";
 
     public void cleanContent(){
         qn="";
@@ -36,14 +36,15 @@ public class Hjt212FrameBuilder {
 
         String body = qn+st+cn+pw+mn+flag+"CP=&&"+content+"&&";
         byte [] bodyBuff = body.getBytes();
-        int crc = tools.calcCrc16(bodyBuff);
+        int crc = tools.getCrc16CheckOut(bodyBuff);
+        // int crc = tools.calcCrc16(bodyBuff);
         byte [] crcBuff = tools.int2bytes(crc);
         byte [] crcFormatBuff = new byte[2];
         crcFormatBuff[0] = crcBuff[2];
         crcFormatBuff[1] = crcBuff[3];
         String crcString = tools.bytesToHexString(crcFormatBuff,crcFormatBuff.length);
         String lenString = String.format("%04d",bodyBuff.length);
-        //Log.d(tag,"##"+lenString+body+crcString+"\r\n");
+        Log.d(tag,"##"+lenString+body+crcString+"\r\n");
         return "##"+lenString+body+crcString+"\r\n";
     }
 
@@ -68,7 +69,7 @@ public class Hjt212FrameBuilder {
     }
 
     public Hjt212FrameBuilder setPw(String string){
-        mn="PW="+string+";";
+        pw="PW="+string+";";
         return this;
     }
 
