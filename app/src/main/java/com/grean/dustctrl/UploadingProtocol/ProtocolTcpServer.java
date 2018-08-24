@@ -174,6 +174,7 @@ public class ProtocolTcpServer extends Observable implements  ProtocolCommand{
                             socketClient.sendUrgentData(0xFF);
                             send.write(sendBuff.poll());
                             send.flush();
+                            //Log.d(tag,"send buff rest size "+String.valueOf(sendBuff.size()));
                         }
                     } catch (IOException e) {
                         Log.d(tag,"发送失败");
@@ -190,14 +191,14 @@ public class ProtocolTcpServer extends Observable implements  ProtocolCommand{
                     receiverThread.start();
 
                     try {
-                        Thread.sleep(19000);
+                        Thread.sleep(19900);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                 }
 
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(100);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

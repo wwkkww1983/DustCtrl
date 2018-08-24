@@ -161,7 +161,7 @@ public class HJT212_2017ProtocolState implements ProtocolState{
         for(int i=0;i<strings.length;i++){
             String [] miniStrings = strings[i].split("=");
             if(miniStrings.length == 2){
-                Log.d(tag,miniStrings[0]+"="+miniStrings[1]);
+                //Log.d(tag,miniStrings[0]+"="+miniStrings[1]);
                 map.put(miniStrings[0],miniStrings[1]);
             }
         }
@@ -294,7 +294,7 @@ public class HJT212_2017ProtocolState implements ProtocolState{
                         String code = hashMap.get("InfoId");
                         String polId = hashMap.get("PolId");
                         if(code.equals("i21001")){//日志
-                            Log.d(tag,"日志");
+                            //Log.d(tag,"日志");
                             if((hashMap.get("BeginTime")!=null)&&(hashMap.get("EndTime")!=null)) {
                                 long begin = tools.tcpTimeString2timestamp(hashMap.get("BeginTime"));
                                 long end = tools.tcpTimeString2timestamp(hashMap.get("EndTime"));
@@ -303,7 +303,8 @@ public class HJT212_2017ProtocolState implements ProtocolState{
                                 for (int i=0;i<logFormat.getSize();i++){
                                     frameBuilder.cleanContent();
                                     frameBuilder.addContentField("DataTime",tools.timeStamp2TcpStringWithoutMs(logFormat.getDate(i)));
-                                    frameBuilder.addContentInfo(hashMap.get("PolId"),hashMap.get("InfoId"),"//"+logFormat.getLog(i)+"//");
+                                    String logString = logFormat.getLog(i).replace(';','.');//替代;避免服务器端解析错误
+                                    frameBuilder.addContentInfo(hashMap.get("PolId"),hashMap.get("InfoId"),"//"+logString+"//");
                                     command.executeSendTask(frameBuilder.setQn(qnReceived).setSt("21")
                                             .setCn("3020").setPw(format.getPassword()).setMn(format.getMnCode())
                                             .setFlag("8").insertOneFrame().getBytes());
@@ -477,7 +478,7 @@ public class HJT212_2017ProtocolState implements ProtocolState{
         @Override
         public void handleRequest(HashMap<String, String> map) {
             if(map.get("CP")!=null) {
-                Log.d(tag, "处理内容:"+map.get("CP"));
+                //Log.d(tag, "处理内容:"+map.get("CP"));
                 if(cn<2000){//参数命令
                     handleParameter(cn,map.get("CP"));
                 }else if(cn<3000){//数据命令
