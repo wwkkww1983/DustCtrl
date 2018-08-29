@@ -131,6 +131,13 @@ import android.annotation.SuppressLint;
 		}
 	}
 
+	public static byte[] copyArray(byte[] first,int firstLength,byte[] second,int secondLength){
+        byte[] result = new byte[firstLength+secondLength];
+        System.arraycopy(first,0,result,0,firstLength);
+        System.arraycopy(second,0,result,firstLength,secondLength);
+        return result;
+    }
+
 	/**
 	 * 展现导航栏
 	 */

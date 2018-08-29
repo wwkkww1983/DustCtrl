@@ -25,7 +25,7 @@ public class HJT212_2017ProtocolState implements ProtocolState{
     private Hjt212FrameBuilder frameBuilder;
     private String qnSend,qnReceived;
     private int cn,noResponseTimes=0;
-    private byte[] receiveBuff = new byte[1];
+    private byte[] receiveBuff;
     private HashMap<String ,String> content = new HashMap<>();
     private boolean hasReceived,hasSendPowerMessage=false,hasSendMinData = false,
             hasSendHourData,hasSendHeartPackage;
@@ -126,7 +126,7 @@ public class HJT212_2017ProtocolState implements ProtocolState{
             case 3021:
             //case 3040:
             case 3041:
-            case 3042:
+            //case 3042:
             case 9013:
             case 9014:
                 return true;
@@ -329,7 +329,7 @@ public class HJT212_2017ProtocolState implements ProtocolState{
                             sendPolIdInfo(polId,code,String.valueOf(GetProtocols.getInstance().getInfoProtocol().getSensorData().getLoDewPoint()));
                         }else if(code.equals("i13106")){
                             sendPolIdInfo(polId,code,String.valueOf(GetProtocols.getInstance().getInfoProtocol().getSensorData().getHiDewPoint()));
-                        }else if(code.equals("13107")){
+                        }else if(code.equals("i13107")){
                             sendPolIdInfo(polId,code,String.valueOf(GetProtocols.getInstance().getInfoProtocol().getSensorData().getHeatPwm()));
                         }else if(code.equals("i13108")){
                             if(GetProtocols.getInstance().getInfoProtocol().getSensorData().isCalPos()) {
@@ -421,7 +421,7 @@ public class HJT212_2017ProtocolState implements ProtocolState{
                         end = tools.tcpTimeString2timestamp(hashMap.get("EndTime"));
                         Log.d(tag,tools.timestamp2string(begin)+"->"+tools.timestamp2string(end));
                         sendQnRtn(qnReceived);
-                        sendMinData(qnReceived,begin,end);
+                        sendMinData(qnReceived,begin,end,false);
                         sendExeRtn(qnReceived);
                     }
                     break;
@@ -431,7 +431,7 @@ public class HJT212_2017ProtocolState implements ProtocolState{
                         begin = tools.tcpTimeString2timestamp(hashMap.get("BeginTime"));
                         end = tools.tcpTimeString2timestamp(hashMap.get("EndTime"));
                         sendQnRtn(qnReceived);
-                        sendHourData(qnReceived,begin,end);
+                        sendHourData(qnReceived,begin,end,false);
                         sendExeRtn(qnReceived);
                     }
                     break;
@@ -586,7 +586,7 @@ public class HJT212_2017ProtocolState implements ProtocolState{
         HashMap<String,String> map = new HashMap<>();
         String[] bigStrings = string.split("&&");
         if(bigStrings.length>0){
-            Log.d(tag,"BigString="+String.valueOf(bigStrings.length));
+            //Log.d(tag,"BigString="+String.valueOf(bigStrings.length));
             getField(bigStrings[0],map);
             if(bigStrings.length>1){
                 map.put("CP",bigStrings[1]);
@@ -662,10 +662,62 @@ public class HJT212_2017ProtocolState implements ProtocolState{
 
     }
 
+    private int getFrameTail(byte[] buff,int length){
+        int i=0;
+        for(i=1;i<length;i++){
+            if((buff[i-1]=='\r')&&(buff[i]=='\n')){
+                break;
+            }
+        }
+        return i+1;
+    }
+
     @Override
     public void handleReceiveBuff(byte[] buff, int length) {
         Log.d(tag,"size="+String.valueOf(length)+":"+new String(buff,0,length));
-        if(checkFrame(buff,length)){//合规帧
+        int len = getFrameTail(buff,length);
+        if(len==length){
+
+            if(checkFrame(buff,length)){//合规帧处理，不合规舍弃
+                //Log.d(tag,"合规");
+                handleProtocol(getContent(buff,length));
+                receiveBuff = null;
+            }else{
+                if(receiveBuff!=null){//
+                    //Log.d(tag,"需要拼接");
+                    receiveBuff = tools.copyArray(receiveBuff,receiveBuff.length,buff,length);
+                    //Log.d(tag,"size="+String.valueOf(receiveBuff.length)+":"+new String(receiveBuff,0,receiveBuff.length));
+                    if(checkFrame(receiveBuff,receiveBuff.length)){//合规帧处理，不合规舍弃
+                        //Log.d(tag,"合规");
+                        handleProtocol(getContent(receiveBuff,receiveBuff.length));
+                    }
+                    receiveBuff = null;
+                }
+            }
+
+        }else if(len < length){
+            //Log.d(tag,"结束符在中间，处理粘包 size="+String.valueOf(len));
+            if(checkFrame(buff,len)){
+                Log.d(tag,"合规");
+                handleReceiveBuff(buff,len);
+            }
+            receiveBuff = new byte[length-len];
+            System.arraycopy(buff,len,receiveBuff,0,length - len);
+        }else{
+           // Log.d(tag,"无结束符");
+            if(receiveBuff != null){
+                receiveBuff = tools.copyArray(receiveBuff,receiveBuff.length,buff,length);
+                if(receiveBuff.length > 9999){
+                    receiveBuff = null;
+                }
+            }else{
+                receiveBuff = new byte[length];
+                System.arraycopy(buff,0,receiveBuff,0,length);
+            }
+        }
+
+
+        /*if(checkFrame(buff,length)){//合规帧
             handleProtocol(getContent(buff,length));
         }else{//处理异常帧
             if(checkFrameHead(buff,length)){
@@ -707,7 +759,7 @@ public class HJT212_2017ProtocolState implements ProtocolState{
                 }
             }
             receiveBuff=new byte[1];//清空
-        }
+        }*/
     }
 
     @Override
@@ -726,7 +778,7 @@ public class HJT212_2017ProtocolState implements ProtocolState{
         }
     }
 
-    private void sendMinData(String qn,long begin,long end){
+    private void sendMinData(String qn,long begin,long end,boolean response){
         GeneralHistoryDataFormat dataFormat = GetProtocols.getInstance().getDataBaseProtocol().getData(begin, end);
         for (int i = 0; i < dataFormat.getSize(); i++) {
             frameBuilder.cleanContent();
@@ -740,8 +792,13 @@ public class HJT212_2017ProtocolState implements ProtocolState{
                 Integer val = (Integer) entry.getValue();
                 frameBuilder.addContentFactor(key,"Rtd", tools.float2String3(item.get(val)), "N");
             }
-            command.executeSendTask(frameBuilder.setQn(qn).setSt("21").setCn("2011").setPw(format.getPassword())
-                    .setMn(format.getMnCode()).setFlag("9").insertOneFrame().getBytes());
+            if(response) {
+                command.executeSendTask(frameBuilder.setQn(qn).setSt("21").setCn("2011").setPw(format.getPassword())
+                        .setMn(format.getMnCode()).setFlag("9").insertOneFrame().getBytes());
+            }else{
+                command.executeSendTask(frameBuilder.setQn(qn).setSt("21").setCn("2011").setPw(format.getPassword())
+                        .setMn(format.getMnCode()).setFlag("8").insertOneFrame().getBytes());
+            }
         }
     }
 
@@ -752,7 +809,7 @@ public class HJT212_2017ProtocolState implements ProtocolState{
                 uploadMinDate = date;
                 hasSendMinData = true;
                 qnSend = tools.timeStamp2TcpString(now);
-                sendMinData(qnSend,lastUploadMinDate,date);
+                sendMinData(qnSend,lastUploadMinDate,date,true);
                 lastUploadMinDate = uploadMinDate;//测试用
             }
         }
@@ -787,7 +844,7 @@ public class HJT212_2017ProtocolState implements ProtocolState{
 
     }
 
-    private void sendHourData(String qn,long begin,long end){
+    private void sendHourData(String qn,long begin,long end,boolean response){
         GeneralHistoryDataFormat dataFormat = GetProtocols.getInstance().getDataBaseProtocol().getHourData(begin, end);
         for (int i = 0; i < dataFormat.getSize(); i++) {
             frameBuilder.cleanContent();
@@ -801,8 +858,13 @@ public class HJT212_2017ProtocolState implements ProtocolState{
                 Integer val = (Integer) entry.getValue();
                 frameBuilder.addContentFactor(key,"Avg", tools.float2String3(item.get(val)), "N");
             }
-            command.executeSendTask(frameBuilder.setQn(qn).setSt("21").setCn("2061").setPw(format.getPassword())
-                    .setMn(format.getMnCode()).setFlag("9").insertOneFrame().getBytes());
+            if(response) {
+                command.executeSendTask(frameBuilder.setQn(qn).setSt("21").setCn("2061").setPw(format.getPassword())
+                        .setMn(format.getMnCode()).setFlag("9").insertOneFrame().getBytes());
+            }else{
+                command.executeSendTask(frameBuilder.setQn(qn).setSt("21").setCn("2061").setPw(format.getPassword())
+                        .setMn(format.getMnCode()).setFlag("8").insertOneFrame().getBytes());
+            }
         }
     }
 
@@ -814,7 +876,7 @@ public class HJT212_2017ProtocolState implements ProtocolState{
                 uploadHourDate = date;
                 hasSendHourData = true;
                 qnSend = tools.timeStamp2TcpString(now);
-                sendHourData(qnSend,lastUploadHourDate,date);
+                sendHourData(qnSend,lastUploadHourDate,date,true);
                 lastUploadHourDate = uploadHourDate;//测试用
             }
         }
