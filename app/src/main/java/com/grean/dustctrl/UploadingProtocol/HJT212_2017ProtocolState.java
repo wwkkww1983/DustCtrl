@@ -663,8 +663,8 @@ public class HJT212_2017ProtocolState implements ProtocolState{
     }
 
     private int getFrameTail(byte[] buff,int length){
-        int i=0;
-        for(i=1;i<length;i++){
+        int i;
+        for(i=(length-1);i>=1;i--){
             if((buff[i-1]=='\r')&&(buff[i]=='\n')){
                 break;
             }
@@ -686,7 +686,7 @@ public class HJT212_2017ProtocolState implements ProtocolState{
                 if(receiveBuff!=null){//
                     //Log.d(tag,"需要拼接");
                     receiveBuff = tools.copyArray(receiveBuff,receiveBuff.length,buff,length);
-                    //Log.d(tag,"size="+String.valueOf(receiveBuff.length)+":"+new String(receiveBuff,0,receiveBuff.length));
+                    Log.d(tag,"size="+String.valueOf(receiveBuff.length)+":"+new String(receiveBuff,0,receiveBuff.length));
                     if(checkFrame(receiveBuff,receiveBuff.length)){//合规帧处理，不合规舍弃
                         //Log.d(tag,"合规");
                         handleProtocol(getContent(receiveBuff,receiveBuff.length));
@@ -695,16 +695,16 @@ public class HJT212_2017ProtocolState implements ProtocolState{
                 }
             }
 
-        }else if(len < length){
+        }else if(len > 1){
             //Log.d(tag,"结束符在中间，处理粘包 size="+String.valueOf(len));
             if(checkFrame(buff,len)){
-                Log.d(tag,"合规");
+                //Log.d(tag,"合规");
                 handleReceiveBuff(buff,len);
             }
             receiveBuff = new byte[length-len];
             System.arraycopy(buff,len,receiveBuff,0,length - len);
         }else{
-           // Log.d(tag,"无结束符");
+            //Log.d(tag,"无结束符");
             if(receiveBuff != null){
                 receiveBuff = tools.copyArray(receiveBuff,receiveBuff.length,buff,length);
                 if(receiveBuff.length > 9999){
