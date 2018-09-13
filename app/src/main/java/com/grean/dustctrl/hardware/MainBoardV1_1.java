@@ -50,7 +50,11 @@ public class MainBoardV1_1 implements MainBoardController {
             }else{
                 data.setBatteryLow(false);
             }
-            data.setHiTemp(tools.getFloat(rec,44));//采样管温度
+            if(tools.getFloat(rec,44)>999){
+                data.setHiTemp(999);
+            }else {
+                data.setHiTemp(tools.getFloat(rec, 44));//采样管温度
+            }
             data.setLoTemp(tools.getFloat(rec,48));//采样管出口温度
             data.setHiHumidity(tools.getFloat(rec,52));//采样管目标温度
             data.setPipeTemp(tools.getFloat(rec,52));//同上

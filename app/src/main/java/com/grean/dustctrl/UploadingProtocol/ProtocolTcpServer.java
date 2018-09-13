@@ -274,6 +274,15 @@ public class ProtocolTcpServer extends Observable implements  ProtocolCommand{
                 }
                 e.printStackTrace();
             }
+            finally {
+                connected = false;
+                try {
+                    socketClient.close();
+                    Log.d(tag,"关闭链接");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
             setChanged();
             notifyObservers(new LogFormat("中断网络链接"));
         }
