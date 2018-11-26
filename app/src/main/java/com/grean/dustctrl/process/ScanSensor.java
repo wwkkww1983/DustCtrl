@@ -525,6 +525,10 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
 
             restartScanSensor();
         }
+
+        private void minnStepBackward(){
+
+        }
     }
 
     private class MinUploadThread extends Thread{

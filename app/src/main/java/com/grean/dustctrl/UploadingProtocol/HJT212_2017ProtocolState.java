@@ -101,7 +101,7 @@ public class HJT212_2017ProtocolState implements ProtocolState{
         @Override
         public void handleRequest(HashMap<String, String> map) {
             if(map.get("QN").equals(qnSend)){
-                Log.d(tag,"接收到返回帧");
+                //Log.d(tag,"接收到返回帧");
                 hasReceived = true;
             }else{
                 qnReceived = map.get("QN");
@@ -451,18 +451,18 @@ public class HJT212_2017ProtocolState implements ProtocolState{
                         hasReceived = false;
                         if(hasSendMinData) {
                             hasSendMinData = false;
-                            Log.d(tag,"接收到分钟数据");
+                            //Log.d(tag,"接收到分钟数据");
                             lastUploadMinDate = uploadMinDate;
                         }
 
                         if(hasSendHourData){
-                            Log.d(tag,"接收到小时数据");
+                            //Log.d(tag,"接收到小时数据");
                             hasSendHourData = false;
                             lastUploadHourDate = uploadHourDate;
                         }
 
                         if(hasSendHeartPackage){
-                            Log.d(tag,"接收到心跳包");
+                            //Log.d(tag,"接收到心跳包");
                             hasSendHeartPackage = false;
 
                         }
@@ -674,7 +674,7 @@ public class HJT212_2017ProtocolState implements ProtocolState{
 
     @Override
     public void handleReceiveBuff(byte[] buff, int length) {
-        Log.d(tag,"size="+String.valueOf(length)+":"+new String(buff,0,length));
+        //Log.d(tag,"size="+String.valueOf(length)+":"+new String(buff,0,length));
         int len = getFrameTail(buff,length);
         if(len==length){
 
@@ -686,7 +686,7 @@ public class HJT212_2017ProtocolState implements ProtocolState{
                 if(receiveBuff!=null){//
                     //Log.d(tag,"需要拼接");
                     receiveBuff = tools.copyArray(receiveBuff,receiveBuff.length,buff,length);
-                    Log.d(tag,"size="+String.valueOf(receiveBuff.length)+":"+new String(receiveBuff,0,receiveBuff.length));
+                    //Log.d(tag,"size="+String.valueOf(receiveBuff.length)+":"+new String(receiveBuff,0,receiveBuff.length));
                     if(checkFrame(receiveBuff,receiveBuff.length)){//合规帧处理，不合规舍弃
                         //Log.d(tag,"合规");
                         handleProtocol(getContent(receiveBuff,receiveBuff.length));
