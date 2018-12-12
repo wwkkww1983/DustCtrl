@@ -46,6 +46,10 @@ public class CameraCommunication extends SerialCommunication{
             windDirection = (int) CtrlCommunication.getInstance().getData().getWindDirection()+directionOffset;
             if(windDirection >=360){
                 windDirection -= 360;
+            }else if(windDirection <0){
+                windDirection += 360;
+            }else{
+
             }
             byte [] cmd = new byte[7];
             cmd[0] = 0x01;

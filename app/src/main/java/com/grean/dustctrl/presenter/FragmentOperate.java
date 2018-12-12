@@ -383,7 +383,15 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
                 Toast.makeText(getActivity(),"设置成功，重启生效",Toast.LENGTH_LONG).show();
                 break;
             case R.id.btnCameraDirectionOffset:
-                system.setCameraDirectionOffset(Integer.valueOf(etCameraDirectionOffset.getText().toString()));
+                int offset = Integer.valueOf(etCameraDirectionOffset.getText().toString());
+                if(offset > 359){
+                    Toast.makeText(getActivity(),"参数超范围，不得大于359",Toast.LENGTH_LONG).show();
+                }else if(offset <-359){
+                    Toast.makeText(getActivity(),"参数超范围，不得小于-359",Toast.LENGTH_LONG).show();
+                }else {
+                    system.setCameraDirectionOffset(offset);
+                    Toast.makeText(getActivity(),"设置成功",Toast.LENGTH_LONG).show();
+                }
                 break;
             default:
                 break;
