@@ -199,6 +199,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         long next = tools.calcNextTime(now,1524069000000l,4*3600000l);
         Date when = new Date(next);
         autoPatchTimer.schedule(new AutoPatchTimer(),when,4*3600000l);
+
+        if(SystemConfig.getInstance(this).getConfigBoolean("CameraDirectionFunction")){
+            CameraCommunication.getInstance().setDirectionOffset(SystemConfig.getInstance(this)
+                    .getConfigInt("CameraDirectionOffset"));
+        }
     }
 
     private void initView(){

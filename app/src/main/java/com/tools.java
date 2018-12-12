@@ -398,4 +398,28 @@ import android.annotation.SuppressLint;
 		return temp;
 	}
 
+	/**
+	 * ModBus 帧 审核地址 功能码 及crc
+	 * @param buff 帧地址
+	 * @param size 帧长
+	 * @param addr ModBus地址
+	 * @return true 合规 false 不合规
+	 */
+	public static boolean checkFrameWithAddr(byte []buff,int size,byte addr){
+		if (buff[0]!=addr){
+			return false;
+		}
+
+		if(!((buff[1]==0x03)||(buff[1]==0x06))){
+			return false;
+		}
+
+
+		if (calcCrc16(buff,0,size)!=0x0000){
+			return false;
+		}
+
+		return true;
+	}
+
 }

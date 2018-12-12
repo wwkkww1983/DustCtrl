@@ -48,8 +48,8 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
             ,btnDustMeterManCalZero,btnMotorTestUp,btnMotorTestDown,btnUpdateSetting,btnSetParaK,btnNoiseCal,btnResetResetCom,btnSaveLocation;
     private TextView tvDustMeterInfo,tvNextAutoCalTime,tvLocalIp,tvSoftwareVersion;//tvParaK
     private EditText etMotorRounds,etMotorTime,etAutoCalInterval,etServerIp,etServerPort,etUpdateSoftwareUrl,etTargetValue,etMnCode,etAlarm
-            ,etSetParaK,etSetParaB,etLng,etLat;
-    private Switch swDustMeterRun,swValve,swFan,swExt1,swExt2,swBackup,swAutoCalibrationEnable;
+            ,etSetParaK,etSetParaB,etLng,etLat,etCameraDirectionOffset;
+    private Switch swDustMeterRun,swValve,swFan,swExt1,swExt2,swBackup,swAutoCalibrationEnable,swCameraDirectionEnable;
     private Spinner spProtocol,spDustName,spDustMeter,spMainBoard;
     private int clientProtocolName,mainBoardName;
 
@@ -155,6 +155,8 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
 
         etLng.setText(operateTcp.getLng());
         etLat.setText(operateTcp.getLat());
+        swCameraDirectionEnable.setChecked(system.getCameraDirectionEnable());
+        etCameraDirectionOffset.setText(String.valueOf(system.getCameraDirectionOffset()));
     }
 
     private void initView(View v){
@@ -177,6 +179,7 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
         etAutoCalInterval = v.findViewById(R.id.etOperateAutoCalInterval);
         btnSaveAutoCal = v.findViewById(R.id.btnOperateSaveAutoCal);
         swAutoCalibrationEnable = v.findViewById(R.id.swAutoCaliration);
+        swCameraDirectionEnable = v.findViewById(R.id.swCameraDirection);
         etServerIp = v.findViewById(R.id.etOperateServerIP);
         etServerPort = v.findViewById(R.id.etOperateServerPort);
         etUpdateSoftwareUrl = v.findViewById(R.id.etOperateUpdateUrl);
@@ -203,6 +206,7 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
         etLat = v.findViewById(R.id.etoperateLat);
         btnResetResetCom = v.findViewById(R.id.btnOperateResetCom);
         btnSaveLocation = v.findViewById(R.id.btnOperateSaveLocation);
+        etCameraDirectionOffset = v.findViewById(R.id.etCameraDirectionOffset);
         btnSaveLocation.setOnClickListener(this);
         btnResetResetCom.setOnClickListener(this);
         btnNoiseCal.setOnClickListener(this);
@@ -227,6 +231,8 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
         btnMotorSet.setOnClickListener(this);
         btnUpdateSetting.setOnClickListener(this);
         btnSetParaK.setOnClickListener(this);
+        swCameraDirectionEnable.setOnClickListener(this);
+        v.findViewById(R.id.btnCameraDirectionOffset).setOnClickListener(this);
     }
 
 
@@ -371,6 +377,13 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
                 break;
             case R.id.btnOperateSaveLocation:
                 operateTcp.setLocation(getActivity(),etLng.getText().toString(),etLat.getText().toString());
+                break;
+            case R.id.swCameraDirection:
+                system.setCameraDirectionEnable(swCameraDirectionEnable.isChecked());
+                Toast.makeText(getActivity(),"设置成功，重启生效",Toast.LENGTH_LONG).show();
+                break;
+            case R.id.btnCameraDirectionOffset:
+                system.setCameraDirectionOffset(Integer.valueOf(etCameraDirectionOffset.getText().toString()));
                 break;
             default:
                 break;

@@ -151,7 +151,7 @@ public class CtrlCommunication extends SerialCommunication implements SerialComm
     @Override
     protected void communicationProtocol(byte[] rec, int size,int state) {
 
-        if (checkFrameWithAddr(rec,size,MainBoardController.MainBoardAddress)){//主板
+        if (tools.checkFrameWithAddr(rec,size,MainBoardController.MainBoardAddress)){//主板
             //Log.d(tag,"board sync right check");
             switch (state){
                 case Inquire:
@@ -162,7 +162,7 @@ public class CtrlCommunication extends SerialCommunication implements SerialComm
 
             }
 
-        }else if (checkFrameWithAddr(rec,size,(byte)0xdd)){//粉尘仪
+        }else if (tools.checkFrameWithAddr(rec,size,(byte)0xdd)){//粉尘仪
             DustMeterLibs.getInstance().getDustMeterController().handleProtocol(rec,size,state,data,info);
            // Log.d(tag,"dust sync right check");
            /* switch(state){
@@ -201,9 +201,9 @@ public class CtrlCommunication extends SerialCommunication implements SerialComm
                     break;
             }*/
 
-        }else if(checkFrameWithAddr(rec,size,(byte)0xde)){//校准装置
+        }else if(tools.checkFrameWithAddr(rec,size,(byte)0xde)){//校准装置
             DustMeterLibs.getInstance().getDustMeterController().handleProtocol(rec,size,state,data,info);
-        }else if(checkFrameWithAddr(rec,size,MainBoardController.WindForceAddress)){//风速
+        }else if(tools.checkFrameWithAddr(rec,size,MainBoardController.WindForceAddress)){//风速
             switch (state){
                 case WindForce:
                     MainBoardLibs.getInstance().getController().inquireWindForce(rec,size,data);
@@ -212,7 +212,7 @@ public class CtrlCommunication extends SerialCommunication implements SerialComm
                     break;
             }
 
-        }else if(checkFrameWithAddr(rec,size,MainBoardController.WindDirAddress)){//风向
+        }else if(tools.checkFrameWithAddr(rec,size,MainBoardController.WindDirAddress)){//风向
             switch (state){
                 case WindDirection:
                     MainBoardLibs.getInstance().getController().inquireWindDir(rec,size,data);
@@ -221,7 +221,7 @@ public class CtrlCommunication extends SerialCommunication implements SerialComm
                     break;
             }
 
-        }else if(checkFrameWithAddr(rec,size,MainBoardController.AirParameter)){//温湿度大气压
+        }else if(tools.checkFrameWithAddr(rec,size,MainBoardController.AirParameter)){//温湿度大气压
             switch (state){
                 case AirParameter:
                     MainBoardLibs.getInstance().getController().inquireAirParameter(rec,size,data);
@@ -236,9 +236,9 @@ public class CtrlCommunication extends SerialCommunication implements SerialComm
 
     @Override
     protected void asyncCommunicationProtocol(byte[] rec, int size) {
-        if (checkFrameWithAddr(rec,size,(byte)0x55)){//主板
+        if (tools.checkFrameWithAddr(rec,size,(byte)0x55)){//主板
             Log.d(tag,"async right check");
-        }else if (checkFrameWithAddr(rec,size,(byte)0xdd)){//粉尘仪
+        }else if (tools.checkFrameWithAddr(rec,size,(byte)0xdd)){//粉尘仪
             Log.d(tag,"async right check");
         }else{
             Log.d(tag,"async wrong check");
@@ -358,7 +358,7 @@ public class CtrlCommunication extends SerialCommunication implements SerialComm
         super.flag = false;
     }
 
-    private boolean checkFrameWithAddr(byte []buff,int size,byte addr){
+   /* private boolean checkFrameWithAddr(byte []buff,int size,byte addr){
         if (buff[0]!=addr){
             return false;
         }
@@ -373,7 +373,7 @@ public class CtrlCommunication extends SerialCommunication implements SerialComm
         }
 
         return true;
-    }
+    }*/
 
     @Override
     public void send(byte[] buff, int state) {

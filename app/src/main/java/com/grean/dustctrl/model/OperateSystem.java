@@ -9,6 +9,8 @@ import android.net.Uri;
 import android.os.Environment;
 import android.os.Process;
 import android.util.Log;
+
+import com.grean.dustctrl.CameraCommunication;
 import com.grean.dustctrl.CtrlCommunication;
 import com.grean.dustctrl.NoiseCalibrationListener;
 import com.grean.dustctrl.NoiseCommunication;
@@ -50,6 +52,23 @@ public class OperateSystem {
     public void setMainBoardName(int name){
         SystemConfig.getInstance(context).saveConfig("MainBoardName",name);
         MainBoardLibs.getInstance().setName(name);
+    }
+
+    public void setCameraDirectionEnable(boolean enable){
+        SystemConfig.getInstance(context).saveConfig("CameraDirectionFunction",enable);
+    }
+
+    public void setCameraDirectionOffset(int offset){
+        SystemConfig.getInstance(context).saveConfig("CameraDirectionOffset",offset);
+        CameraCommunication.getInstance().setDirectionOffset(offset);
+    }
+
+    public int getCameraDirectionOffset(){
+        return SystemConfig.getInstance(context).getConfigInt("CameraDirectionOffset");
+    }
+
+    public boolean getCameraDirectionEnable(){
+        return SystemConfig.getInstance(context).getConfigBoolean("CameraDirectionFunction");
     }
 
     public void ctrlDo(int num,boolean key){
