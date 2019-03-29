@@ -648,6 +648,19 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
             float paraK = config.getConfigFloat("DustParaK");
             float paraB = config.getConfigFloat("DustParaB");
             alarmDust = config.getConfigFloat("AlarmDust");
+
+            float tempSlope = config.getConfigFloat("ParaTempSlope");
+            float tempIntercept = config.getConfigFloat("ParaTempIntercept");
+            float humiSlope = config.getConfigFloat("ParaHumiSlope");
+            float humiIntercept = config.getConfigFloat("ParaHumiIntercept");
+            if(tempSlope == 0f){
+                tempSlope = 1f;
+            }
+            if(humiSlope == 0f){
+                humiSlope = 1f;
+            }
+            com.setTempHumiPara(tempSlope,tempIntercept,humiSlope,humiIntercept);
+
             boolean alarm;
             com.setDustParaK(paraK);
             com.setDustParaB(paraB);

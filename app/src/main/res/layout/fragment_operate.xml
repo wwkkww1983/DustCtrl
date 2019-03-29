@@ -581,6 +581,84 @@
                 android:text="温湿度大气压计"
                 android:textSize="30sp" />
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/textView57"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="温度:斜率"
+                    android:textSize="24sp" />
+
+                <EditText
+                    android:id="@+id/etTempSlope"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ems="5"
+                    android:inputType="numberDecimal" />
+
+                <TextView
+                    android:id="@+id/textView56"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="截距:"
+                    android:textSize="24sp" />
+
+                <EditText
+                    android:id="@+id/etTempIntercept"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ems="5"
+                    android:inputType="numberSigned|numberDecimal" />
+
+                <TextView
+                    android:id="@+id/textView55"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="湿度:斜率"
+                    android:textSize="24sp" />
+
+                <EditText
+                    android:id="@+id/etHumiSlope"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ems="5"
+                    android:inputType="numberDecimal" />
+
+                <TextView
+                    android:id="@+id/textView54"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="截距"
+                    android:textSize="24sp" />
+
+                <EditText
+                    android:id="@+id/etHumiIntercept"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ems="5"
+                    android:inputType="numberSigned|numberDecimal" />
+
+                <Button
+                    android:id="@+id/btnSaveHumiTempPara"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="保存系数" />
+            </LinearLayout>
+
             <TextView
                 android:id="@+id/textView27"
                 android:layout_width="match_parent"

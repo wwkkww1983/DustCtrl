@@ -63,6 +63,39 @@ public class OperateSystem {
         CameraCommunication.getInstance().setDirectionOffset(offset);
     }
 
+    public String getParaTempSlope(){
+        float slope = SystemConfig.getInstance(context).getConfigFloat("ParaTempSlope");
+        if(slope == 0f){
+            slope = 1;
+        }
+        return tools.float2String3(slope);
+
+    }
+
+    public String getParaTempIntercept(){
+        return tools.float2String3((SystemConfig.getInstance(context).getConfigFloat("ParaTempIntercept")));
+    }
+
+    public String getParaHumiSlope(){
+        float slope = SystemConfig.getInstance(context).getConfigFloat("ParaHumiSlope");
+        if(slope == 0f){
+            slope = 1;
+        }
+        return tools.float2String3(slope);
+    }
+
+    public void saveTempHumiPara(float paraTempSlope,float paraTempIntercept,float paraHumiSlope,float paraHumiIntercept){
+        CtrlCommunication.getInstance().setTempHumiPara(paraTempSlope,paraTempIntercept,paraHumiSlope,paraHumiIntercept);
+        SystemConfig.getInstance(context).saveConfig("ParaTempSlope",paraTempSlope);
+        SystemConfig.getInstance(context).saveConfig("ParaTempIntercept",paraTempIntercept);
+        SystemConfig.getInstance(context).saveConfig("ParaHumiSlope",paraHumiSlope);
+        SystemConfig.getInstance(context).saveConfig("ParaHumiIntercept",paraHumiIntercept);
+    }
+
+    public String getParaHumiIntercept(){
+        return tools.float2String3(SystemConfig.getInstance(context).getConfigFloat("ParaHumiIntercept"));
+    }
+
     public int getCameraDirectionOffset(){
         return SystemConfig.getInstance(context).getConfigInt("CameraDirectionOffset");
     }

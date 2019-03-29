@@ -48,7 +48,7 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
             ,btnDustMeterManCalZero,btnMotorTestUp,btnMotorTestDown,btnUpdateSetting,btnSetParaK,btnNoiseCal,btnResetResetCom,btnSaveLocation;
     private TextView tvDustMeterInfo,tvNextAutoCalTime,tvLocalIp,tvSoftwareVersion;//tvParaK
     private EditText etMotorRounds,etMotorTime,etAutoCalInterval,etServerIp,etServerPort,etUpdateSoftwareUrl,etTargetValue,etMnCode,etAlarm
-            ,etSetParaK,etSetParaB,etLng,etLat,etCameraDirectionOffset;
+            ,etSetParaK,etSetParaB,etLng,etLat,etCameraDirectionOffset,etTempSlope,etTempIntercept,etHumiSlope,etHumiIntercept;
     private Switch swDustMeterRun,swValve,swFan,swExt1,swExt2,swBackup,swAutoCalibrationEnable,swCameraDirectionEnable;
     private Spinner spProtocol,spDustName,spDustMeter,spMainBoard;
     private int clientProtocolName,mainBoardName;
@@ -157,6 +157,11 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
         etLat.setText(operateTcp.getLat());
         swCameraDirectionEnable.setChecked(system.getCameraDirectionEnable());
         etCameraDirectionOffset.setText(String.valueOf(system.getCameraDirectionOffset()));
+
+        etHumiIntercept.setText(system.getParaHumiIntercept());
+        etHumiSlope.setText(system.getParaHumiSlope());
+        etTempIntercept.setText(system.getParaTempIntercept());
+        etTempSlope.setText(system.getParaTempSlope());
     }
 
     private void initView(View v){
@@ -233,6 +238,12 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
         btnSetParaK.setOnClickListener(this);
         swCameraDirectionEnable.setOnClickListener(this);
         v.findViewById(R.id.btnCameraDirectionOffset).setOnClickListener(this);
+
+        etTempIntercept = v.findViewById(R.id.etTempIntercept);
+        etTempSlope = v.findViewById(R.id.etTempSlope);
+        etHumiIntercept = v.findViewById(R.id.etHumiIntercept);
+        etHumiSlope = v.findViewById(R.id.etHumiSlope);
+        v.findViewById(R.id.btnSaveHumiTempPara).setOnClickListener(this);
     }
 
 
@@ -392,6 +403,11 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
                     system.setCameraDirectionOffset(offset);
                     Toast.makeText(getActivity(),"设置成功",Toast.LENGTH_LONG).show();
                 }
+                break;
+            case R.id.btnSaveHumiTempPara:
+                system.saveTempHumiPara(Float.valueOf(etTempSlope.getText().toString()),Float.valueOf(etTempIntercept.getText().toString()),
+                        Float.valueOf(etHumiSlope.getText().toString()),Float.valueOf(etHumiIntercept.getText().toString()));
+                        Toast.makeText(getActivity(),"设置成功",Toast.LENGTH_LONG).show();
                 break;
             default:
                 break;

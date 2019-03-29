@@ -13,6 +13,7 @@ public class SensorData {
     private float value;//粉尘仪原始值
     private float paraK;//粉尘仪K值
     private float paraB;//
+    private float paraTempSlope=1,paraTempIntercept=0,paraHumiSlope=1,paraHumiIntercept=0;
     private float noise,airTemperature,airHumidity,airPressure,windForce,windDirection;
     private boolean acIn,batteryLow,calPos,measurePos;
     private boolean[] ctrlDo = new boolean[5];
@@ -22,6 +23,38 @@ public class SensorData {
 
     public SensorData(){
 
+    }
+
+    public float getParaTempSlope() {
+        return paraTempSlope;
+    }
+
+    public void setParaTempSlope(float paraTempSlope) {
+        this.paraTempSlope = paraTempSlope;
+    }
+
+    public float getParaTempIntercept() {
+        return paraTempIntercept;
+    }
+
+    public void setParaTempIntercept(float paraTempIntercept) {
+        this.paraTempIntercept = paraTempIntercept;
+    }
+
+    public float getParaHumiSlope() {
+        return paraHumiSlope;
+    }
+
+    public void setParaHumiSlope(float paraHumiSlope) {
+        this.paraHumiSlope = paraHumiSlope;
+    }
+
+    public float getParaHumiIntercept() {
+        return paraHumiIntercept;
+    }
+
+    public void setParaHumiIntercept(float paraHumiIntercept) {
+        this.paraHumiIntercept = paraHumiIntercept;
     }
 
     public float getNoise() {
@@ -177,7 +210,7 @@ public class SensorData {
     }
 
     public void setAirTemperature(float airTemperature) {
-        this.airTemperature = airTemperature;
+        this.airTemperature = airTemperature*paraTempSlope+paraTempIntercept;
     }
 
     public float getAirHumidity() {
@@ -185,7 +218,7 @@ public class SensorData {
     }
 
     public void setAirHumidity(float airHumidity) {
-        this.airHumidity = airHumidity;
+        this.airHumidity = airHumidity*paraHumiSlope+paraHumiIntercept;
     }
 
     public float getAirPressure() {

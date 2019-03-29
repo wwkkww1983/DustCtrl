@@ -113,6 +113,13 @@ public class CtrlCommunication extends SerialCommunication implements SerialComm
         //Log.d(tag,"Send"+tools.bytesToHexString(cmdMotorState,cmdMotorState.length));
     }
 
+    public void setTempHumiPara(float paraTempSlope,float paraTempIntercept,float paraHumiSlope,float paraHumiIntercept){
+        data.setParaHumiIntercept(paraHumiIntercept);
+        data.setParaHumiSlope(paraHumiSlope);
+        data.setParaTempIntercept(paraTempIntercept);
+        data.setParaTempSlope(paraTempSlope);
+    }
+
     public static CtrlCommunication getInstance() {
         return instance;
     }
@@ -143,6 +150,9 @@ public class CtrlCommunication extends SerialCommunication implements SerialComm
         data.setParaB(b);
         data.setValue(0);
     }
+
+
+
     @Override
     protected boolean checkRecBuff() {
         return true;
