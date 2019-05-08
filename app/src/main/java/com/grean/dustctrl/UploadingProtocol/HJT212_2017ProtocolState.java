@@ -886,11 +886,11 @@ public class HJT212_2017ProtocolState implements ProtocolState{
     public void setConfig(UploadingConfigFormat format) {
         format.addFactor("a01010",GeneralHistoryDataFormat.Dust);
         format.addFactor("a01011",GeneralHistoryDataFormat.Noise);
-        format.addFactor("a01012",GeneralHistoryDataFormat.Humidity);
-        format.addFactor("a01013",GeneralHistoryDataFormat.Temperature);
-        format.addFactor("a01014",GeneralHistoryDataFormat.Pressure);
-        format.addFactor("a01015",GeneralHistoryDataFormat.WindForce);
-        format.addFactor("a01016",GeneralHistoryDataFormat.WindDirection);
+        format.addFactor("a01002",GeneralHistoryDataFormat.Humidity);
+        format.addFactor("a01001",GeneralHistoryDataFormat.Temperature);
+        format.addFactor("a01006",GeneralHistoryDataFormat.Pressure);
+        format.addFactor("a01007",GeneralHistoryDataFormat.WindForce);
+        format.addFactor("a01008",GeneralHistoryDataFormat.WindDirection);
         this.format = format;
     }
 
