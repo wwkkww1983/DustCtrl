@@ -124,6 +124,12 @@ public class JSON {
         if(jsonObject.has("dustMeter")){
             infoProtocol.setDustMeter(jsonObject.getInt("dustMeter"));
         }
+        if(jsonObject.has("cameraEnable")){
+            infoProtocol.setCameraEnable(jsonObject.getBoolean("cameraEnable"));
+        }
+        if(jsonObject.has("cameraOffset")){
+            infoProtocol.setCameraOffset(jsonObject.getInt("cameraOffset"));
+        }
         return insertFrame(object.toString());
     }
 
@@ -141,6 +147,8 @@ public class JSON {
         object.put("dustParaB",infoProtocol.getParaB());
         object.put("motorTime",infoProtocol.getMotorTime());
         object.put("motorStep",infoProtocol.getMotorStep());
+        object.put("cameraEnable",infoProtocol.isCameraEnable());
+        object.put("cameraOffset",infoProtocol.getCameraOffset());
         String [] names = infoProtocol.getClientProtocolNames();
         JSONArray array = new JSONArray();
         for(int i=0;i<names.length;i++){

@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.SystemDateTime;
+import com.grean.dustctrl.CameraCommunication;
 import com.grean.dustctrl.CtrlCommunication;
 import com.grean.dustctrl.LogFormat;
 import com.grean.dustctrl.NoiseCalibrationListener;
@@ -510,6 +511,27 @@ public class InformationProtocol extends Observable implements GeneralInfoProtoc
     @Override
     public void setDustMeter(int name) {
         config.saveConfig("DustMeter",name);
+    }
+
+    @Override
+    public int getCameraOffset() {
+        return config.getConfigInt("CameraDirectionOffset");
+    }
+
+    @Override
+    public void setCameraOffset(int offset) {
+        config.saveConfig("CameraDirectionOffset",offset);
+        CameraCommunication.getInstance().setDirectionOffset(offset);
+    }
+
+    @Override
+    public boolean isCameraEnable() {
+        return config.getConfigBoolean("CameraDirectionFunction");
+    }
+
+    @Override
+    public void setCameraEnable(boolean enable) {
+        config.saveConfig("CameraDirectionFunction",enable);
     }
 
 

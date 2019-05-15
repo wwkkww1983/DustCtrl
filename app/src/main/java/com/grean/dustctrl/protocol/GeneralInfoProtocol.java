@@ -162,4 +162,10 @@ public interface GeneralInfoProtocol {
     int getDustMeter();
 
     void setDustMeter(int name);
+
+    int getCameraOffset();
+    void setCameraOffset(int offset);
+
+    boolean isCameraEnable();
+    void setCameraEnable(boolean enable);
 }
