@@ -44,12 +44,17 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
     private ProcessDialogFragment dialogFragment;
     private ProcessFragment processFragment;
     private String dustMeterInfo,autoCalTime,toastString,NoiseCalibrationInfo;
-    private Button btnDustMeterManCal,btnDustMeterInquire,btnMotorSet,btnSaveAutoCal,btnSaveServer,btnUpdateSoftware,btnCalcParaK,btnSetAlarm
-            ,btnDustMeterManCalZero,btnMotorTestUp,btnMotorTestDown,btnUpdateSetting,btnSetParaK,btnNoiseCal,btnResetResetCom,btnSaveLocation;
+    private Button btnDustMeterManCal,btnDustMeterInquire,btnMotorSet,btnSaveAutoCal,
+            btnSaveServer,btnUpdateSoftware,btnCalcParaK,btnSetAlarm,
+            btnDustMeterManCalZero,btnMotorTestUp,btnMotorTestDown,btnUpdateSetting,
+            btnSetParaK,btnNoiseCal,btnResetResetCom,btnSaveLocation;
     private TextView tvDustMeterInfo,tvNextAutoCalTime,tvLocalIp,tvSoftwareVersion;//tvParaK
-    private EditText etMotorRounds,etMotorTime,etAutoCalInterval,etServerIp,etServerPort,etUpdateSoftwareUrl,etTargetValue,etMnCode,etAlarm
-            ,etSetParaK,etSetParaB,etLng,etLat,etCameraDirectionOffset,etTempSlope,etTempIntercept,etHumiSlope,etHumiIntercept;
-    private Switch swDustMeterRun,swValve,swFan,swExt1,swExt2,swBackup,swAutoCalibrationEnable,swCameraDirectionEnable;
+    private EditText etMotorRounds,etMotorTime,etAutoCalInterval,etServerIp,
+            etServerPort,etUpdateSoftwareUrl,etTargetValue,etMnCode,etAlarm,etSetParaK,
+            etSetParaB,etLng,etLat,etCameraDirectionOffset,etTempSlope,etTempIntercept,
+            etHumiSlope,etHumiIntercept;
+    private Switch swDustMeterRun,swValve,swFan,swExt1,swExt2,swBackup,
+            swAutoCalibrationEnable,swCameraDirectionEnable,swLedDisplayEnable;
     private Spinner spProtocol,spDustName,spDustMeter,spMainBoard;
     private int clientProtocolName,mainBoardName;
 
@@ -162,6 +167,8 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
         etHumiSlope.setText(system.getParaHumiSlope());
         etTempIntercept.setText(system.getParaTempIntercept());
         etTempSlope.setText(system.getParaTempSlope());
+
+        swLedDisplayEnable.setChecked(system.isLedDisplayEnable());
     }
 
     private void initView(View v){
@@ -244,6 +251,9 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
         etHumiIntercept = v.findViewById(R.id.etHumiIntercept);
         etHumiSlope = v.findViewById(R.id.etHumiSlope);
         v.findViewById(R.id.btnSaveHumiTempPara).setOnClickListener(this);
+
+        swLedDisplayEnable = v.findViewById(R.id.swLedDisplayEnable);
+        swLedDisplayEnable.setOnClickListener(this);
     }
 
 
@@ -408,6 +418,10 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
                 system.saveTempHumiPara(Float.valueOf(etTempSlope.getText().toString()),Float.valueOf(etTempIntercept.getText().toString()),
                         Float.valueOf(etHumiSlope.getText().toString()),Float.valueOf(etHumiIntercept.getText().toString()));
                         Toast.makeText(getActivity(),"设置成功",Toast.LENGTH_LONG).show();
+                break;
+            case R.id.swLedDisplayEnable:
+                system.setLedDisplayEnable(swLedDisplayEnable.isChecked());
+                Toast.makeText(getActivity(),"设置成功,重启生效！",Toast.LENGTH_LONG).show();
                 break;
             default:
                 break;

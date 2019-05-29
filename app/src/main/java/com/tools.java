@@ -208,6 +208,15 @@ import android.annotation.SuppressLint;
 		temp[0] = (byte) ((i>>24)&0x000000FF);
 		return temp;
 	}
+
+	public static byte[] int2BytesReversed(int i){
+		byte[] temp = {0x00,0x00,0x00,0x00};
+		temp[0] = (byte) (i&0x000000FF);
+		temp[1] = (byte) ((i>>8)&0x000000FF);
+		temp[2] = (byte) ((i>>16)&0x000000FF);
+		temp[3] = (byte) ((i>>24)&0x000000FF);
+		return temp;
+	}
 	
 	/*int 转 成 HEX格式字符转  
 	 * 输入 
@@ -337,8 +346,16 @@ import android.annotation.SuppressLint;
 	 * @return
 	 */
 	public static String float2String4(float data){
-		DecimalFormat fnum = new DecimalFormat("##0.0000"); //保留小数点后3位
+		DecimalFormat fnum = new DecimalFormat("##0.0000"); //保留小数点后4位
 		return fnum.format(data); 
+	}
+	public static String float2String2(float data){
+		DecimalFormat fnum = new DecimalFormat("##0.00"); //保留小数点后2位
+		return fnum.format(data);
+	}
+	public static String float2String1(float data){
+		DecimalFormat fnum = new DecimalFormat("##0.0"); //保留小数点后1位
+		return fnum.format(data);
 	}
 	/**
 	 * float转字符串，无小数部分

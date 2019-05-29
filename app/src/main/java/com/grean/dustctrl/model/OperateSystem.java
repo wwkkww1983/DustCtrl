@@ -58,6 +58,14 @@ public class OperateSystem {
         SystemConfig.getInstance(context).saveConfig("CameraDirectionFunction",enable);
     }
 
+    public void setLedDisplayEnable(boolean enable){
+        SystemConfig.getInstance(context).saveConfig("LedDisplayFunction",enable);
+    }
+
+    public boolean isLedDisplayEnable(){
+        return SystemConfig.getInstance(context).getConfigBoolean("LedDisplayFunction");
+    }
+
     public void setCameraDirectionOffset(int offset){
         SystemConfig.getInstance(context).saveConfig("CameraDirectionOffset",offset);
         CameraCommunication.getInstance().setDirectionOffset(offset);

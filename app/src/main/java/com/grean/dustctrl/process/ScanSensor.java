@@ -14,6 +14,7 @@ import com.grean.dustctrl.DbTask;
 import com.grean.dustctrl.LogFormat;
 import com.grean.dustctrl.NoiseCommunication;
 import com.grean.dustctrl.SystemConfig;
+import com.grean.dustctrl.UploadingProtocol.NotifyScanSensorOnLedDisplay;
 import com.grean.dustctrl.UploadingProtocol.ProtocolState;
 import com.grean.dustctrl.UploadingProtocol.ProtocolTcpServer;
 import com.grean.dustctrl.dust.DustMeterLibs;
@@ -50,6 +51,7 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
     private NotifyOperateInfo info;
     private NotifyProcessDialogInfo dialogInfo;
     private CalcNextAutoCalibration calcNextAutoCalibration;
+    private NotifyScanSensorOnLedDisplay ledDisplay;
     private SensorData data;
     private float alarmDust;
     private double [] sumData = new double[7];
@@ -66,6 +68,10 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
 
     private ScanSensor(){
 
+    }
+
+    public void setLedDisplayNotify(NotifyScanSensorOnLedDisplay displayNotify){
+        this.ledDisplay = displayNotify;
     }
 
     public float getAlarmDust() {
@@ -507,14 +513,50 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+            com.SendFrame(CtrlCommunication.Inquire);
             notifyObservers(new LogFormat("校准结束"));
             setChanged();
-            infoProtocol.setDustCalMeterProcess(100);
+            infoProtocol.setDustCalMeterProcess(200);
             infoProtocol.notifySystemState("校准结束");
             SensorData data = com.getData();
-            notifyObservers(new LogFormat("散光板:限位"+String.valueOf(data.isCalPos())+";测量位置"+String.valueOf(data.isMeasurePos())));
-            //Log.d(tag,"散光板:限位"+String.valueOf(data.isCalPos())+";测量位置"+String.valueOf(data.isMeasurePos()));
+            notifyObservers(new LogFormat("散光板:限位"+String.valueOf(data.isCalPos())
+                    +";测量位置"+String.valueOf(data.isMeasurePos())));
             setChanged();
+            //如测量位置有误则继续移动散光板
+            if (data.isMeasurePos()) {
+                notifyObservers(new LogFormat("散光板位置未回至测量位置，启动第1次回拨"));
+                setChanged();
+                SystemConfig config = SystemConfig.getInstance(context);
+                int step = config.getConfigInt("MotorRounds");
+                int time = config.getConfigInt("MotorTime");
+                for (int i = 0; i < 3; i++) {
+                    com.setMotorTime(500);
+                    com.setMotorRounds(100);
+                    com.setMotorSetting(CtrlCommunication.MotorBackward);
+                    try {
+                        Thread.sleep(1200);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    com.SendFrame(CtrlCommunication.Inquire);
+                    try {
+                        Thread.sleep(200);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    data = com.getData();
+                    if (data.isMeasurePos()) {
+                        notifyObservers(new LogFormat("第"+String.valueOf(i)+"次回拨失败"));
+                        setChanged();
+                    } else {
+                        notifyObservers(new LogFormat("散光板回至测量位置"));
+                        setChanged();
+                        break;
+                    }
+                }
+                com.setMotorTime(time);
+                com.setMotorRounds(step);
+            }
             com.SendFrame(CtrlCommunication.DustMeterRun);
             if(info!=null) {
                 info.cancelDialog();
@@ -693,7 +735,9 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
                 e.printStackTrace();
             }
             DustMeterInfo dustMeterInfo = com.getInfo();
-            String string = "泵运行累计时间:"+String.valueOf(dustMeterInfo.getPumpTime())+"h;激光运行累计时间:"+String.valueOf(dustMeterInfo.getLaserTime())+"h;";
+            String string = "泵运行累计时间:"+String.valueOf(dustMeterInfo.getPumpTime())
+                    +"h;激光运行累计时间:"+String.valueOf(dustMeterInfo.getLaserTime())
+                    +"h;";
             infoProtocol.setDustMeterPumpTime(dustMeterInfo.getPumpTime());
             infoProtocol.setDustMeterLaserTime(dustMeterInfo.getLaserTime());
 
@@ -770,6 +814,10 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
                 if(notifyScanSensor!=null){
                     notifyScanSensor.onResult(data);
                     notifyScanSensor.setAlarmDust(alarm);
+                }
+
+                if(ledDisplay!=null){
+                    ledDisplay.onResult(data);
                 }
 
             }

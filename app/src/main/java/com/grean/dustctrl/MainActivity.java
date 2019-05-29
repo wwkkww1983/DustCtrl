@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 
+import com.grean.dustctrl.UploadingProtocol.LedTcpProtocolServer;
 import com.grean.dustctrl.UploadingProtocol.ProtocolTcpServer;
 import com.grean.dustctrl.UploadingProtocol.UploadingConfigFormat;
 import com.grean.dustctrl.presenter.CalcNextAutoCalibration;
@@ -203,6 +204,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if(SystemConfig.getInstance(this).getConfigBoolean("CameraDirectionFunction")){
             CameraCommunication.getInstance().setDirectionOffset(SystemConfig.getInstance(this)
                     .getConfigInt("CameraDirectionOffset"));
+        }
+
+        if(SystemConfig.getInstance(this).getConfigBoolean("LedDisplayFunction")){
+            LedTcpProtocolServer.getInstance().connectServer("192.168.1.99",10000);
+            ScanSensor.getInstance().setLedDisplayNotify(LedTcpProtocolServer.getInstance());
         }
     }
 

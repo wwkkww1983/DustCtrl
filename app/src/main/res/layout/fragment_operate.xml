@@ -678,7 +678,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="摄像头附加功能"
+                    android:text="附加功能"
                     android:textSize="30sp" />
 
                 <Switch
@@ -713,6 +713,13 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="保存" />
+
+                <Switch
+                    android:id="@+id/swLedDisplayEnable"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="LED显示屏功能" />
             </LinearLayout>
 
             <LinearLayout
