@@ -152,6 +152,10 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
         }
         db.close();
         helper.close();
+
+        if(ledDisplay!=null){
+            ledDisplay.onResult(data);
+        }
     }
 
     @Override
@@ -816,9 +820,9 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
                     notifyScanSensor.setAlarmDust(alarm);
                 }
 
-                if(ledDisplay!=null){
+                /*if(ledDisplay!=null){
                     ledDisplay.onResult(data);
-                }
+                }*/
 
             }
 

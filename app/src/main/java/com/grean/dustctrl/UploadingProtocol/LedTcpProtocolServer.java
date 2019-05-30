@@ -34,8 +34,9 @@ public class LedTcpProtocolServer extends Observable implements NotifyScanSensor
     private OutputStream send;
     private String ip;
     private int port;
+    private byte [] currentFrame = new byte[0];
 
-    private ConcurrentLinkedQueue<byte[]> sendBuff = new ConcurrentLinkedQueue<>();
+    //private ConcurrentLinkedQueue<byte[]> sendBuff = new ConcurrentLinkedQueue<>();
 
     public static LedTcpProtocolServer getInstance() {
         return instance;
@@ -119,8 +120,8 @@ public class LedTcpProtocolServer extends Observable implements NotifyScanSensor
                 0x00,0x00,0x00,0x00,
                 0x3f,0x00,0x0f,0x00,
                 0x01,0x00,0x00,
-                0x01,
-                0x01,
+                0x61,
+                0x14,
                 0x01,0x00,
                 0x10,
                 0x08,0x00,0x00,0x00,
@@ -146,8 +147,8 @@ public class LedTcpProtocolServer extends Observable implements NotifyScanSensor
     }
 
     private void showDataOnLedDisplay(SensorData data){
-        showContentOnLedDisplay("  扬 尘",
-                tools.float2String0(data.getDust()*1000)+"μg/m3");
+        showContentOnLedDisplay(" 扬  尘 ",
+                tools.float2String0(data.getDust())+"μg/m3");
     }
 
     /**
@@ -156,9 +157,10 @@ public class LedTcpProtocolServer extends Observable implements NotifyScanSensor
      * @param region2 区域数据2
      */
     private void showContentOnLedDisplay(String region1,String region2){
-        if(connected){
+        /*if(connected){
             sendBuff.add(addFrame(addRegionFrame(1,region1),addRegionFrame(2,region2)));
-        }
+        }*/
+        currentFrame = addFrame(addRegionFrame(1,region1),addRegionFrame(2,region2));
     }
 
     @Override
@@ -178,7 +180,7 @@ public class LedTcpProtocolServer extends Observable implements NotifyScanSensor
 
             while ((!interrupted())&&run){
                 if (connected){//已连接服务器
-                    try {
+                    /*try {
                         if(!sendBuff.isEmpty()){
                             socketClient.sendUrgentData(0xFF);
                             send.write(sendBuff.poll());
@@ -193,21 +195,21 @@ public class LedTcpProtocolServer extends Observable implements NotifyScanSensor
                             e1.printStackTrace();
                         }
                         e.printStackTrace();
-                    }
+                    }*/
                 }else{
                     socketClient = new Socket();
                     receiverThread = new ReceiverThread();
                     receiverThread.start();
 
                     try {
-                        Thread.sleep(1500);
+                        Thread.sleep(15000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                 }
 
                 try {
-                    Thread.sleep(100);
+                    Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -226,7 +228,6 @@ public class LedTcpProtocolServer extends Observable implements NotifyScanSensor
         public void run() {
             super.run();
             try {
-
                 socketClient.connect(new InetSocketAddress(ip, port), 5000);
                 socketClient.setTcpNoDelay(true);
                 socketClient.setSoLinger(true,30);
@@ -240,13 +241,15 @@ public class LedTcpProtocolServer extends Observable implements NotifyScanSensor
                 byte[] readBuff = new byte[4096];
 
                 connected = true;
-                setChanged();
-                Log.d(tag,"已连接服务器");
-                notifyObservers(new LogFormat("已连接服务器"));
+                //setChanged();
+                //Log.d(tag,"已连接服务器");
+                //notifyObservers(new LogFormat("已连接服务器"));
+                send.write(currentFrame);
+                send.flush();
                 while (connected){
                     if (socketClient.isConnected()&&(!socketClient.isClosed())){
                         while ((count = receive.read(readBuff))!=-1 && connected){
-                            //Log.d(tag, tools.bytesToHexString(readBuff,count));
+                            Log.d(tag, tools.bytesToHexString(readBuff,count));
                             handleBuffer(readBuff,count);
                         }
                         connected = false;
@@ -270,8 +273,8 @@ public class LedTcpProtocolServer extends Observable implements NotifyScanSensor
                     e.printStackTrace();
                 }
             }
-            setChanged();
-            notifyObservers(new LogFormat("中断网络链接"));
+            //setChanged();
+            //notifyObservers(new LogFormat("中断网络链接"));
         }
     }
 }
