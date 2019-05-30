@@ -120,15 +120,17 @@ public class LedTcpProtocolServer extends Observable implements NotifyScanSensor
                 0x00,0x00,0x00,0x00,
                 0x3f,0x00,0x0f,0x00,
                 0x01,0x00,0x00,
-                0x61,
-                0x14,
-                0x01,0x00,
+                0x01,
+                0x01,
+                0x02,0x00,
                 0x10,
                 0x08,0x00,0x00,0x00,
         };
         if(regionNum!=1){
             head[8] = 0x10;
             head[12] = 0x1f;
+            head[17] = 0x61;
+            head[18] = 0x0a;
         }
         byte[] contentSize = tools.int2bytes(content.length);
         head[22] = contentSize[3];
@@ -148,7 +150,7 @@ public class LedTcpProtocolServer extends Observable implements NotifyScanSensor
 
     private void showDataOnLedDisplay(SensorData data){
         showContentOnLedDisplay(" 扬  尘 ",
-                tools.float2String0(data.getDust())+"μg/m3");
+                tools.float2String3(data.getDust())+"mg/m3");
     }
 
     /**
@@ -244,8 +246,12 @@ public class LedTcpProtocolServer extends Observable implements NotifyScanSensor
                 //setChanged();
                 //Log.d(tag,"已连接服务器");
                 //notifyObservers(new LogFormat("已连接服务器"));
-                send.write(currentFrame);
-                send.flush();
+                if(currentFrame.length>0) {
+                    send.write(currentFrame);
+                    Log.d(tag, tools.bytesToHexString(currentFrame, currentFrame.length));
+                    send.flush();
+                    currentFrame = new byte[0];
+                }
                 while (connected){
                     if (socketClient.isConnected()&&(!socketClient.isClosed())){
                         while ((count = receive.read(readBuff))!=-1 && connected){
