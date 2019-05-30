@@ -91,7 +91,7 @@ public class LedTcpProtocolServer extends Observable implements NotifyScanSensor
         length += region2.length;
         System.arraycopy(end,0,frame,length,end.length);
         length += end.length;
-        Log.d(tag,"send = "+ tools.bytesToHexString(frame,length));
+        //Log.d(tag,"send = "+ tools.bytesToHexString(frame,length));
         return frame;
     }
 
@@ -119,8 +119,8 @@ public class LedTcpProtocolServer extends Observable implements NotifyScanSensor
                 0x00,0x00,0x00,0x00,
                 0x3f,0x00,0x0f,0x00,
                 0x01,0x00,0x00,
-                0x61,
-                0x14,
+                0x01,
+                0x01,
                 0x01,0x00,
                 0x10,
                 0x08,0x00,0x00,0x00,
@@ -146,8 +146,8 @@ public class LedTcpProtocolServer extends Observable implements NotifyScanSensor
     }
 
     private void showDataOnLedDisplay(SensorData data){
-        showContentOnLedDisplay("扬尘:"+tools.float2String3(data.getDust())+"mg/m³",
-                "温度:"+tools.float2String1(data.getHiTemp())+"℃");
+        showContentOnLedDisplay("  扬 尘",
+                tools.float2String0(data.getDust()*1000)+"μg/m3");
     }
 
     /**
@@ -217,6 +217,10 @@ public class LedTcpProtocolServer extends Observable implements NotifyScanSensor
 
     }
 
+    private void handleBuffer(byte[] buff,int count){
+
+    }
+
     private class ReceiverThread extends Thread{
         @Override
         public void run() {
@@ -242,8 +246,8 @@ public class LedTcpProtocolServer extends Observable implements NotifyScanSensor
                 while (connected){
                     if (socketClient.isConnected()&&(!socketClient.isClosed())){
                         while ((count = receive.read(readBuff))!=-1 && connected){
-                            Log.d(tag, tools.bytesToHexString(readBuff,count));
-                            //state.handleReceiveBuff(readBuff,count);
+                            //Log.d(tag, tools.bytesToHexString(readBuff,count));
+                            handleBuffer(readBuff,count);
                         }
                         connected = false;
                         break;
