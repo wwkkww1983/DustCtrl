@@ -119,8 +119,8 @@ public class LedTcpProtocolServer extends Observable implements NotifyScanSensor
                 0x00,0x00,0x00,0x00,
                 0x3f,0x00,0x0f,0x00,
                 0x01,0x00,0x00,
-                0x01,
-                0x01,
+                0x61,
+                0x14,
                 0x01,0x00,
                 0x10,
                 0x08,0x00,0x00,0x00,
@@ -200,7 +200,7 @@ public class LedTcpProtocolServer extends Observable implements NotifyScanSensor
                     receiverThread.start();
 
                     try {
-                        Thread.sleep(29900);
+                        Thread.sleep(1500);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
