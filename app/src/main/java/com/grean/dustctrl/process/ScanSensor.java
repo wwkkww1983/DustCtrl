@@ -528,12 +528,13 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
             setChanged();
             //如测量位置有误则继续移动散光板
             if (data.isMeasurePos()) {
-                notifyObservers(new LogFormat("散光板位置未回至测量位置，启动第1次回拨"));
-                setChanged();
                 SystemConfig config = SystemConfig.getInstance(context);
                 int step = config.getConfigInt("MotorRounds");
                 int time = config.getConfigInt("MotorTime");
                 for (int i = 0; i < 3; i++) {
+                    notifyObservers(new LogFormat("散光板位置未回至测量位置，启动第"
+                            +String.valueOf(i+1)+"次回拨"));
+                    setChanged();
                     com.setMotorTime(500);
                     com.setMotorRounds(100);
                     com.setMotorSetting(CtrlCommunication.MotorBackward);
@@ -550,7 +551,7 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
                     }
                     data = com.getData();
                     if (data.isMeasurePos()) {
-                        notifyObservers(new LogFormat("第"+String.valueOf(i)+"次回拨失败"));
+                        notifyObservers(new LogFormat("第"+String.valueOf(i+1)+"次回拨失败"));
                         setChanged();
                     } else {
                         notifyObservers(new LogFormat("散光板回至测量位置"));
