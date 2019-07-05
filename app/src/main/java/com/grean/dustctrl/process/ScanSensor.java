@@ -52,6 +52,7 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
     private NotifyProcessDialogInfo dialogInfo;
     private CalcNextAutoCalibration calcNextAutoCalibration;
     private NotifyScanSensorOnLedDisplay ledDisplay;
+    private ProtocolState protocolState;
     private SensorData data;
     private float alarmDust;
     private double [] sumData = new double[7];
@@ -72,6 +73,10 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
 
     public void setLedDisplayNotify(NotifyScanSensorOnLedDisplay displayNotify){
         this.ledDisplay = displayNotify;
+    }
+
+    public void setProtocolState(ProtocolState protocolState) {
+        this.protocolState = protocolState;
     }
 
     public float getAlarmDust() {
@@ -819,6 +824,10 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
                 if(notifyScanSensor!=null){
                     notifyScanSensor.onResult(data);
                     notifyScanSensor.setAlarmDust(alarm);
+                }
+
+                if(protocolState!=null){
+                    protocolState.setRealTimeData(data);
                 }
 
                 /*if(ledDisplay!=null){

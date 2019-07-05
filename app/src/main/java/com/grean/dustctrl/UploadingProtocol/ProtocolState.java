@@ -1,5 +1,7 @@
 package com.grean.dustctrl.UploadingProtocol;
 
+import com.grean.dustctrl.process.SensorData;
+
 /**
  * Created by weifeng on 2018/6/28.
  */
@@ -44,4 +46,10 @@ public interface ProtocolState {
      * @param format
      */
     void setConfig(UploadingConfigFormat format);
+
+    /**
+     * 设置实时数据
+     * @param data
+     */
+    void setRealTimeData(SensorData data);
 }

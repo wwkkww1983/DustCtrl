@@ -3,6 +3,7 @@ package com.grean.dustctrl.UploadingProtocol;
 import android.content.pm.PackageManager;
 import android.util.Log;
 
+import com.grean.dustctrl.process.SensorData;
 import com.grean.dustctrl.protocol.GeneralHistoryDataFormat;
 import com.grean.dustctrl.protocol.GeneralLogFormat;
 import com.grean.dustctrl.protocol.GetProtocols;
@@ -20,22 +21,23 @@ import java.util.Map;
 
 public class HJT212_2017ProtocolState implements ProtocolState{
     private static final String tag = "HJT212_2017ProtocolState";
-    private UploadingConfigFormat format;
-    private ProtocolCommand command;
+    protected UploadingConfigFormat format;
+    protected ProtocolCommand command;
     private Hjt212FrameBuilder frameBuilder;
-    private String qnSend,qnReceived;
-    private int cn,noResponseTimes=0;
+    protected String qnSend,qnReceived;
+    protected int cn,noResponseTimes=0;
+    protected SensorData realTimeData;
     private byte[] receiveBuff;
     private HashMap<String ,String> content = new HashMap<>();
-    private boolean hasReceived,hasSendPowerMessage=false,hasSendMinData = false,
+    protected boolean hasReceived,hasSendPowerMessage=false,hasSendMinData = false,
             hasSendHourData,hasSendHeartPackage;
-    private long lastUploadMinDate,uploadMinDate,lastUploadHourDate,uploadHourDate;
-    private RequestHandle rhStart;
-    private interface RequestHandle{
+    protected long lastUploadMinDate,uploadMinDate,lastUploadHourDate,uploadHourDate;
+    protected RequestHandle rhStart;
+    protected interface RequestHandle{
         void handleRequest(HashMap<String,String>map);
     }
 
-    private class MnRequestHandle implements RequestHandle{
+    protected class MnRequestHandle implements RequestHandle{
         private RequestHandle rh;
 
         public MnRequestHandle(RequestHandle rh){
@@ -54,7 +56,7 @@ public class HJT212_2017ProtocolState implements ProtocolState{
         }
     }
 
-    private class FlagRequestHandle implements RequestHandle{
+    protected class FlagRequestHandle implements RequestHandle{
         private RequestHandle rh;
 
         public FlagRequestHandle(RequestHandle rh){
@@ -73,7 +75,7 @@ public class HJT212_2017ProtocolState implements ProtocolState{
         }
     }
 
-    private class PwRequestHandle implements RequestHandle{
+    protected class PwRequestHandle implements RequestHandle{
         private RequestHandle rh;
 
         public PwRequestHandle(RequestHandle rh){
@@ -92,7 +94,7 @@ public class HJT212_2017ProtocolState implements ProtocolState{
         }
     }
 
-    private class QnRequestHandle implements RequestHandle{
+    protected class QnRequestHandle implements RequestHandle{
         private RequestHandle rh;
 
         public QnRequestHandle(RequestHandle rh){
@@ -110,7 +112,7 @@ public class HJT212_2017ProtocolState implements ProtocolState{
         }
     }
 
-    private boolean isCnAvailable(int num){
+    protected boolean isCnAvailable(int num){
         switch (num){
             case 1000:
             case 1011:
@@ -135,7 +137,7 @@ public class HJT212_2017ProtocolState implements ProtocolState{
         }
     }
 
-    private class CnRequestHandle implements RequestHandle{
+    protected class CnRequestHandle implements RequestHandle{
         private RequestHandle rh;
         public CnRequestHandle(RequestHandle rh){
             this.rh = rh;
@@ -156,7 +158,7 @@ public class HJT212_2017ProtocolState implements ProtocolState{
         }
     }
 
-    private void getField(String string,HashMap<String,String> map){
+    protected void getField(String string,HashMap<String,String> map){
         String[] strings = string.split(";");
         for(int i=0;i<strings.length;i++){
             String [] miniStrings = strings[i].split("=");
@@ -167,7 +169,7 @@ public class HJT212_2017ProtocolState implements ProtocolState{
         }
     }
 
-    private class CpRequestHandle implements RequestHandle{
+    protected class CpRequestHandle implements RequestHandle{
         private void handleParameter(int num,String string){
             HashMap<String,String> hashMap = new HashMap<>();
             switch (num){
@@ -497,6 +499,10 @@ public class HJT212_2017ProtocolState implements ProtocolState{
 
     public HJT212_2017ProtocolState(ProtocolCommand command){
         this.command = command;
+        initConfig();
+    }
+
+    protected void initConfig(){
         frameBuilder = new Hjt212FrameBuilder();
         RequestHandle cp = new CpRequestHandle();
         RequestHandle cnRh = new CnRequestHandle(cp);
@@ -778,7 +784,7 @@ public class HJT212_2017ProtocolState implements ProtocolState{
         }
     }
 
-    private void sendMinData(String qn,long begin,long end,boolean response){
+    protected void sendMinData(String qn,long begin,long end,boolean response){
         GeneralHistoryDataFormat dataFormat = GetProtocols.getInstance().getDataBaseProtocol().getData(begin, end);
         for (int i = 0; i < dataFormat.getSize(); i++) {
             frameBuilder.cleanContent();
@@ -844,7 +850,7 @@ public class HJT212_2017ProtocolState implements ProtocolState{
 
     }
 
-    private void sendHourData(String qn,long begin,long end,boolean response){
+    protected void sendHourData(String qn,long begin,long end,boolean response){
         GeneralHistoryDataFormat dataFormat = GetProtocols.getInstance().getDataBaseProtocol().getHourData(begin, end);
         for (int i = 0; i < dataFormat.getSize(); i++) {
             frameBuilder.cleanContent();
@@ -892,6 +898,11 @@ public class HJT212_2017ProtocolState implements ProtocolState{
         format.addFactor("a01007",GeneralHistoryDataFormat.WindForce);
         format.addFactor("a01008",GeneralHistoryDataFormat.WindDirection);
         this.format = format;
+    }
+
+    @Override
+    public void setRealTimeData(SensorData data) {
+        this.realTimeData = data;
     }
 
     private void sendQnRtn(String qn){

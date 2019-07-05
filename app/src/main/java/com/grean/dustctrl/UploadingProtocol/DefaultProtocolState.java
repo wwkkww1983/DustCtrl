@@ -1,5 +1,6 @@
 package com.grean.dustctrl.UploadingProtocol;
 
+import com.grean.dustctrl.process.SensorData;
 import com.grean.dustctrl.protocol.GeneralHistoryDataFormat;
 import com.grean.dustctrl.protocol.GetProtocols;
 import com.tools;
@@ -80,5 +81,10 @@ public class DefaultProtocolState implements ProtocolState{
         format.addFactor("107-Cou",GeneralHistoryDataFormat.Pressure);
         format.addFactor("108-Cou",GeneralHistoryDataFormat.WindForce);
         format.addFactor("109-Cou",GeneralHistoryDataFormat.WindDirection);
+    }
+
+    @Override
+    public void setRealTimeData(SensorData data) {
+
     }
 }

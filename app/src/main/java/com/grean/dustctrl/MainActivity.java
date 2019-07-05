@@ -210,6 +210,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             LedTcpProtocolServer.getInstance().connectServer("192.168.1.99",10000);
             ScanSensor.getInstance().setLedDisplayNotify(LedTcpProtocolServer.getInstance());
         }
+
+        ScanSensor.getInstance().setProtocolState(GetProtocols.getInstance().getProtocolState());
     }
 
     private void initView(){
