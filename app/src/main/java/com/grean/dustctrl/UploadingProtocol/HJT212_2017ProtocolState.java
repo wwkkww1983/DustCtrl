@@ -169,6 +169,22 @@ public class HJT212_2017ProtocolState implements ProtocolState{
         }
     }
 
+    protected HashMap<String , String> getCode(String string){
+        HashMap<String,String> hashMap = new HashMap<>();
+        String[] strings = string.split(";");
+        for(int i=0;i<strings.length;i++){
+            String[] strings1 = strings[i].split(",");
+            for(int j=0;j<strings1.length;j++){
+                String[] strings2 = strings1[j].split("=");
+                if(strings2.length==2){
+                    Log.d(tag,strings2[0]+","+strings2[1]);
+                    hashMap.put(strings2[0],strings2[1]);
+                }
+            }
+        }
+        return hashMap;
+    }
+
     protected class CpRequestHandle implements RequestHandle{
         private void handleParameter(int num,String string){
             HashMap<String,String> hashMap = new HashMap<>();
@@ -193,7 +209,7 @@ public class HJT212_2017ProtocolState implements ProtocolState{
                     getField(string,hashMap);
                     if(hashMap.get("PolId")!=null){
                         sendQnRtn(qnReceived);
-                        frameBuilder.cleanContent();;
+                        frameBuilder.cleanContent();
                         frameBuilder.addContentField("SystemTime",tools.timeStamp2TcpStringWithoutMs(tools.nowtime2timestamp()));
                         command.executeSendTask(frameBuilder.setQn(qnReceived).setSt("21")
                                 .setCn("1011").setPw(format.getPassword()).setMn(format.getMnCode())
@@ -261,21 +277,7 @@ public class HJT212_2017ProtocolState implements ProtocolState{
 
 
 
-        private HashMap<String , String> getCode(String string){
-            HashMap<String,String> hashMap = new HashMap<>();
-            String[] strings = string.split(";");
-            for(int i=0;i<strings.length;i++){
-                String[] strings1 = strings[i].split(",");
-                for(int j=0;j<strings1.length;j++){
-                    String[] strings2 = strings1[j].split("=");
-                    if(strings2.length==2){
-                        Log.d(tag,strings2[0]+","+strings2[1]);
-                        hashMap.put(strings2[0],strings2[1]);
-                    }
-                }
-            }
-            return hashMap;
-        }
+
 
         private void sendPolIdInfo(String polId,String code,String info){
             sendQnRtn(qnReceived);

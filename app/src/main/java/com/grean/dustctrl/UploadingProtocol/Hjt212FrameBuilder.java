@@ -115,6 +115,16 @@ public class Hjt212FrameBuilder {
         return this;
     }
 
+    public Hjt212FrameBuilder addContentValues(String polId,String field1,String value1,
+                                               String field2,String value2){
+        if(content.equals("")){
+            content = polId+"-"+field1+"="+value1+","+polId+field2+"="+value2;
+        }else{
+            content = content+";" + polId+"-"+field1+"="+value1+","+polId+field2+"="+value2;
+        }
+        return this;
+    }
+
     public Hjt212FrameBuilder contentQnRtn(){
         content = "QnRtn=1";
         return this;

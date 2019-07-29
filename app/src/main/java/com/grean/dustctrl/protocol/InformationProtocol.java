@@ -534,6 +534,11 @@ public class InformationProtocol extends Observable implements GeneralInfoProtoc
         config.saveConfig("CameraDirectionFunction",enable);
     }
 
+    @Override
+    public void saveUploadingConfig(String configString) {
+        config.saveConfig("UploadConfig",configString);
+    }
+
 
     @Override
     public void onResult(String calInfo, boolean success) {

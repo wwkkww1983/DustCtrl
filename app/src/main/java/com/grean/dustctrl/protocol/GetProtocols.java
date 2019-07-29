@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.grean.dustctrl.SystemLog;
 import com.grean.dustctrl.UploadingProtocol.DefaultProtocolState;
+import com.grean.dustctrl.UploadingProtocol.HJ212_HzProtocolState;
 import com.grean.dustctrl.UploadingProtocol.HJT212_2017ProtocolState;
 import com.grean.dustctrl.UploadingProtocol.ProtocolState;
 import com.grean.dustctrl.UploadingProtocol.ProtocolTcpServer;
@@ -24,8 +25,8 @@ public class GetProtocols {
     private GeneralDataBaseProtocol dataBaseProtocol;
     private int clientProtocolName =0;
     public static final int CLIENT_PROTOCOL_DEFAULT=0,CLIENT_PROTOCOL_HJT212 = 1,
-            CLIENT_PROTOCOL_MAX = 2;
-    public static final String[] CLIENT_PROTOCOL_DEFAULT_NAMES ={"Default","HJ/T-212-2017"};
+            CLIENT_PROTOCOL_HJT212_HZ=2, CLIENT_PROTOCOL_MAX = 3;
+    public static final String[] CLIENT_PROTOCOL_DEFAULT_NAMES ={"Default","HJ/T-212-2017","杭州扬尘通讯协议"};
     private Context context;
 
     private GetProtocols(){
@@ -40,7 +41,11 @@ public class GetProtocols {
             }else if(clientProtocolName == CLIENT_PROTOCOL_HJT212){
                 Log.d(tag,"CLIENT_PROTOCOL_HJT212");
                 protocolState = new HJT212_2017ProtocolState(ProtocolTcpServer.getInstance());
-            }else{
+            }else if(clientProtocolName == CLIENT_PROTOCOL_HJT212_HZ){
+                Log.d(tag,"CLIENT_PROTOCOL_HJT212_HZ");
+                protocolState = new HJ212_HzProtocolState(ProtocolTcpServer.getInstance());
+            }
+            else{
                 protocolState = new DefaultProtocolState(ProtocolTcpServer.getInstance());
             }
         }

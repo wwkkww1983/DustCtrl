@@ -6,6 +6,8 @@ import com.grean.dustctrl.protocol.GeneralHistoryDataFormat;
 import com.grean.dustctrl.protocol.GetProtocols;
 import com.tools;
 
+import org.json.JSONException;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -46,12 +48,12 @@ public class HJ212_HzProtocolState extends HJT212_2017ProtocolState{
         }
         @Override
         public void handleRequest(HashMap<String, String> map) {
-            /*if(map.get("QN").equals(qnSend)){
+            if(map.get("QN").equals(qnSend)){
                 //Log.d(tag,"接收到返回帧");
                 hasReceived = true;
             }else{
                 qnReceived = map.get("QN");
-            }*/
+            }
             rh.handleRequest(map);
         }
     }
@@ -88,12 +90,174 @@ public class HJ212_HzProtocolState extends HJT212_2017ProtocolState{
     }
 
 
+    private void sendQnRtn(String qn){
+        frameBuilder.cleanContent();
+        frameBuilder.contentQnRtn();
+        command.executeSendTask(frameBuilder.setQn(qn).setSt("91").setCn("9011")
+                .setPw(format.getPassword()).setMn(format.getMnCode()).setFlag("0").insertOneFrame().getBytes());
+    }
+
+    private void sendExeRtn(String qn){
+        frameBuilder.cleanContent();
+        frameBuilder.contentExeRtn();
+        command.executeSendTask(frameBuilder.setQn(qn).setSt("91").setCn("9012")
+                .setPw(format.getPassword()).setMn(format.getMnCode()).insertOneFrame().getBytes());
+    }
 
 
     private class HzCpRequestHandle implements RequestHandle{
 
         private void handleParameter (int num,String string){
+            HashMap<String,String> hashMap = new HashMap<>();
+            switch (num){
+                case 1000:
+                    getField(string,hashMap);
+                    if((hashMap.get("OverTime")!=null)&&(hashMap.get("ReCount")!=null)) {
+                        try {
+                            Log.d(tag, "设置超时及重发次数");
+                            int overTime = Integer.valueOf(hashMap.get("OverTime"));
+                            int reCount = Integer.valueOf(hashMap.get("ReCount"));
+                            format.setTimeoutLimit(overTime);
+                            format.setTimeoutRepetition(reCount);
+                        }catch (NumberFormatException e){
+                            Log.d(tag,"数字转换错误");
+                        }//存储
+                        saveUploadConfig();
+                        sendQnRtn(qnReceived);
+                        sendExeRtn(qnReceived);
+                    }
+                    break;
+                case 1001:
+                    getField(string,hashMap);
+                    if(hashMap.get("WarnTime")!=null) {
+                        try {
+                            Log.d(tag, "设置超时及重发次数");
+                            int warnTime = Integer.valueOf(hashMap.get("WarnTime"));
+                            format.setWarnTime(warnTime);
+                        }catch (NumberFormatException e){
+                            Log.d(tag,"数字转换错误");
+                        }//存储
+                        saveUploadConfig();
+                        sendQnRtn(qnReceived);
+                        sendExeRtn(qnReceived);
+                    }
+                    break;
+                case 1011:
+                    getField(string,hashMap);
+                    if(hashMap.get("PolId")!=null){
+                        sendQnRtn(qnReceived);
+                        frameBuilder.cleanContent();
+                        frameBuilder.addContentField("SystemTime",tools.timeStamp2TcpStringWithoutMs(tools.nowtime2timestamp()));
+                        command.executeSendTask(frameBuilder.setQn(qnReceived).setSt("32")
+                                .setCn("1011").setPw(format.getPassword()).setMn(format.getMnCode())
+                                .insertOneFrame().getBytes());
+                        sendExeRtn(qnReceived);
+                    }
+                    break;
+                case 1012:
+                    getField(string,hashMap);
+                    if(hashMap.get("SystemTime")!=null) {
+                        String systemTime = hashMap.get("SystemTime");
+                        int year, month, day, hour, min, second;
+                        year = Integer.valueOf(systemTime.substring(0, 4));
+                        month = Integer.valueOf(systemTime.substring(4, 6));
+                        day = Integer.valueOf(systemTime.substring(6, 8));
+                        hour = Integer.valueOf(systemTime.substring(8, 10));
+                        min = Integer.valueOf(systemTime.substring(10, 12));
+                        second = Integer.valueOf(systemTime.substring(12, 14));
+                        Log.d(tag, String.valueOf(year) + "-" + String.valueOf(month) + "-" + String.valueOf(day) + " " + String.valueOf(hour) + ":" + String.valueOf(min) + ":" + String.valueOf(second));
+                        GetProtocols.getInstance().getInfoProtocol().setSystemDate(year, month, day, hour, min, second);
+                        sendQnRtn(qnReceived);
+                        sendExeRtn(qnReceived);
+                    }
+                    break;
+                case 1021://提取报警门限值
+                    getField(string,hashMap);
+                    if(hashMap.get("PolId")!=null){
+                        String polId = hashMap.get("PolId");
+                        if(polId.equals("a34001")){
+                            sendQnRtn(qnReceived);
+                            frameBuilder.cleanContent();
+                            frameBuilder.addContentValues(polId,"LowValue","0","UpVlaue",
+                                    String.valueOf(GetProtocols.getInstance().getInfoProtocol().getAlarmDust()));
+                            command.executeSendTask(frameBuilder.setQn(qnReceived).setSt("32")
+                                    .setCn("1021").setPw(format.getPassword()).setMn(format.getMnCode())
+                                    .insertOneFrame().getBytes());
+                            sendExeRtn(qnReceived);
+                        }
+                    }
+                    break;
+                case 1022:
+                    hashMap = getCode(string);
+                    if(hashMap.get("a34001-UpValue")!=null){
+                        String upValue = hashMap.get("a34001-UpValue");
+                        try {
+                            float fUpValue = Float.valueOf(upValue);
+                            GetProtocols.getInstance().getInfoProtocol().setAlarmDust(fUpValue);
+                            saveUploadConfig();
+                            sendQnRtn(qnReceived);
+                            sendExeRtn(qnReceived);
+                        }catch(Exception e){
 
+                        }
+                    }
+                    break;
+                case 1031:
+                    sendQnRtn(qnReceived);
+                    frameBuilder.cleanContent();
+                    frameBuilder.addContentField("AlarmTarget",format.getAlarmTarget());
+                    command.executeSendTask(frameBuilder.setQn(qnReceived).setSt("32")
+                            .setCn("1031").setPw(format.getPassword()).setMn(format.getMnCode())
+                            .insertOneFrame().getBytes());
+                    sendExeRtn(qnReceived);
+                    break;
+                case 1032:
+                    getField(string,hashMap);
+                    if(hashMap.get("AlarmTarget")!=null){
+                        format.setAlarmTarget(hashMap.get("AlarmTarget"));
+                        saveUploadConfig();
+                        sendQnRtn(qnReceived);
+                        sendExeRtn(qnReceived);
+                    }
+                    break;
+
+                case 1061:
+                    sendQnRtn(qnReceived);
+                    frameBuilder.cleanContent();
+                    frameBuilder.addContentField("RtdInterval",String.valueOf(format.getRealTimeInterval()));
+                    command.executeSendTask(frameBuilder.setQn(qnReceived).setSt("32")
+                            .setCn("1061").setPw(format.getPassword()).setMn(format.getMnCode())
+                            .insertOneFrame().getBytes());
+                    sendExeRtn(qnReceived);
+                    break;
+                case 1062:
+                    getField(string,hashMap);
+                    if(hashMap.get("RtdInterval")!=null){
+                        try {
+                            int rtdInterval = Integer.valueOf(hashMap.get("RtdInterval"));
+                            format.setRealTimeInterval(rtdInterval);
+                            saveUploadConfig();
+                        }catch (NumberFormatException e){
+                            Log.d(tag,"数字转换错误");
+                        }
+
+                        sendQnRtn(qnReceived);
+                        sendExeRtn(qnReceived);
+                    }
+                    break;
+                case 1072:
+                    getField(string,hashMap);
+                    if(hashMap.get("PW")!=null){
+                        format.setPassword(hashMap.get("PW"));
+                        saveUploadConfig();
+                        sendQnRtn(qnReceived);
+                        sendExeRtn(qnReceived);
+                    }
+                    break;
+                default:
+
+                    break;
+            }
         }
 
         private void handleInteraction (int num,String string){
@@ -101,6 +265,45 @@ public class HJ212_HzProtocolState extends HJT212_2017ProtocolState{
         }
 
         private void handleData (int num,String string){
+            long begin=0,end=0;
+            HashMap<String,String> hashMap = new HashMap<>();
+            switch(num){
+                case 2011:
+                    sendQnRtn(qnReceived);
+                    realTimeDataEnable = true;
+                    break;
+                case 2012:
+                    realTimeDataEnable = false;
+                    sendExeRtn(qnReceived);
+                    break;
+                case 2051:
+                    hashMap = getCode(string);
+                    if((hashMap.get("BeginTime")!=null)&&(hashMap.get("EndTime")!=null)){
+                        //Log.d(tag,"提取分钟数据2");
+                        begin = tools.tcpTimeString2timestamp(hashMap.get("BeginTime"))-60000l;
+                        end = tools.tcpTimeString2timestamp(hashMap.get("EndTime"));
+                        Log.d(tag,tools.timestamp2string(begin)+"->"+tools.timestamp2string(end));
+                        sendQnRtn(qnReceived);
+                        sendMinData(qnReceived,begin,end,false);
+                        sendExeRtn(qnReceived);
+                    }
+                    break;
+                case 2061://提取小时数据
+                    hashMap = getCode(string);
+                    if((hashMap.get("BeginTime")!=null)&&(hashMap.get("EndTime")!=null)) {
+                        begin = tools.tcpTimeString2timestamp(hashMap.get("BeginTime"));
+                        end = tools.tcpTimeString2timestamp(hashMap.get("EndTime"));
+                        sendQnRtn(qnReceived);
+                        sendHourData(qnReceived,begin,end,false);
+                        sendExeRtn(qnReceived);
+                    }
+                    break;
+                default:
+
+                    break;
+
+            }
+
 
         }
 
@@ -126,6 +329,15 @@ public class HJ212_HzProtocolState extends HJT212_2017ProtocolState{
         }
     }
 
+    private void saveUploadConfig(){
+        try {
+            GetProtocols.getInstance().getInfoProtocol().saveUploadingConfig(
+                    format.getConfigString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     protected boolean isCnAvailable(int num) {
         switch (num){
@@ -136,8 +348,8 @@ public class HJ212_HzProtocolState extends HJT212_2017ProtocolState{
             case 1022:
             case 1031:
             case 1032:
-            case 1041:
-            case 1042:
+            //case 1041:
+            //case 1042:
             case 1061:
             case 1062:
             case 1072:

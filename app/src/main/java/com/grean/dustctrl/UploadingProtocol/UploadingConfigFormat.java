@@ -11,8 +11,8 @@ import java.util.HashMap;
  */
 
 public class UploadingConfigFormat implements Cloneable {
-    private String serverAddress,mnCode,password;
-    private int serverPort,timeoutLimit,timeoutRepetition,realTimeInterval;
+    private String serverAddress,mnCode,password,alarmTarget;
+    private int serverPort,timeoutLimit,timeoutRepetition,realTimeInterval,warnTime;
     private double lng,lat;//经纬度
     private HashMap<String,Integer> factorMap = new HashMap<>();//因子，数据库位置
 
@@ -27,6 +27,16 @@ public class UploadingConfigFormat implements Cloneable {
         realTimeInterval = object.getInt("RealTimeInterval");
         lng = object.getDouble("Lng");
         lat = object.getDouble("Lat");
+        if(object.has("WarnTime")){
+            warnTime = object.getInt("WarnTime");
+        }else{
+            warnTime = 5;
+        }
+        if(object.has("AlarmTarget")){
+            alarmTarget = object.getString("AlarmTarget");
+        }else{
+            alarmTarget = "3882566";
+        }
     }
 
     public static String getDefaultConfig() throws JSONException {
@@ -39,6 +49,8 @@ public class UploadingConfigFormat implements Cloneable {
         object.put("RealTimeInterval",3);
         object.put("Lng",0);
         object.put("Lat",0);
+        object.put("WarnTime",5);
+        object.put("AlarmTarget","3882566");
         return object.toString();
     }
 
@@ -53,6 +65,8 @@ public class UploadingConfigFormat implements Cloneable {
         object.put("RealTimeInterval",realTimeInterval);
         object.put("Lng",lng);
         object.put("Lat",lat);
+        object.put("WarnTime",warnTime);
+        object.put("AlarmTarget",alarmTarget);
         return object.toString();
     }
 
@@ -73,8 +87,24 @@ public class UploadingConfigFormat implements Cloneable {
 
     }
 
+    public int getWarnTime() {
+        return warnTime;
+    }
+
+    public void setWarnTime(int warnTime) {
+        this.warnTime = warnTime;
+    }
+
     public String getPassword() {
         return password;
+    }
+
+    public String getAlarmTarget() {
+        return alarmTarget;
+    }
+
+    public void setAlarmTarget(String alarmTarget) {
+        this.alarmTarget = alarmTarget;
     }
 
     public void setPassword(String password) {

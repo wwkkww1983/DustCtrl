@@ -168,4 +168,10 @@ public interface GeneralInfoProtocol {
 
     boolean isCameraEnable();
     void setCameraEnable(boolean enable);
+
+    /**
+     * 固化上传配置
+     * @param configString
+     */
+    void saveUploadingConfig(String configString);
 }
