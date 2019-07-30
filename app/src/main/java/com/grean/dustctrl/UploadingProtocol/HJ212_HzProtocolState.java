@@ -21,7 +21,7 @@ public class HJ212_HzProtocolState extends HJT212_2017ProtocolState{
     private GeneralHistoryDataFormat lastMinDataFormat = new GeneralHistoryDataFormat();
     private static String tag = "HJ212_HzProtocolState";
     private static long oneDayTimestamps = Long.valueOf(60*60*24*1000);
-    private boolean realTimeDataEnable = true;
+    private boolean realTimeDataEnable = false;
     private int flag;
     private Hjt212HzFrameBuilder frameBuilder;
     public HJ212_HzProtocolState(ProtocolCommand command) {
@@ -261,6 +261,16 @@ public class HJ212_HzProtocolState extends HJT212_2017ProtocolState{
         }
 
         private void handleInteraction (int num,String string){
+            switch (num){
+                case 9013:
+
+                    break;
+                case 9014:
+
+                    break;
+                default:
+                    break;
+            }
 
         }
 
@@ -308,6 +318,28 @@ public class HJ212_HzProtocolState extends HJT212_2017ProtocolState{
         }
 
         private void handleControl(int num,String string){
+            switch (num){
+                case 3011:
+                    HashMap<String,String> hashMap = getCode(string);
+                    if(hashMap.get("PolID")!=null){
+                        if(hashMap.get("PolID").equals("a34001")) {
+                            GetProtocols.getInstance().getInfoProtocol().calDustMeter();
+                            sendQnRtn(qnReceived);
+                            sendExeRtn(qnReceived);
+                        }
+                    }
+
+                    break;
+                case 3012:
+                case 3013:
+                case 3014:
+                    sendQnRtn(qnReceived);
+                    sendExeRtn(qnReceived);
+                    break;
+                default:
+
+                    break;
+            }
 
         }
         @Override
@@ -396,7 +428,7 @@ public class HJ212_HzProtocolState extends HJT212_2017ProtocolState{
                     frameBuilder.addContentFactor("a01008","Rtd",
                             tools.float2String0(realTimeData.getWindDirection()),"N");
                 }
-                command.executeSendTask(frameBuilder.setQn(qnSend).setSt("39").setCn("2011").setPw(format.getPassword())
+                command.executeSendTask(frameBuilder.setQn(qnSend).setSt("22").setCn("2011").setPw(format.getPassword())
                         .setMn(format.getMnCode()).insertOneFrame().getBytes());
             }
         }else{
@@ -425,10 +457,11 @@ public class HJ212_HzProtocolState extends HJT212_2017ProtocolState{
                 Integer val = (Integer) entry.getValue();
                 frameBuilder.addContentFactor(key,"Min", tools.float2String3(item.get(val)),
                         "Avg",tools.float2String3(item.get(val)),"Max"
-                        ,tools.float2String3(item.get(val)));
+                        ,tools.float2String3(item.get(val)),"N");
             }
-            command.executeSendTask(frameBuilder.setQn(qn).setSt("39").setCn("2051").setPw(format.getPassword())
+            command.executeSendTask(frameBuilder.setQn(qn).setSt("22").setCn("2051").setPw(format.getPassword())
                     .setMn(format.getMnCode()).insertOneFrame().getBytes());
+            Log.d(tag,"发送分钟数据");
         }
     }
 
@@ -452,9 +485,9 @@ public class HJ212_HzProtocolState extends HJT212_2017ProtocolState{
                 Integer val = (Integer) entry.getValue();
                 frameBuilder.addContentFactor(key,"Min", tools.float2String3(item.get(val)),
                         "Avg",tools.float2String3(item.get(val)),"Max"
-                        ,tools.float2String3(item.get(val)));
+                        ,tools.float2String3(item.get(val)),"N");
             }
-            command.executeSendTask(frameBuilder.setQn(qn).setSt("39").setCn("2061").setPw(format.getPassword())
+            command.executeSendTask(frameBuilder.setQn(qn).setSt("22").setCn("2061").setPw(format.getPassword())
                     .setMn(format.getMnCode()).insertOneFrame().getBytes());
         }
     }
@@ -481,7 +514,7 @@ public class HJ212_HzProtocolState extends HJT212_2017ProtocolState{
                 Integer val = (Integer) entry.getValue();
                 frameBuilder.addContentFactor(key,"Min", tools.float2String3(results.get(val)/size),
                         "Avg",tools.float2String3(results.get(val)/size),"Max"
-                        ,tools.float2String3(results.get(val)/size));
+                        ,tools.float2String3(results.get(val)/size),"N");
             }
 
         }
@@ -505,5 +538,13 @@ public class HJ212_HzProtocolState extends HJT212_2017ProtocolState{
         }
 
 
+    }
+
+    @Override
+    public void uploadSystemTime(long now, long lastMinDate, long lastHourDate) {
+        this.lastUploadHourDate = lastHourDate;
+        this.lastUploadMinDate = lastMinDate;
+        uploadMinDate = lastMinDate;
+        uploadHourDate = lastHourDate;
     }
 }

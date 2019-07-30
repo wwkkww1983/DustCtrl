@@ -682,7 +682,7 @@ public class HJT212_2017ProtocolState implements ProtocolState{
 
     @Override
     public void handleReceiveBuff(byte[] buff, int length) {
-        //Log.d(tag,"size="+String.valueOf(length)+":"+new String(buff,0,length));
+        Log.d(tag,"size="+String.valueOf(length)+":"+new String(buff,0,length));
         int len = getFrameTail(buff,length);
         if(len==length){
 
@@ -776,6 +776,7 @@ public class HJT212_2017ProtocolState implements ProtocolState{
         this.lastUploadMinDate = lastMinDate;
         uploadMinDate = lastMinDate;
         uploadHourDate = lastHourDate;
+
         if(command.isConnected()){
             hasSendPowerMessage = true;
             frameBuilder.cleanContent();
