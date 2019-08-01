@@ -908,6 +908,16 @@ public class HJT212_2017ProtocolState implements ProtocolState{
         this.realTimeData = data;
     }
 
+    @Override
+    public void handleNetError() {
+
+    }
+
+    @Override
+    public void handleNewConnect() {
+
+    }
+
     private void sendQnRtn(String qn){
         frameBuilder.cleanContent();
         frameBuilder.contentQnRtn();

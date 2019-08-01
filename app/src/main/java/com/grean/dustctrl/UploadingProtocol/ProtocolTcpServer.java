@@ -251,6 +251,7 @@ public class ProtocolTcpServer extends Observable implements  ProtocolCommand{
                 setChanged();
                 Log.d(tag,"已连接服务器");
                 notifyObservers(new LogFormat("已连接服务器"));
+                state.handleNewConnect();
                 while (connected){
                     if (socketClient.isConnected()&&(!socketClient.isClosed())){
                         while ((count = receive.read(readBuff))!=-1 && connected){
@@ -266,6 +267,7 @@ public class ProtocolTcpServer extends Observable implements  ProtocolCommand{
             } catch (IOException e) {
                 connected = false;
                 Log.d(tag,"找不到服务器");
+                state.handleNetError();
                 if(notifyProcessDialogInfo!=null){
                     notifyProcessDialogInfo.showInfo("服务器未开启");
                 }

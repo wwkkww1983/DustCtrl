@@ -52,4 +52,14 @@ public interface ProtocolState {
      * @param data
      */
     void setRealTimeData(SensorData data);
+
+    /**
+     * 处理网络异常
+     */
+    void handleNetError();
+
+    /**
+     * 处理新建网络链接
+     */
+    void handleNewConnect();
 }

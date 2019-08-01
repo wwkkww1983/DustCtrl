@@ -87,4 +87,14 @@ public class DefaultProtocolState implements ProtocolState{
     public void setRealTimeData(SensorData data) {
 
     }
+
+    @Override
+    public void handleNetError() {
+
+    }
+
+    @Override
+    public void handleNewConnect() {
+
+    }
 }

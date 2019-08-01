@@ -20,8 +20,8 @@ import java.util.Map;
 public class HJ212_HzProtocolState extends HJT212_2017ProtocolState{
     private GeneralHistoryDataFormat lastMinDataFormat = new GeneralHistoryDataFormat();
     private static String tag = "HJ212_HzProtocolState";
-    private static long oneDayTimestamps = Long.valueOf(60*60*24*1000);
-    private boolean realTimeDataEnable = false;
+    private static long oneDayTimestamps = Long.valueOf(60*60*24*1000),connectErrorTime;
+    private boolean realTimeDataEnable = false,connectError = false;
     private int flag;
     private Hjt212HzFrameBuilder frameBuilder;
     public HJ212_HzProtocolState(ProtocolCommand command) {
@@ -148,7 +148,7 @@ public class HJ212_HzProtocolState extends HJT212_2017ProtocolState{
                         sendQnRtn(qnReceived);
                         frameBuilder.cleanContent();
                         frameBuilder.addContentField("SystemTime",tools.timeStamp2TcpStringWithoutMs(tools.nowtime2timestamp()));
-                        command.executeSendTask(frameBuilder.setQn(qnReceived).setSt("32")
+                        command.executeSendTask(frameBuilder.setQn(qnReceived).setSt("22")
                                 .setCn("1011").setPw(format.getPassword()).setMn(format.getMnCode())
                                 .insertOneFrame().getBytes());
                         sendExeRtn(qnReceived);
@@ -180,7 +180,7 @@ public class HJ212_HzProtocolState extends HJT212_2017ProtocolState{
                             frameBuilder.cleanContent();
                             frameBuilder.addContentValues(polId,"LowValue","0","UpVlaue",
                                     String.valueOf(GetProtocols.getInstance().getInfoProtocol().getAlarmDust()));
-                            command.executeSendTask(frameBuilder.setQn(qnReceived).setSt("32")
+                            command.executeSendTask(frameBuilder.setQn(qnReceived).setSt("22")
                                     .setCn("1021").setPw(format.getPassword()).setMn(format.getMnCode())
                                     .insertOneFrame().getBytes());
                             sendExeRtn(qnReceived);
@@ -206,7 +206,7 @@ public class HJ212_HzProtocolState extends HJT212_2017ProtocolState{
                     sendQnRtn(qnReceived);
                     frameBuilder.cleanContent();
                     frameBuilder.addContentField("AlarmTarget",format.getAlarmTarget());
-                    command.executeSendTask(frameBuilder.setQn(qnReceived).setSt("32")
+                    command.executeSendTask(frameBuilder.setQn(qnReceived).setSt("22")
                             .setCn("1031").setPw(format.getPassword()).setMn(format.getMnCode())
                             .insertOneFrame().getBytes());
                     sendExeRtn(qnReceived);
@@ -225,7 +225,7 @@ public class HJ212_HzProtocolState extends HJT212_2017ProtocolState{
                     sendQnRtn(qnReceived);
                     frameBuilder.cleanContent();
                     frameBuilder.addContentField("RtdInterval",String.valueOf(format.getRealTimeInterval()));
-                    command.executeSendTask(frameBuilder.setQn(qnReceived).setSt("32")
+                    command.executeSendTask(frameBuilder.setQn(qnReceived).setSt("22")
                             .setCn("1061").setPw(format.getPassword()).setMn(format.getMnCode())
                             .insertOneFrame().getBytes());
                     sendExeRtn(qnReceived);
@@ -546,5 +546,25 @@ public class HJ212_HzProtocolState extends HJT212_2017ProtocolState{
         this.lastUploadMinDate = lastMinDate;
         uploadMinDate = lastMinDate;
         uploadHourDate = lastHourDate;
+    }
+
+    @Override
+    public void handleNetError() {
+        Log.d(tag,"断开服务器");
+        connectError = true;
+        connectErrorTime = tools.nowtime2timestamp();
+    }
+
+    @Override
+    public void handleNewConnect() {
+        Log.d(tag,"新建链接");
+        if(connectError){
+            connectError = false;
+            long now = tools.nowtime2timestamp();
+            qnSend = tools.timeStamp2TcpString(now);
+            sendMinData(qnSend,connectErrorTime - 60000l,now,false);
+            Log.d(tag,"补发分钟数据"+tools.timeStamp2TcpString(connectErrorTime-60000l)
+                    +"-"+tools.timestamp2string(now));
+        }
     }
 }
