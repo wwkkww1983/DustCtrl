@@ -104,6 +104,18 @@ public class HJ212_HzProtocolState extends HJT212_2017ProtocolState{
                 .setPw(format.getPassword()).setMn(format.getMnCode()).insertOneFrame().getBytes());
     }
 
+    private void sendResponseInform(String qn){
+        frameBuilder.cleanContent();
+        command.executeSendTask(frameBuilder.setQn(qn).setSt("91").setCn("9013")
+                .setPw(format.getPassword()).setMn(format.getMnCode()).insertOneFrame().getBytes());
+    }
+
+    private void sendResponseData(String qn){
+        frameBuilder.cleanContent();
+        command.executeSendTask(frameBuilder.setQn(qn).setSt("91").setCn("9014")
+                .setPw(format.getPassword()).setMn(format.getMnCode()).insertOneFrame().getBytes());
+    }
+
 
     private class HzCpRequestHandle implements RequestHandle{
 
@@ -284,7 +296,17 @@ public class HJ212_HzProtocolState extends HJT212_2017ProtocolState{
                     break;
                 case 2012:
                     realTimeDataEnable = false;
-                    sendExeRtn(qnReceived);
+                    sendResponseInform(qnReceived);
+                    break;
+                case 2031://提取日数据;
+                    hashMap = getCode(string);
+                    if((hashMap.get("BeginTime")!=null)&&(hashMap.get("EndTime")!=null)) {
+                        begin = tools.tcpTimeString2timestamp(hashMap.get("BeginTime"));
+                        end = tools.tcpTimeString2timestamp(hashMap.get("EndTime"));
+                        sendQnRtn(qnReceived);
+                        sendDayData(qnReceived,begin,end,false);
+                        sendExeRtn(qnReceived);
+                    }
                     break;
                 case 2051:
                     hashMap = getCode(string);
@@ -455,9 +477,9 @@ public class HJ212_HzProtocolState extends HJT212_2017ProtocolState{
                 Map.Entry entry = (Map.Entry) it.next();
                 String key = (String) entry.getKey();
                 Integer val = (Integer) entry.getValue();
-                frameBuilder.addContentFactor(key,"Min", tools.float2String3(item.get(val)),
-                        "Avg",tools.float2String3(item.get(val)),"Max"
-                        ,tools.float2String3(item.get(val)),"N");
+                String valueString = tools.float2String3(item.get(val));
+                frameBuilder.addContentFactor(key,"Min", valueString,
+                        "Avg",valueString,"Max",valueString,"N");
             }
             command.executeSendTask(frameBuilder.setQn(qn).setSt("22").setCn("2051").setPw(format.getPassword())
                     .setMn(format.getMnCode()).insertOneFrame().getBytes());
@@ -483,9 +505,9 @@ public class HJ212_HzProtocolState extends HJT212_2017ProtocolState{
                 Map.Entry entry = (Map.Entry) it.next();
                 String key = (String) entry.getKey();
                 Integer val = (Integer) entry.getValue();
-                frameBuilder.addContentFactor(key,"Min", tools.float2String3(item.get(val)),
-                        "Avg",tools.float2String3(item.get(val)),"Max"
-                        ,tools.float2String3(item.get(val)),"N");
+                String valueString = tools.float2String3(item.get(val));
+                frameBuilder.addContentFactor(key,"Min", valueString,
+                        "Avg",valueString,"Max",valueString,"N");
             }
             command.executeSendTask(frameBuilder.setQn(qn).setSt("22").setCn("2061").setPw(format.getPassword())
                     .setMn(format.getMnCode()).insertOneFrame().getBytes());
@@ -494,29 +516,59 @@ public class HJ212_HzProtocolState extends HJT212_2017ProtocolState{
 
     private void sendDayData(String qn,long begin,long end,boolean response){
         GeneralHistoryDataFormat dataFormat = GetProtocols.getInstance().getDataBaseProtocol().getHourData(begin, end);
-        frameBuilder.cleanContent();
         int size  = dataFormat.getSize();
-        if(size>0){//有数据,则发送日数据
-            frameBuilder.cleanContent();
-            ArrayList<Float> results = dataFormat.getItem(0);
-            ArrayList<Float> item;
-            for(int i=1;i<size;i++){
-                 item = dataFormat.getItem(i);
-                for(int j=0;j<item.size();j++){
-                    float result= results.get(j)+item.get(j);
-                    results.add(j,result);
+        int dataSize = 1;
+        ArrayList<Float> item;
+        ArrayList<Float> results;
+        if(size>0){
+            item = dataFormat.getItem(0);
+            results = new ArrayList<>(item.size());
+        }else{
+            results = new ArrayList<>(GeneralHistoryDataFormat.MAX);
+        }
+        for(int i=0;i<size;i++){
+            long dayDate = dataFormat.getDate(i);
+            item = dataFormat.getItem(i);
+            for(int j=0;j<item.size();j++){
+                float result= results.get(j)+item.get(j);
+                results.add(j,result);
+            }
+            dataSize++;
+            if(isZeroClock(dayDate)){//发送日数据
+                frameBuilder.cleanContent();
+                frameBuilder.addContentField("DataTime", tools.timeStamp2TcpStringWithoutMs(dayDate));
+                Iterator it = format.getFactorMap().entrySet().iterator();
+                while (it.hasNext()) {
+                    Map.Entry entry = (Map.Entry) it.next();
+                    String key = (String) entry.getKey();
+                    Integer val = (Integer) entry.getValue();
+                    String valueString = tools.float2String3(results.get(val)/dataSize);
+                    frameBuilder.addContentFactor(key,"Min",valueString,"Avg",valueString,"Max"
+                            ,valueString,"N");
                 }
-            }
-            Iterator it = format.getFactorMap().entrySet().iterator();
-            while (it.hasNext()) {
-                Map.Entry entry = (Map.Entry) it.next();
-                String key = (String) entry.getKey();
-                Integer val = (Integer) entry.getValue();
-                frameBuilder.addContentFactor(key,"Min", tools.float2String3(results.get(val)/size),
-                        "Avg",tools.float2String3(results.get(val)/size),"Max"
-                        ,tools.float2String3(results.get(val)/size),"N");
-            }
+                command.executeSendTask(frameBuilder.setQn(qn).setSt("22").setCn("2031")
+                        .setPw(format.getPassword()).setMn(format.getMnCode())
+                        .insertOneFrame().getBytes());
+                Log.d(tag,"发送日数据");
+                results = new ArrayList<>(item.size());//清零
+                dataSize = 1;
+            }else{
 
+            }
+        }
+
+    }
+
+    /**
+     * 判断是否为0点
+     * @param date
+     * @return
+     */
+    private boolean isZeroClock(long date){
+        if((date%oneDayTimestamps)==57600000l){
+            return true;
+        }else {
+            return false;
         }
     }
 
@@ -529,7 +581,7 @@ public class HJ212_HzProtocolState extends HJT212_2017ProtocolState{
                 hasSendHourData = true;
                 qnSend = tools.timeStamp2TcpString(now);
                 sendHourData(qnSend,lastUploadHourDate,date,true);
-                if((date%oneDayTimestamps)==0){//0点时刻，上传日数据
+                if(isZeroClock(date)){//0点时刻，上传日数据
                     sendDayData(qnSend,date-oneDayTimestamps,date,true);
 
                 }
@@ -564,7 +616,7 @@ public class HJ212_HzProtocolState extends HJT212_2017ProtocolState{
             qnSend = tools.timeStamp2TcpString(now);
             sendMinData(qnSend,connectErrorTime - 60000l,now,false);
             Log.d(tag,"补发分钟数据"+tools.timeStamp2TcpString(connectErrorTime-60000l)
-                    +"-"+tools.timestamp2string(now));
+                    +"-"+tools.timeStamp2TcpString(now));
         }
     }
 }
