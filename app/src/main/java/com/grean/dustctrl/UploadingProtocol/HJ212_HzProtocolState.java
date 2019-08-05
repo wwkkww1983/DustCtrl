@@ -2,6 +2,7 @@ package com.grean.dustctrl.UploadingProtocol;
 
 import android.util.Log;
 
+import com.grean.dustctrl.process.ScanSensor;
 import com.grean.dustctrl.protocol.GeneralHistoryDataFormat;
 import com.grean.dustctrl.protocol.GetProtocols;
 import com.tools;
@@ -278,7 +279,7 @@ public class HJ212_HzProtocolState extends HJT212_2017ProtocolState{
 
                     break;
                 case 9014:
-
+                    sendExeRtn(qnReceived);
                     break;
                 default:
                     break;
@@ -412,7 +413,7 @@ public class HJ212_HzProtocolState extends HJT212_2017ProtocolState{
             case 2021:
             case 2022:
             case 2031:
-            case 2041:
+            //case 2041:
             case 2051:
             case 2061:
             case 2071:
@@ -427,6 +428,30 @@ public class HJ212_HzProtocolState extends HJT212_2017ProtocolState{
                 return false;
         }
     }
+
+    private void sendAlarmInfo(String qn,long begin,long end){
+        GeneralHistoryDataFormat dataFormat = GetProtocols.getInstance().getDataBaseProtocol().getData(begin, end);
+        float alarmValue = ScanSensor.getInstance().getAlarmDust();
+        long alarmDate;
+        float minData;
+        boolean hasAlarmed = false;
+        for(int i=0;i<dataFormat.getSize();i++){
+            minData = dataFormat.getItem(i).get(GeneralHistoryDataFormat.Dust);
+            if(!hasAlarmed){
+                if(minData > alarmValue){//产生报警信息
+                    hasAlarmed = true;
+                }
+            }else{
+                if(minData <= alarmValue){
+                    hasAlarmed = false;//清除报警
+                }
+            }
+
+
+        }
+    }
+
+
 
     @Override
     public void uploadSecondDate(long now) {
@@ -520,20 +545,23 @@ public class HJ212_HzProtocolState extends HJT212_2017ProtocolState{
         int dataSize = 1;
         ArrayList<Float> item;
         ArrayList<Float> results;
-        if(size>0){
-            item = dataFormat.getItem(0);
-            results = new ArrayList<>(item.size());
-        }else{
-            results = new ArrayList<>(GeneralHistoryDataFormat.MAX);
+
+        results = new ArrayList<>();
+        for (int i=0;i<GeneralHistoryDataFormat.MAX;i++){
+            results.add(0f);
         }
+        //Log.d(tag,"day data size="+String.valueOf(size));
         for(int i=0;i<size;i++){
+            //Log.d(tag,"day data size="+String.valueOf(size)+";index="+String.valueOf(i));
             long dayDate = dataFormat.getDate(i);
             item = dataFormat.getItem(i);
+            //Log.d(tag,"计算结果 item size"+String.valueOf(item.size())+"-"+String.valueOf(results.size()));
             for(int j=0;j<item.size();j++){
                 float result= results.get(j)+item.get(j);
-                results.add(j,result);
+                results.set(j,result);
             }
             dataSize++;
+            //Log.d(tag,"day data size="+String.valueOf(size)+";index="+String.valueOf(i));
             if(isZeroClock(dayDate)){//发送日数据
                 frameBuilder.cleanContent();
                 frameBuilder.addContentField("DataTime", tools.timeStamp2TcpStringWithoutMs(dayDate));
@@ -549,8 +577,11 @@ public class HJ212_HzProtocolState extends HJT212_2017ProtocolState{
                 command.executeSendTask(frameBuilder.setQn(qn).setSt("22").setCn("2031")
                         .setPw(format.getPassword()).setMn(format.getMnCode())
                         .insertOneFrame().getBytes());
-                Log.d(tag,"发送日数据");
-                results = new ArrayList<>(item.size());//清零
+                Log.d(tag,"发送日数据 size of "+String.valueOf(dataSize));
+
+                for (int k=0;k<GeneralHistoryDataFormat.MAX;k++){
+                    results.set(k,0f);
+                }
                 dataSize = 1;
             }else{
 
@@ -566,6 +597,7 @@ public class HJ212_HzProtocolState extends HJT212_2017ProtocolState{
      */
     private boolean isZeroClock(long date){
         if((date%oneDayTimestamps)==57600000l){
+        //if((date%oneDayTimestamps)==0l){
             return true;
         }else {
             return false;
@@ -582,14 +614,13 @@ public class HJ212_HzProtocolState extends HJT212_2017ProtocolState{
                 qnSend = tools.timeStamp2TcpString(now);
                 sendHourData(qnSend,lastUploadHourDate,date,true);
                 if(isZeroClock(date)){//0点时刻，上传日数据
+                    //Log.d(tag,"查询发送日数据");
                     sendDayData(qnSend,date-oneDayTimestamps,date,true);
 
                 }
                 lastUploadHourDate = uploadHourDate;//测试用
             }
         }
-
-
     }
 
     @Override
