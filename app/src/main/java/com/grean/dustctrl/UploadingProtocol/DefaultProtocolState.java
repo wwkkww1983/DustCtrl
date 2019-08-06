@@ -97,4 +97,9 @@ public class DefaultProtocolState implements ProtocolState{
     public void handleNewConnect() {
 
     }
+
+    @Override
+    public void setAlarmValue(float value) {
+
+    }
 }

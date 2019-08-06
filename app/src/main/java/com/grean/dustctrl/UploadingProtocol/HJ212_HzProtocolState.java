@@ -23,7 +23,9 @@ public class HJ212_HzProtocolState extends HJT212_2017ProtocolState{
     private static String tag = "HJ212_HzProtocolState";
     private static long oneDayTimestamps = Long.valueOf(60*60*24*1000),connectErrorTime;
     private boolean realTimeDataEnable = false,connectError = false;
+    private boolean alarmFlag = false;
     private int flag;
+
     private Hjt212HzFrameBuilder frameBuilder;
     public HJ212_HzProtocolState(ProtocolCommand command) {
         super(command);
@@ -206,6 +208,7 @@ public class HJ212_HzProtocolState extends HJT212_2017ProtocolState{
                         String upValue = hashMap.get("a34001-UpValue");
                         try {
                             float fUpValue = Float.valueOf(upValue);
+                            alarmUpValue = fUpValue;
                             GetProtocols.getInstance().getInfoProtocol().setAlarmDust(fUpValue);
                             saveUploadConfig();
                             sendQnRtn(qnReceived);
@@ -331,6 +334,16 @@ public class HJ212_HzProtocolState extends HJT212_2017ProtocolState{
                         sendExeRtn(qnReceived);
                     }
                     break;
+                case 2071://提取报警记录
+                    hashMap = getCode(string);
+                    if((hashMap.get("BeginTime")!=null)&&(hashMap.get("EndTime")!=null)) {
+                        begin = tools.tcpTimeString2timestamp(hashMap.get("BeginTime"));
+                        end = tools.tcpTimeString2timestamp(hashMap.get("EndTime"));
+                        sendQnRtn(qnReceived);
+                        sendAlarmInfo(qnReceived,begin,end);
+                        sendExeRtn(qnReceived);
+                    }
+                    break;
                 default:
 
                     break;
@@ -429,20 +442,55 @@ public class HJ212_HzProtocolState extends HJT212_2017ProtocolState{
         }
     }
 
+    private void sendAlarmFrame(String qn,long date,float value){
+        if(alarmFlag){//已报警
+            if(value < alarmUpValue) {//解除警报
+                alarmFlag = false;
+                frameBuilder.cleanContent();
+                frameBuilder.addContentField("AlarmTime",
+                        tools.timeStamp2TcpStringWithoutMs(date));
+                frameBuilder.addContentValues("a34001","Ala",tools.float2String3(value),
+                        "AlarmType","0");
+                command.executeSendTask(frameBuilder.setQn(qn).setSt("22").setCn("2072")
+                        .setPw(format.getPassword()).setMn(format.getMnCode()).insertOneFrame().getBytes());
+                Log.d(tag,"解除报警");
+            }
+        }else{
+            if(value > alarmUpValue) {//发出报警
+                alarmFlag = true;
+                frameBuilder.cleanContent();
+                frameBuilder.addContentField("AlarmTime",
+                        tools.timeStamp2TcpStringWithoutMs(date));
+                frameBuilder.addContentValues("a34001","Ala",tools.float2String3(value),
+                        "AlarmType","1");
+                command.executeSendTask(frameBuilder.setQn(qn).setSt("22").setCn("2072")
+                        .setPw(format.getPassword()).setMn(format.getMnCode()).insertOneFrame().getBytes());
+                Log.d(tag,"发出报警");
+            }
+        }
+
+    }
+
     private void sendAlarmInfo(String qn,long begin,long end){
         GeneralHistoryDataFormat dataFormat = GetProtocols.getInstance().getDataBaseProtocol().getData(begin, end);
-        float alarmValue = ScanSensor.getInstance().getAlarmDust();
         long alarmDate;
         float minData;
         boolean hasAlarmed = false;
         for(int i=0;i<dataFormat.getSize();i++){
             minData = dataFormat.getItem(i).get(GeneralHistoryDataFormat.Dust);
             if(!hasAlarmed){
-                if(minData > alarmValue){//产生报警信息
+                if(minData > alarmUpValue){//产生报警信息
                     hasAlarmed = true;
+                    alarmDate = dataFormat.getDate(i);
+                    frameBuilder.cleanContent();
+                    frameBuilder.addContentField("DataTime",
+                            tools.timeStamp2TcpStringWithoutMs(alarmDate));
+                    frameBuilder.addContentField("a34001-Ala",tools.float2String3(minData));
+                    command.executeSendTask(frameBuilder.setQn(qn).setSt("22").setCn("2071").setPw(format.getPassword())
+                            .setMn(format.getMnCode()).insertOneFrame().getBytes());
                 }
             }else{
-                if(minData <= alarmValue){
+                if(minData <= alarmUpValue){
                     hasAlarmed = false;//清除报警
                 }
             }
@@ -477,7 +525,16 @@ public class HJ212_HzProtocolState extends HJT212_2017ProtocolState{
                 }
                 command.executeSendTask(frameBuilder.setQn(qnSend).setSt("22").setCn("2011").setPw(format.getPassword())
                         .setMn(format.getMnCode()).insertOneFrame().getBytes());
+            }else{
+                //Log.d(tag,"realTimeData is " + String.valueOf(realTimeData!=null));
+                if(realTimeData!=null) {
+                    //Log.d(tag,String.valueOf(realTimeData.getDust())+"-"+String.valueOf(alarmUpValue));
+                    qnSend = tools.timeStamp2TcpString(now);
+                    sendAlarmFrame(qnSend,now,realTimeData.getDust());
+
+                }
             }
+
         }else{
             noResponseTimes++;
         }

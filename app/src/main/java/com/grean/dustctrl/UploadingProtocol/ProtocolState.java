@@ -62,4 +62,6 @@ public interface ProtocolState {
      * 处理新建网络链接
      */
     void handleNewConnect();
+
+    void setAlarmValue(float value);
 }

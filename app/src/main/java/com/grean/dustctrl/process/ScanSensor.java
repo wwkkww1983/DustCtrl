@@ -762,7 +762,9 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
             if(!minUploadRun){
                 new MinUploadThread(GetProtocols.getInstance().getProtocolState()).start();
             }
-
+            if(protocolState!=null){
+                protocolState.setAlarmValue(alarmDust);
+            }
             while (run){
                 com.SendFrame(CtrlCommunication.Inquire);
                 com.SendFrame(CtrlCommunication.WindForce);

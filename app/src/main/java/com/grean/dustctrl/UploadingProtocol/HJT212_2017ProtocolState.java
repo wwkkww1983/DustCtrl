@@ -33,6 +33,7 @@ public class HJT212_2017ProtocolState implements ProtocolState{
             hasSendHourData,hasSendHeartPackage;
     protected long lastUploadMinDate,uploadMinDate,lastUploadHourDate,uploadHourDate;
     protected RequestHandle rhStart;
+    protected  float alarmUpValue = 1f;
     protected interface RequestHandle{
         void handleRequest(HashMap<String,String>map);
     }
@@ -916,6 +917,11 @@ public class HJT212_2017ProtocolState implements ProtocolState{
     @Override
     public void handleNewConnect() {
 
+    }
+
+    @Override
+    public void setAlarmValue(float value) {
+        alarmUpValue = value;
     }
 
     private void sendQnRtn(String qn){
