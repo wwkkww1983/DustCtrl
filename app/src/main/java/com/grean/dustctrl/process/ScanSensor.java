@@ -824,6 +824,7 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
                 }*/
 
                 if(notifyScanSensor!=null){
+                    notifyScanSensor.setServerOnline(infoProtocol.isServerConnected());
                     notifyScanSensor.onResult(data);
                     notifyScanSensor.setAlarmDust(alarm);
                 }

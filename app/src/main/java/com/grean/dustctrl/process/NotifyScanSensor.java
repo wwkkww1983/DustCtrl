@@ -8,4 +8,5 @@ package com.grean.dustctrl.process;
 public interface NotifyScanSensor {
     void onResult(SensorData data);
     void setAlarmDust(boolean alarm);
+    void setServerOnline(boolean connected);
 }

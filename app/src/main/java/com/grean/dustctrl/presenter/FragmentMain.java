@@ -36,11 +36,11 @@ public class FragmentMain extends Fragment implements NotifyScanSensor{
     private TextView tvWindForce;
     private TextView tvWindDirection;
     private TextView tvNoise,tvNextCal,tvValue;
-    private TextView tvHiTemperature,tvLoTemperature,tvHiHumidity,tvLoHumidity,tvPwm,tvBatteryOk,tvPowerIn,tvAlarm,
-    tvHiDewPoint,tvLoDewPoint;
+    private TextView tvHiTemperature,tvLoTemperature,tvHiHumidity,tvLoHumidity,
+            tvPwm,tvBatteryOk,tvPowerIn,tvAlarm,tvOnline,tvHiDewPoint,tvLoDewPoint;
     private SensorData data;
     private OperateInit operateInit;
-    private boolean alarm = false;
+    private boolean alarm = false,online = false;
 
     private String nextCalString,dustName;
     private static final int msgUpdateSensor = 1,
@@ -103,6 +103,11 @@ public class FragmentMain extends Fragment implements NotifyScanSensor{
                     tvPowerIn.setText(string);
                     string = "散光板:限位:"+String.valueOf(data.isCalPos())+"测量:"+String.valueOf(data.isMeasurePos());
                     tvBatteryOk.setText(string);
+                    if(online){
+                        tvOnline.setText("已连接服务器");
+                    }else{
+                        tvOnline.setText("未连接服务器");
+                    }
                     break;
                 case msgUpdateNextCal:
                     tvNextCal.setText("自动校准:"+nextCalString);
@@ -176,7 +181,7 @@ public class FragmentMain extends Fragment implements NotifyScanSensor{
         tvAlarm = v.findViewById(R.id.tvMainAlarm);
         tvHiDewPoint = v.findViewById(R.id.tvMainHiDewPoint);
         tvLoDewPoint = v.findViewById(R.id.tvMainLoDewPoint);
-
+        tvOnline = v.findViewById(R.id.tvMainOnline);
         //tvAlarm.setText("new app");
     }
 
@@ -198,5 +203,10 @@ public class FragmentMain extends Fragment implements NotifyScanSensor{
             this.alarm = alarm;
             handler.sendEmptyMessage(msgUpdateAlarm);
         }
+    }
+
+    @Override
+    public void setServerOnline(boolean connected) {
+        this.online = connected;
     }
 }
