@@ -22,7 +22,7 @@ public class Hjt212HzFrameBuilder extends Hjt212FrameBuilder{
         crcFormatBuff[1] = crcBuff[3];
         String crcString = tools.bytesToHexString(crcFormatBuff,crcFormatBuff.length);
         String lenString = String.format("%04d",bodyBuff.length);
-        Log.d(tag,"##"+lenString+body+crcString+"\r\n");
+        //Log.d(tag,"##"+lenString+body+crcString+"\r\n");
         return "##"+lenString+body+crcString+"\r\n";
 
     }

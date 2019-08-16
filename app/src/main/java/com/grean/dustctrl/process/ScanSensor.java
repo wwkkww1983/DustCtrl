@@ -783,9 +783,11 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
                 data.setNoise(noiseCom.getNoiseData());
                 if(data.getDust()>=alarmDust){
                     alarm = true;
+                    com.ctrlDo(3,true);
                     //clientProtocol.setRealTimeAlarm(GeneralClientProtocol.ALARM_ADD);
                 }else{
                     alarm = false;
+                    com.ctrlDo(3,false);
                     //clientProtocol.setRealTimeAlarm(GeneralClientProtocol.AlARM_N);
                 }
                 infoProtocol.notifySenorData(data);
