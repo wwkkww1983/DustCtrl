@@ -525,8 +525,13 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
             com.SendFrame(CtrlCommunication.Inquire);
             notifyObservers(new LogFormat("校准结束"));
             setChanged();
-            infoProtocol.setDustCalMeterProcess(200);
+            infoProtocol.setDustCalMeterProcess(100);
             infoProtocol.notifySystemState("校准结束");
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             SensorData data = com.getData();
             notifyObservers(new LogFormat("散光板:限位"+String.valueOf(data.isCalPos())
                     +";测量位置"+String.valueOf(data.isMeasurePos())));
@@ -536,15 +541,15 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
                 SystemConfig config = SystemConfig.getInstance(context);
                 int step = config.getConfigInt("MotorRounds");
                 int time = config.getConfigInt("MotorTime");
-                for (int i = 0; i < 3; i++) {
+                for (int i = 0; i < 5; i++) {
                     notifyObservers(new LogFormat("散光板位置未回至测量位置，启动第"
                             +String.valueOf(i+1)+"次回拨"));
                     setChanged();
-                    com.setMotorTime(500);
-                    com.setMotorRounds(100);
+                    com.setMotorTime(200);
+                    com.setMotorRounds(20);
                     com.setMotorSetting(CtrlCommunication.MotorBackward);
                     try {
-                        Thread.sleep(1200);
+                        Thread.sleep(3000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
