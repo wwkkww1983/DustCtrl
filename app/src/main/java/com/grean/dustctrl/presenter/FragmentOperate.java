@@ -364,9 +364,11 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
                 dialogFragment.setCancelable(true);
                 dialogFragment.show(getFragmentManager(),"TcpSocket");
                 operateTcp.setTcpSocketClient(getActivity(),etServerIp.getText().toString(),Integer.valueOf(etServerPort.getText().toString()),etMnCode.getText().toString(),dialogFragment,clientProtocolName);
+                Toast.makeText(getActivity(),"设置成功，重启生效",Toast.LENGTH_LONG).show();
                 break;
             case R.id.btnOperateSaveBackupServer:
                 operateTcp.setBackupTcpSocketClient(getActivity(),etBackupServerAddress.getText().toString(),Integer.valueOf(etBackupServerPort.getText().toString()),etBackupMnCode.getText().toString());
+                Toast.makeText(getActivity(),"设置成功，重启生效",Toast.LENGTH_LONG).show();
                 break;
             case R.id.btnOperateUpdateSoftware:
                 //SophixManager.getInstance().queryAndLoadNewPatch();
