@@ -38,11 +38,12 @@ public class SystemConfig implements ReadWriteConfig{
             editor.putInt("MainBoardName",1);
             editor.putInt("DustMeterName",0);
             editor.putFloat("DustParaK",1f);
-            editor.putInt("MotorRounds",1400);
+            editor.putInt("MotorRounds",1600);
             editor.putInt("MotorTime",2000);
             editor.putLong("AutoCalTime",1483200000000l);
             editor.putLong("AutoCalInterval",86400000l);
             editor.putBoolean("AutoCalibrationEnable",true);
+            editor.putInt("ClientProtocol",2);
 
             try {
                 editor.putString("UploadConfig", UploadingConfigFormat.getDefaultConfig());

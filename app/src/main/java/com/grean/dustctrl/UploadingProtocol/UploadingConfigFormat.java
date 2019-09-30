@@ -11,8 +11,8 @@ import java.util.HashMap;
  */
 
 public class UploadingConfigFormat implements Cloneable {
-    private String serverAddress,mnCode,password,alarmTarget;
-    private int serverPort,timeoutLimit,timeoutRepetition,realTimeInterval,warnTime;
+    private String serverAddress,mnCode,password,alarmTarget,backupServerAddress,backupMnCode;
+    private int serverPort,timeoutLimit,timeoutRepetition,realTimeInterval,warnTime,backupServerPort;
     private double lng,lat;//经纬度
     private HashMap<String,Integer> factorMap = new HashMap<>();//因子，数据库位置
 
@@ -21,6 +21,9 @@ public class UploadingConfigFormat implements Cloneable {
         serverAddress = object.getString("ServerAddress");
         mnCode = object.getString("MnCode");
         password = object.getString("Password");
+        backupServerAddress = object.getString("BackupServerAddress");
+        backupMnCode = object.getString("BackupServerMnCode");
+        backupServerPort = object.getInt("BackupServerPort");
         serverPort = object.getInt("ServerPort");
         timeoutLimit = object.getInt("TimeoutLimit");
         timeoutRepetition = object.getInt("TimeoutRepetition");
@@ -41,16 +44,19 @@ public class UploadingConfigFormat implements Cloneable {
 
     public static String getDefaultConfig() throws JSONException {
         JSONObject object = new JSONObject();
-        object.put("ServerAddress","117.149.30.221");
-        object.put("MnCode","3301000005");
+        object.put("ServerAddress","39.107.94.109");
+        object.put("MnCode","LJHJ0HZ0010005");
         object.put("Password","123456");
-        object.put("ServerPort",203);
+        object.put("ServerPort",9998);
         object.put("TimeoutLimit",5);
         object.put("RealTimeInterval",3);
         object.put("Lng",0);
         object.put("Lat",0);
         object.put("WarnTime",5);
         object.put("AlarmTarget","3882566");
+        object.put("BackupServerAddress","117.149.30.221");
+        object.put("BackupServerMnCode","3301000001");
+        object.put("BackupServerPort",210);
         return object.toString();
     }
 
@@ -67,6 +73,9 @@ public class UploadingConfigFormat implements Cloneable {
         object.put("Lat",lat);
         object.put("WarnTime",warnTime);
         object.put("AlarmTarget",alarmTarget);
+        object.put("BackupServerAddress",backupServerAddress);
+        object.put("BackupServerMnCode",backupMnCode);
+        object.put("BackupServerPort",backupServerPort);
         return object.toString();
     }
 
@@ -175,7 +184,43 @@ public class UploadingConfigFormat implements Cloneable {
         this.lat = lat;
     }
 
-    public Object clone() throws CloneNotSupportedException{
-        return super.clone();
+    /**
+     * 深拷贝
+     * @return
+     */
+    @Override
+    protected Object clone()  {
+        UploadingConfigFormat format = null;
+        try {
+            format = (UploadingConfigFormat) super.clone();
+        }catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+        return format;
+
+    }
+
+    public String getBackupServerAddress() {
+        return backupServerAddress;
+    }
+
+    public void setBackupServerAddress(String backupServerAddress) {
+        this.backupServerAddress = backupServerAddress;
+    }
+
+    public String getBackupMnCode() {
+        return backupMnCode;
+    }
+
+    public void setBackupMnCode(String backupMnCode) {
+        this.backupMnCode = backupMnCode;
+    }
+
+    public int getBackupServerPort() {
+        return backupServerPort;
+    }
+
+    public void setBackupServerPort(int backupServerPort) {
+        this.backupServerPort = backupServerPort;
     }
 }

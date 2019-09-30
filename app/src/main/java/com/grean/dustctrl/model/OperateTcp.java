@@ -43,6 +43,33 @@ public class OperateTcp {
         ProtocolTcpServer.getInstance().reconnectServer(context,info,notifyProcessDialogInfo);
     }
 
+    public void setBackupTcpSocketClient(Context context,String ip,int port,String mnCode){
+        UploadingConfigFormat format = ProtocolTcpServer.getInstance().getFormat();
+        format.setBackupMnCode(mnCode);
+        format.setBackupServerAddress(ip);
+        format.setBackupServerPort(port);
+        try {
+            SystemConfig.getInstance(context).saveConfig("UploadConfig",format.getConfigString());//固化
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public String getBackTcpMnCode(){
+        return ProtocolTcpServer.getInstance().getFormat().getBackupMnCode();
+
+    }
+
+    public String getBackupServerAddress(){
+        return ProtocolTcpServer.getInstance().getFormat().getBackupServerAddress();
+    }
+
+    public String getBackupServerPort(){
+        return String.valueOf(ProtocolTcpServer.getInstance().getFormat().getBackupServerPort());
+    }
+
+
+
     public String getTcpMnCode(){
 
         return ProtocolTcpServer.getInstance().getFormat().getMnCode();

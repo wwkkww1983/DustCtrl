@@ -52,9 +52,9 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
     private EditText etMotorRounds,etMotorTime,etAutoCalInterval,etServerIp,
             etServerPort,etUpdateSoftwareUrl,etTargetValue,etMnCode,etAlarm,etSetParaK,
             etSetParaB,etLng,etLat,etCameraDirectionOffset,etTempSlope,etTempIntercept,
-            etHumiSlope,etHumiIntercept;
+            etHumiSlope,etHumiIntercept,etBackupServerAddress,etBackupServerPort,etBackupMnCode;
     private Switch swDustMeterRun,swValve,swFan,swExt1,swExt2,swBackup,
-            swAutoCalibrationEnable,swCameraDirectionEnable,swLedDisplayEnable;
+            swAutoCalibrationEnable,swCameraDirectionEnable,swLedDisplayEnable,swBackupServer;
     private Spinner spProtocol,spDustName,spDustMeter,spMainBoard;
     private int clientProtocolName,mainBoardName;
 
@@ -169,6 +169,11 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
         etTempSlope.setText(system.getParaTempSlope());
 
         swLedDisplayEnable.setChecked(system.isLedDisplayEnable());
+
+        etBackupServerPort.setText(operateTcp.getBackupServerPort());
+        etBackupServerAddress.setText(operateTcp.getBackupServerAddress());
+        etBackupMnCode.setText(operateTcp.getBackTcpMnCode());
+        swBackupServer.setChecked(system.isBackupServerEnable());
     }
 
     private void initView(View v){
@@ -254,6 +259,14 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
 
         swLedDisplayEnable = v.findViewById(R.id.swLedDisplayEnable);
         swLedDisplayEnable.setOnClickListener(this);
+
+
+        etBackupMnCode = v.findViewById(R.id.etOperateBackupMnCode);
+        etBackupServerAddress = v.findViewById(R.id.etOperateBackupServerIp);
+        etBackupServerPort = v.findViewById(R.id.etOperateBackupServerPort);
+        v.findViewById(R.id.btnOperateSaveBackupServer).setOnClickListener(this);
+        swBackupServer = v.findViewById(R.id.swBackupServerEnable);
+        swBackupServer.setOnClickListener(this);
     }
 
 
@@ -352,6 +365,9 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
                 dialogFragment.show(getFragmentManager(),"TcpSocket");
                 operateTcp.setTcpSocketClient(getActivity(),etServerIp.getText().toString(),Integer.valueOf(etServerPort.getText().toString()),etMnCode.getText().toString(),dialogFragment,clientProtocolName);
                 break;
+            case R.id.btnOperateSaveBackupServer:
+                operateTcp.setBackupTcpSocketClient(getActivity(),etBackupServerAddress.getText().toString(),Integer.valueOf(etBackupServerPort.getText().toString()),etBackupMnCode.getText().toString());
+                break;
             case R.id.btnOperateUpdateSoftware:
                 //SophixManager.getInstance().queryAndLoadNewPatch();
                 dialogFragment = new ProcessDialogFragment();
@@ -421,6 +437,10 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
                 break;
             case R.id.swLedDisplayEnable:
                 system.setLedDisplayEnable(swLedDisplayEnable.isChecked());
+                Toast.makeText(getActivity(),"设置成功,重启生效！",Toast.LENGTH_LONG).show();
+                break;
+            case R.id.swBackupServerEnable:
+                system.setBackupServerEnable(swBackupServer.isChecked());
                 Toast.makeText(getActivity(),"设置成功,重启生效！",Toast.LENGTH_LONG).show();
                 break;
             default:

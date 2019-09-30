@@ -251,6 +251,14 @@ public class OperateSystem {
         SystemConfig.getInstance(context).saveConfig("AutoCalibrationEnable",key);
     }
 
+    public void setBackupServerEnable(boolean enable){
+        SystemConfig.getInstance(context).saveConfig("BackupServerEnable",enable);
+    }
+
+    public boolean isBackupServerEnable(){
+        return SystemConfig.getInstance(context).getConfigBoolean("BackupServerEnable");
+    }
+
     public void setAutoTime(String string){
         date = tools.string2timestamp(string);
         SystemConfig.getInstance(context).saveConfig("AutoCalTime",date);

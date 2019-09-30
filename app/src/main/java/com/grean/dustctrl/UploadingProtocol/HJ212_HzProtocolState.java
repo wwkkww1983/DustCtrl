@@ -565,7 +565,7 @@ public class HJ212_HzProtocolState extends HJT212_2017ProtocolState{
             }
             command.executeSendTask(frameBuilder.setQn(qn).setSt("22").setCn("2051").setPw(format.getPassword())
                     .setMn(format.getMnCode()).insertOneFrame().getBytes());
-            //Log.d(tag,"发送分钟数据");
+            Log.d(tag,"发送分钟数据");
         }
     }
 

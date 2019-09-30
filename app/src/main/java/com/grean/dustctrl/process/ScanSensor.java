@@ -52,7 +52,7 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
     private NotifyProcessDialogInfo dialogInfo;
     private CalcNextAutoCalibration calcNextAutoCalibration;
     private NotifyScanSensorOnLedDisplay ledDisplay;
-    private ProtocolState protocolState;
+    private ProtocolState protocolState,backupProtocolState;
     private SensorData data;
     private float alarmDust;
     private double [] sumData = new double[7];
@@ -77,6 +77,10 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
 
     public void setProtocolState(ProtocolState protocolState) {
         this.protocolState = protocolState;
+    }
+
+    public void setBackupProtocolState(ProtocolState backupProtocolState) {
+        this.backupProtocolState = backupProtocolState;
     }
 
     public float getAlarmDust() {
@@ -616,6 +620,9 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
             }
             //Log.d(tag,"加载下次小时数据时间2 now="+tools.timestamp2string(now)+tools.timestamp2string(lastHourDate));
             protocolState.uploadSystemTime(now,lastMinDate,lastHourDate-60*60*1000l);
+            if(backupProtocolState!=null){
+                backupProtocolState.uploadSystemTime(now,lastMinDate,lastHourDate-60*60*1000l);
+            }
 
             while (minUploadRun&&(!interrupted())) {
                 now = tools.nowtime2timestamp();
@@ -625,16 +632,25 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
                     //Log.d(tag,"发送分钟数据"+String.valueOf(protocolState==null));
                     saveMinData(lastMinDate);
                     protocolState.uploadMinDate(now,lastMinDate);
+                    if(backupProtocolState!=null){
+                        backupProtocolState.uploadMinDate(now,lastMinDate);
+                    }
                     lastMinDate = dataBaseProtocol.calcNextMinDate(now);
                     dataBaseProtocol.saveMinDate();
                 }else if(now > lastHourDate){
                     Log.d(tag,"发送小时数据"+tools.timestamp2string(lastHourDate));
                     saveHourData(lastHourDate);
                     protocolState.uploadHourDate(now,lastHourDate);
+                    if(backupProtocolState!=null){
+                        backupProtocolState.uploadHourDate(now,lastHourDate);
+                    }
                     lastHourDate = dataBaseProtocol.calcNextHourDate(now);
                     dataBaseProtocol.saveHourDate();
                 }else{
                     protocolState.uploadSecondDate(now);
+                    if(backupProtocolState!=null){
+                        backupProtocolState.uploadSecondDate(now);
+                    }
                 }
 
                 try {
@@ -859,13 +875,21 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
         sumData[GeneralHistoryDataFormat.Humidity] += data.getAirHumidity();
         sumData[GeneralHistoryDataFormat.Pressure] += data.getAirPressure();
         sumData[GeneralHistoryDataFormat.WindForce] += data.getWindForce();
-        sumData[GeneralHistoryDataFormat.WindDirection] += data.getWindDirection();
+        sumData[GeneralHistoryDataFormat.WindDirection] = data.getWindDirection();
         scanTimes++;
     }
 
     synchronized private void calcMean(){
         if(scanTimes != 0) {
-            for (int i = 0; i < 7; i++) {
+            for (int i=0;i<GeneralHistoryDataFormat.WindDirection;i++){
+                minData[i] = (float) (sumData[i] / scanTimes);
+                sumData[i] = 0d;
+            }
+            minData [GeneralHistoryDataFormat.WindDirection]
+                    = (float) sumData[GeneralHistoryDataFormat.WindDirection];
+            sumData[GeneralHistoryDataFormat.WindDirection] = 0d;
+            for (int i = (GeneralHistoryDataFormat.WindDirection+1);
+                 i < GeneralHistoryDataFormat.MAX; i++) {
                 minData[i] = (float) (sumData[i] / scanTimes);
                 sumData[i] = 0d;
             }

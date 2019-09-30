@@ -212,6 +212,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         ScanSensor.getInstance().setProtocolState(GetProtocols.getInstance().getProtocolState());
+        if(SystemConfig.getInstance(this).getConfigBoolean("BackupServerEnable")){
+            Log.d(tag,"启动backup服务");
+            ProtocolTcpServer.getInstance().setBackupState(GetProtocols.getInstance().getBackupProtocolState());
+            ProtocolTcpServer.getInstance().connectBackupServer(this);
+            ScanSensor.getInstance().setBackupProtocolState(GetProtocols.getInstance().getBackupProtocolState());
+        }
     }
 
     private void initView(){

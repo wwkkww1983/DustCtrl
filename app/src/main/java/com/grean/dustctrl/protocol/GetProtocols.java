@@ -5,8 +5,10 @@ import android.util.Log;
 
 import com.grean.dustctrl.SystemLog;
 import com.grean.dustctrl.UploadingProtocol.DefaultProtocolState;
+import com.grean.dustctrl.UploadingProtocol.HJ212_2017BackupProtocolState;
 import com.grean.dustctrl.UploadingProtocol.HJ212_HzProtocolState;
 import com.grean.dustctrl.UploadingProtocol.HJT212_2017ProtocolState;
+import com.grean.dustctrl.UploadingProtocol.ProtocolCommand;
 import com.grean.dustctrl.UploadingProtocol.ProtocolState;
 import com.grean.dustctrl.UploadingProtocol.ProtocolTcpServer;
 import com.grean.dustctrl.myApplication;
@@ -19,7 +21,7 @@ import com.grean.dustctrl.myApplication;
 public class GetProtocols {
     private static final String tag = "GetProtocols";
     private static GetProtocols instance = new GetProtocols();
-    private ProtocolState protocolState;
+    private ProtocolState protocolState,backupProtocolState;
     private GeneralServerProtocol serverProtocol;
     private GeneralInfoProtocol infoProtocol;
     private GeneralDataBaseProtocol dataBaseProtocol;
@@ -31,6 +33,14 @@ public class GetProtocols {
 
     private GetProtocols(){
 
+    }
+
+    public synchronized  ProtocolState getBackupProtocolState(){
+        if(backupProtocolState == null){
+            Log.d(tag,"CLIENT_PROTOCOL_HJT212");
+            backupProtocolState = new HJ212_2017BackupProtocolState(ProtocolTcpServer.getInstance().getBackupProtocolCommand());
+        }
+        return backupProtocolState;
     }
 
     public synchronized ProtocolState getProtocolState(){
