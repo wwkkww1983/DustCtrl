@@ -21,9 +21,21 @@ public class UploadingConfigFormat implements Cloneable {
         serverAddress = object.getString("ServerAddress");
         mnCode = object.getString("MnCode");
         password = object.getString("Password");
-        backupServerAddress = object.getString("BackupServerAddress");
-        backupMnCode = object.getString("BackupServerMnCode");
-        backupServerPort = object.getInt("BackupServerPort");
+        if(object.has("BackupServerAddress")){
+            backupServerAddress = object.getString("BackupServerAddress");
+        }else{
+            backupServerAddress = "117.149.30.221";
+        }
+        if(object.has("BackupServerMnCode")) {
+            backupMnCode = object.getString("BackupServerMnCode");
+        }else{
+            backupMnCode =  "3301000001";
+        }
+        if(object.has("BackupServerPort")) {
+            backupServerPort = object.getInt("BackupServerPort");
+        }else{
+            backupServerPort = 210;
+        }
         serverPort = object.getInt("ServerPort");
         timeoutLimit = object.getInt("TimeoutLimit");
         timeoutRepetition = object.getInt("TimeoutRepetition");
