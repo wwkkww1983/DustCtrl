@@ -517,7 +517,7 @@ public class HJ212_HzProtocolState extends HJT212_2017ProtocolState{
                     frameBuilder.addContentFactor("a01002","Rtd",
                             tools.float2String1(realTimeData.getAirHumidity()),"N");
                     frameBuilder.addContentFactor("a01006","Rtd",
-                            tools.float2String1(realTimeData.getAirPressure()),"N");
+                            tools.float2String1(realTimeData.getAirPressure()/10f),"N");
                     frameBuilder.addContentFactor("a01007","Rtd",
                             tools.float2String1(realTimeData.getWindForce()),"N");
                     frameBuilder.addContentFactor("a01008","Rtd",
@@ -559,7 +559,12 @@ public class HJ212_HzProtocolState extends HJT212_2017ProtocolState{
                 Map.Entry entry = (Map.Entry) it.next();
                 String key = (String) entry.getKey();
                 Integer val = (Integer) entry.getValue();
-                String valueString = tools.float2String3(item.get(val));
+                String valueString;
+                if(val == GeneralHistoryDataFormat.Pressure){
+                    valueString = tools.float2String3(item.get(val)/10f);
+                }else {
+                    valueString = tools.float2String3(item.get(val));
+                }
                 frameBuilder.addContentFactor(key,"Min", valueString,
                         "Avg",valueString,"Max",valueString,"N");
             }
@@ -627,7 +632,13 @@ public class HJ212_HzProtocolState extends HJT212_2017ProtocolState{
                     Map.Entry entry = (Map.Entry) it.next();
                     String key = (String) entry.getKey();
                     Integer val = (Integer) entry.getValue();
-                    String valueString = tools.float2String3(results.get(val)/dataSize);
+                    String valueString;
+                    if(val == GeneralHistoryDataFormat.Pressure){
+                        valueString = tools.float2String3(item.get(val)/10f/dataSize);
+                    }else {
+                        valueString = tools.float2String3(item.get(val)/dataSize);
+                    }
+
                     frameBuilder.addContentFactor(key,"Min",valueString,"Avg",valueString,"Max"
                             ,valueString,"N");
                 }
