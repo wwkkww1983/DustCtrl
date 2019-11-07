@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -55,8 +56,8 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
             etHumiSlope,etHumiIntercept,etBackupServerAddress,etBackupServerPort,etBackupMnCode;
     private Switch swDustMeterRun,swValve,swFan,swExt1,swExt2,swBackup,
             swAutoCalibrationEnable,swCameraDirectionEnable,swLedDisplayEnable,swBackupServer;
-    private Spinner spProtocol,spDustName,spDustMeter,spMainBoard;
-    private int clientProtocolName,mainBoardName;
+    private Spinner spProtocol,spDustName,spDustMeter,spMainBoard,spCameraName;
+    private int clientProtocolName,mainBoardName,cameraName;
 
 
 
@@ -133,6 +134,12 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
         spProtocol.setAdapter(clientProtocolNames);
         clientProtocolName = system.getClientName();
         spProtocol.setSelection(clientProtocolName);
+
+        ArrayAdapter<String>CameraNames = new ArrayAdapter<String>(getActivity(),R.layout.my_spnner,system.getCameraNames());
+        spCameraName.setOnItemSelectedListener(this);
+        spCameraName.setAdapter(CameraNames);
+        cameraName = system.getCameraName();
+        spCameraName.setSelection(cameraName);
 
         ArrayAdapter<String>dustNames = new ArrayAdapter<String>(getActivity(),R.layout.my_spnner,dustMeter.DustNames);
         spDustName.setOnItemSelectedListener(this);
@@ -267,6 +274,8 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
         v.findViewById(R.id.btnOperateSaveBackupServer).setOnClickListener(this);
         swBackupServer = v.findViewById(R.id.swBackupServerEnable);
         swBackupServer.setOnClickListener(this);
+
+        spCameraName = v.findViewById(R.id.spCameraName);
     }
 
 
@@ -429,6 +438,7 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
                     Toast.makeText(getActivity(),"参数超范围，不得小于-359",Toast.LENGTH_LONG).show();
                 }else {
                     system.setCameraDirectionOffset(offset);
+                    system.saveCameraName(cameraName);
                     Toast.makeText(getActivity(),"设置成功",Toast.LENGTH_LONG).show();
                 }
                 break;
@@ -477,6 +487,9 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
             case R.id.spMainBoardType:
                 mainBoardName = i;
                 system.setMainBoardName(mainBoardName);
+                break;
+            case R.id.spCameraName:
+                cameraName = i;
                 break;
             default:
 

@@ -14,6 +14,7 @@ import com.grean.dustctrl.DbTask;
 import com.grean.dustctrl.LogFormat;
 import com.grean.dustctrl.NoiseCommunication;
 import com.grean.dustctrl.SystemConfig;
+import com.grean.dustctrl.UploadingProtocol.CameraControl;
 import com.grean.dustctrl.UploadingProtocol.NotifyScanSensorOnLedDisplay;
 import com.grean.dustctrl.UploadingProtocol.ProtocolState;
 import com.grean.dustctrl.UploadingProtocol.ProtocolTcpServer;
@@ -58,7 +59,7 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
     private double [] sumData = new double[7];
     private int scanTimes = 0;
     private float [] minData = new float[7];
-
+    private CameraControl cameraControl;
     public boolean isRun() {
         return run;
     }
@@ -780,6 +781,8 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
                 e.printStackTrace();
             }
 
+            cameraControl = GetProtocols.getInstance().getCameraControl();
+
             if(!minUploadRun){
                 new MinUploadThread(GetProtocols.getInstance().getProtocolState()).start();
             }
@@ -802,6 +805,7 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl {
                 data.calcHiDewPoint();
                 data.calcLoDewPoint();
                 data.setNoise(noiseCom.getNoiseData());
+                cameraControl.setWindDirection((int) data.getWindDirection());
                 if(data.getDust()>=alarmDust){
                     alarm = true;
                     com.ctrlDo(3,true);

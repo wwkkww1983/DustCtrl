@@ -3,7 +3,10 @@ package com.grean.dustctrl.protocol;
 import android.content.Context;
 import android.util.Log;
 
+import com.grean.dustctrl.CameraCommunication;
 import com.grean.dustctrl.SystemLog;
+import com.grean.dustctrl.UploadingProtocol.CameraControl;
+import com.grean.dustctrl.UploadingProtocol.CameraTcpProtocolServer;
 import com.grean.dustctrl.UploadingProtocol.DefaultProtocolState;
 import com.grean.dustctrl.UploadingProtocol.HJ212_2017BackupProtocolState;
 import com.grean.dustctrl.UploadingProtocol.HJ212_HzProtocolState;
@@ -29,10 +32,36 @@ public class GetProtocols {
     public static final int CLIENT_PROTOCOL_DEFAULT=0,CLIENT_PROTOCOL_HJT212 = 1,
             CLIENT_PROTOCOL_HJT212_HZ=2, CLIENT_PROTOCOL_MAX = 3;
     public static final String[] CLIENT_PROTOCOL_DEFAULT_NAMES ={"Default","HJ/T-212-2017","杭州扬尘通讯协议"};
+
+    private int cameraName;
+    private CameraControl cameraControl;
+    public static final String CAMERA_NAMES[] ={"DS-2DF8225IH-黑光","DS-2DE7233-白光"};
+    public static final int CAMERA_2DF8225 = 0,CAMERA_2DE7233 =1;
     private Context context;
 
     private GetProtocols(){
 
+    }
+
+    public void setCameraName(int cameraName) {
+        this.cameraName = cameraName;
+    }
+
+    public int getCameraName() {
+        return cameraName;
+    }
+
+    public synchronized CameraControl getCameraControl(){
+        if(cameraControl ==null){
+            if(cameraName == CAMERA_2DF8225){
+                cameraControl = CameraCommunication.getInstance();
+            }else if(cameraName == CAMERA_2DE7233){
+                cameraControl = CameraTcpProtocolServer.getInstance();
+            }else{
+                cameraControl = CameraCommunication.getInstance();
+            }
+        }
+        return cameraControl;
     }
 
     public synchronized  ProtocolState getBackupProtocolState(){

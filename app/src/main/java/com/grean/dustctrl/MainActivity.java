@@ -202,8 +202,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         autoPatchTimer.schedule(new AutoPatchTimer(),when,4*3600000l);
 
         if(SystemConfig.getInstance(this).getConfigBoolean("CameraDirectionFunction")){
-            CameraCommunication.getInstance().setDirectionOffset(SystemConfig.getInstance(this)
-                    .getConfigInt("CameraDirectionOffset"));
+            GetProtocols.getInstance().setCameraName(SystemConfig
+                    .getInstance(this).getConfigInt("CameraName"));
+            GetProtocols.getInstance().getCameraControl().setDirectionOffset(SystemConfig
+                    .getInstance(this).getConfigInt("CameraDirectionOffset"));
+            GetProtocols.getInstance().getCameraControl().connectServer("192.168.1.64",10086);
+
         }
 
         if(SystemConfig.getInstance(this).getConfigBoolean("LedDisplayFunction")){

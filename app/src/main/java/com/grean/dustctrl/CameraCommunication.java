@@ -3,6 +3,7 @@ package com.grean.dustctrl;
 import android.util.Log;
 
 import com.SerialCommunication;
+import com.grean.dustctrl.UploadingProtocol.CameraControl;
 import com.tools;
 
 /**
@@ -12,7 +13,7 @@ import com.tools;
  * RS485默认地址 0x01 安装时请保持传感器零方位角和摄像机零方位脚一致摄像机方位角可通过控件进行设置
  */
 
-public class CameraCommunication extends SerialCommunication{
+public class CameraCommunication extends SerialCommunication implements CameraControl {
     private static final String tag = "CameraCommunication";
     private static CameraCommunication instance = new CameraCommunication();
     private int windDirection,directionOffset;
@@ -35,6 +36,16 @@ public class CameraCommunication extends SerialCommunication{
     }
 
     @Override
+    public void setWindDirection(int windDirection) {
+        this.windDirection = windDirection;
+    }
+
+    @Override
+    public void connectServer(String ip, int port) {
+
+    }
+
+    @Override
     protected void communicationProtocol(byte[] rec, int size, int state) {
         //Log.d(tag,tools.bytesToHexString(rec,size));
     }
@@ -43,11 +54,11 @@ public class CameraCommunication extends SerialCommunication{
     protected void asyncCommunicationProtocol(byte[] rec, int size) {
         //Log.d(tag,"Async rec = "+tools.bytesToHexString(rec,size));
         if(checkFrame(rec,size)){
-            windDirection = (int) CtrlCommunication.getInstance().getData().getWindDirection()+directionOffset;
-            if(windDirection >=360){
-                windDirection -= 360;
-            }else if(windDirection <0){
-                windDirection += 360;
+            int direction = windDirection+directionOffset;
+            if(direction >=360){
+                direction -= 360;
+            }else if(direction <0){
+                direction += 360;
             }else{
 
             }
@@ -55,7 +66,7 @@ public class CameraCommunication extends SerialCommunication{
             cmd[0] = 0x01;
             cmd[1] = 0x03;
             cmd[2] = 0x02;
-            byte [] tempBuff = tools.int2byte(windDirection);
+            byte [] tempBuff = tools.int2byte(direction);
             cmd[3] = tempBuff[0];
             cmd[4] = tempBuff[1];
             tools.addCrc16(cmd,0,5);

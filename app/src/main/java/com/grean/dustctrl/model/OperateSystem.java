@@ -68,7 +68,7 @@ public class OperateSystem {
 
     public void setCameraDirectionOffset(int offset){
         SystemConfig.getInstance(context).saveConfig("CameraDirectionOffset",offset);
-        CameraCommunication.getInstance().setDirectionOffset(offset);
+        GetProtocols.getInstance().getCameraControl().setDirectionOffset(offset);
     }
 
     public String getParaTempSlope(){
@@ -90,6 +90,10 @@ public class OperateSystem {
             slope = 1;
         }
         return tools.float2String3(slope);
+    }
+
+    public String[] getCameraNames(){
+        return GetProtocols.CAMERA_NAMES;
     }
 
     public void saveTempHumiPara(float paraTempSlope,float paraTempIntercept,float paraHumiSlope,float paraHumiIntercept){
@@ -123,6 +127,14 @@ public class OperateSystem {
 
     public String[] getClientProtocolNames(){
         return GetProtocols.CLIENT_PROTOCOL_DEFAULT_NAMES;
+    }
+
+    public int getCameraName(){
+        return GetProtocols.getInstance().getCameraName();
+    }
+
+    public void saveCameraName(int name){
+        SystemConfig.getInstance(context).saveConfig("CameraName",name);
     }
 
     public int getClientName(){
