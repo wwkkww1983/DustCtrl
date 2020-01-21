@@ -23,7 +23,7 @@ public class OperateDustMeter implements NotifyScanEnd{
     private NotifyOperateInfo info;
     private NotifyProcessDialogInfo dialogInfo;
     public static final String[] DustNames = {"TSP","PM10","PM2.5"};
-    public static final String[] DustMeters = {"LD-8-G","LD-8-J"};
+    public static final String[] DustMeters = {"LD-8-G","LD-8-J","GR-1001"};
     public static final int TSP=0,PM10=1,PM2_5=2;
     private int dustName,dustMeter;
     private Context context;

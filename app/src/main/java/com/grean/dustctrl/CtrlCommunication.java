@@ -241,6 +241,8 @@ public class CtrlCommunication extends SerialCommunication implements SerialComm
             }
         }else{
             Log.d(tag,"sync wrong check");
+            DustMeterLibs.getInstance().getDustMeterController().handleProtocol(rec,size,state,data,info);
+
         }
     }
 

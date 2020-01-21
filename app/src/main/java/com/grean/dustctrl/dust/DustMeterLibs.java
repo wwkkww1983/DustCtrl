@@ -25,6 +25,9 @@ public class DustMeterLibs {
             case 1:
                 dustMeterController = new SibataLd8Japan();
                 break;
+            case 2:
+                dustMeterController = new LyjdLpm1000();
+                break;
             default:
                 dustMeterController = new SibataLd8Gean();
                 break;

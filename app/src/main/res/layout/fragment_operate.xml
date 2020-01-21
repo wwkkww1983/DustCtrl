@@ -565,7 +565,7 @@
                     android:layout_weight="1"
                     android:ems="10"
                     android:inputType="textPersonName"
-                    android:text="http://117.149.30.221:12599/DustCtrl.apk"
+                    android:text="http://115.236.64.130:12599/DustCtrl.apk"
                     android:textSize="24sp" />
 
                 <Button
