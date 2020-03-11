@@ -27,7 +27,6 @@ public class FragmentVideo extends Fragment {
     @Override
     public View onCreateView(final LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         View messageLayout = inflater.inflate(R.layout.fragment_video,container,false);
-        //webView = messageLayout.findViewById(R.id.webView);
         btnVideo = messageLayout.findViewById(R.id.btnVideoCtrl);
         btnSetting = messageLayout.findViewById(R.id.btnVideoSetting);
         btnVideo.setOnClickListener(new View.OnClickListener() {
@@ -40,6 +39,15 @@ public class FragmentVideo extends Fragment {
             @Override
             public void onClick(View view) {
                 Uri uri = Uri.parse("http://192.168.1.64");
+                Intent intent = new Intent(Intent.ACTION_VIEW,uri);
+                startActivity(intent);
+            }
+        });
+        messageLayout.findViewById(R.id.btnRouterSetting).setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+                Uri uri = Uri.parse("http://192.168.1.1");
                 Intent intent = new Intent(Intent.ACTION_VIEW,uri);
                 startActivity(intent);
             }

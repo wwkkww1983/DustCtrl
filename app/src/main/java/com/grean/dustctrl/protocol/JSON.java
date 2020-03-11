@@ -1,21 +1,15 @@
 package com.grean.dustctrl.protocol;
 
 import android.util.Log;
-
-import com.grean.dustctrl.SystemConfig;
-import com.grean.dustctrl.myApplication;
-import com.grean.dustctrl.process.ScanSensor;
+import com.grean.dustctrl.SystemSettingStore;
 import com.grean.dustctrl.process.SensorData;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Stack;
 
 /**
  * 处理JSON数据数据格式
@@ -136,7 +130,7 @@ public class JSON {
     private static byte[] handleDownloadSetting(GeneralInfoProtocol infoProtocol) throws JSONException {
         JSONObject object = new JSONObject();
         object.put("protocolType","downloadSetting");
-        infoProtocol.loadSetting(SystemConfig.getInstance(GetProtocols.getInstance().getContext()));
+        infoProtocol.loadSetting(new SystemSettingStore(GetProtocols.getInstance().getContext()));
         object.put("autoCalEnable",infoProtocol.getAutoCalEnable());
         object.put("autoCalTime",infoProtocol.getAutoCalTime());
         object.put("autoCalInterval",infoProtocol.getAutoCalInterval());

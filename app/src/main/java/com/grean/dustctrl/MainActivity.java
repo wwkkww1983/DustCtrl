@@ -1,6 +1,5 @@
 package com.grean.dustctrl;
 
-import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -8,18 +7,14 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.Window;
-import android.widget.Button;
 
-import com.grean.dustctrl.UploadingProtocol.LedTcpProtocolServer;
 import com.grean.dustctrl.UploadingProtocol.ProtocolTcpServer;
-import com.grean.dustctrl.UploadingProtocol.UploadingConfigFormat;
+import com.grean.dustctrl.device.DevicesManage;
 import com.grean.dustctrl.presenter.CalcNextAutoCalibration;
 import com.grean.dustctrl.presenter.FragmentData;
 import com.grean.dustctrl.presenter.FragmentMain;
@@ -30,9 +25,6 @@ import com.grean.dustctrl.protocol.GetProtocols;
 import com.taobao.sophix.SophixManager;
 import com.tools;
 
-import org.json.JSONException;
-
-import java.net.Socket;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -50,7 +42,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private FragmentVideo fragmentVideo;
     private android.app.FragmentManager fragmentManager;
     private Timer autoCalibrationTimer,autoPatchTimer;
-    //private Fragment lastFragment;
     private static final int msgAutoCalibration = 1,msgAutoPatch =2;
     private Handler handler = new Handler(){
         @Override
@@ -74,15 +65,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             if(intent.getAction().equals("autoCalibration")){
                 Intent mainFragmentIntent = new Intent();
                 mainFragmentIntent.setAction("autoCalNextString");
+                ReadWriteConfig config = new SystemSettingStore(MainActivity.this);
                 if (intent.getBooleanExtra("enable",true)){
-                    SystemConfig.getInstance(MainActivity.this).saveConfig("AutoCalibrationEnable",true);
+                   config.saveConfig("auto_calibration_enable",true);
                     cancelAutoCalibrationTimer();
                     autoCalibrationTimer = new Timer();
                     Date when = new Date(intent.getLongExtra("date",0l));
                     mainFragmentIntent.putExtra("content",tools.timestamp2string(intent.getLongExtra("date",0l)));
                     autoCalibrationTimer.schedule(new AutoCalibrationTimerTask(),when);
                 }else {
-                    SystemConfig.getInstance(MainActivity.this).saveConfig("AutoCalibrationEnable",false);
+                    config.saveConfig("auto_calibration_enable",false);
                     cancelAutoCalibrationTimer();
                     mainFragmentIntent.putExtra("content","-");
                 }
@@ -95,14 +87,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onComplete() {
         Log.d(tag,"计算下次测量时间");
-        SystemConfig config = SystemConfig.getInstance(this);
+        ReadWriteConfig config = new SystemSettingStore(this);
         long now = tools.nowtime2timestamp();
-        long plan = config.getConfigLong("AutoCalTime");
-        long interval = config.getConfigLong("AutoCalInterval");
+        long plan = config.getConfigLong("auto_calibration_date");
+        long interval = config.getConfigLong("auto_calibration_interval");
         long next = tools.calcNextTime(now,plan,interval);
-        config.saveConfig("AutoCalTime",next);
+        config.saveConfig("auto_calibration_date",next);
         cancelAutoCalibrationTimer();
-        if(config.getConfigBoolean("AutoCalibrationEnable")) {
+        if(config.getConfigBoolean("auto_calibration_enable")) {
             autoCalibrationTimer = new Timer();
             Date when = new Date(next);
             autoCalibrationTimer.schedule(new AutoCalibrationTimerTask(), when);
@@ -157,37 +149,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction("autoCalibration");
         registerReceiver(broadcastReceiver,intentFilter);
-        /*btnTest = (Button) findViewById(R.id.testBtn);
-        btnTest.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                CtrlCommunication.getInstance().SendFrame(CtrlCommunication.Cmd.Inquire);
-            }
-        });*/
-        SystemConfig config = SystemConfig.getInstance(this);
-        config.loadConfig();
-        String string = config.getConfigString("UploadConfig");
-        UploadingConfigFormat configFormat = new UploadingConfigFormat();
-        Log.d(tag,"UploadConfig="+string);
-        if(string.equals(" ")){//读取TCP配置
-            try {
-                string = UploadingConfigFormat.getDefaultConfig();
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+        SystemSettingStore settingStore = new SystemSettingStore(this);
+        settingStore.loadDeviceSetting(DevicesManage.getInstance());
+        settingStore.loadUploadSetting(ProtocolTcpServer.getInstance());
+        Log.d(tag,"test 4");
 
-        }
-        Log.d(tag,string);
-        try {
-            configFormat.loadConfig(string);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        ProtocolTcpServer.getInstance().setConfig(configFormat);
         GetProtocols.getInstance().setContext(this);
-        GetProtocols.getInstance().setClientProtocol(SystemConfig.getInstance(this).getConfigInt("ClientProtocol"));
-        GetProtocols.getInstance().getInfoProtocol().loadSetting(SystemConfig.getInstance(this));
+        GetProtocols.getInstance().setClientProtocol(settingStore.getSettingInt("ClientProtocol"));
+        GetProtocols.getInstance().getInfoProtocol().loadSetting(settingStore);
         GetProtocols.getInstance().getInfoProtocol().setContext(this);
+        DevicesManage.getInstance().initDevice();
+
         ScanSensor.getInstance().addObserver(SystemLog.getInstance(this));
         ScanSensor.getInstance().startScan(this);
         ProtocolTcpServer.getInstance().setState(GetProtocols.getInstance().getProtocolState());
@@ -201,22 +173,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Date when = new Date(next);
         autoPatchTimer.schedule(new AutoPatchTimer(),when,4*3600000l);
 
-        if(SystemConfig.getInstance(this).getConfigBoolean("CameraDirectionFunction")){
-            GetProtocols.getInstance().setCameraName(SystemConfig
-                    .getInstance(this).getConfigInt("CameraName"));
-            GetProtocols.getInstance().getCameraControl().setDirectionOffset(SystemConfig
-                    .getInstance(this).getConfigInt("CameraDirectionOffset"));
-            GetProtocols.getInstance().getCameraControl().connectServer("192.168.1.64",10086);
-
-        }
-
-        if(SystemConfig.getInstance(this).getConfigBoolean("LedDisplayFunction")){
-            LedTcpProtocolServer.getInstance().connectServer("192.168.1.99",10000);
-            ScanSensor.getInstance().setLedDisplayNotify(LedTcpProtocolServer.getInstance());
-        }
-
         ScanSensor.getInstance().setProtocolState(GetProtocols.getInstance().getProtocolState());
-        if(SystemConfig.getInstance(this).getConfigBoolean("BackupServerEnable")){
+        if(ProtocolTcpServer.getInstance().getFormat().isBackupServerEnable()){
             Log.d(tag,"启动backup服务");
             ProtocolTcpServer.getInstance().setBackupState(GetProtocols.getInstance().getBackupProtocolState());
             ProtocolTcpServer.getInstance().connectBackupServer(this);

@@ -1,8 +1,8 @@
-package com.grean.dustctrl.UploadingProtocol;
+package com.grean.dustctrl.device;
 
 import android.util.Log;
 
-import com.grean.dustctrl.CtrlCommunication;
+import com.grean.dustctrl.process.SensorData;
 import com.tools;
 
 import java.io.IOException;
@@ -12,11 +12,15 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 
 /**
- * Created by weifeng on 2019/11/5.
+ *
+ * 固定 192.168.1.6 端口 10086
+ * 每2s发送风向信息，发送后摄像头断开连接
+ * 摄像头->设置->网络->高级配置->SNMP->SNMP端口其他配置->SNMP端口 ：10086
+ * Created by weifeng on 2020/3/3.
  */
 
-public class CameraTcpProtocolServer implements CameraControl{
-    private static String tag = "CameraTcpProtocolServer";
+public class CameraWhite implements CameraControl{
+    private static String tag = "CameraWhite";
     private ReceiverThread receiverThread;
     private ConnectThread connectThread;
     private Socket socketClient;
@@ -24,41 +28,33 @@ public class CameraTcpProtocolServer implements CameraControl{
     private OutputStream send;
     private boolean connected =false,run = false;
     private int directionOffset;
-    private String ip;
-    private int port;
     private int windDirection;
+    private SensorData data;
 
-    private static CameraTcpProtocolServer instance =  new CameraTcpProtocolServer();
-
-
-    public static CameraTcpProtocolServer getInstance() {
-        return instance;
+    public CameraWhite(SensorData data){
+        this.data = data;
     }
 
-    private CameraTcpProtocolServer(){
-
-    }
-
-    public void setWindDirection(int windDirection) {
-        this.windDirection = windDirection;
-    }
-
+    @Override
     public void setDirectionOffset(int directionOffset) {
         this.directionOffset = directionOffset;
     }
 
-    public void connectServer(String ip,int port){
+    @Override
+    public int getDirectionOffset() {
+        return directionOffset;
+    }
+
+
+    @Override
+    public void startServer() {
         if(!run){
-            this.ip = ip;
-            this.port = port;
             connectThread = new ConnectThread();
             connectThread.start();
-
         }
     }
 
     private class ConnectThread extends Thread{
-
         public ConnectThread(){
 
         }
@@ -98,7 +94,7 @@ public class CameraTcpProtocolServer implements CameraControl{
         public void run() {
             super.run();
             try {
-                socketClient.connect(new InetSocketAddress(ip, port), 500);
+                socketClient.connect(new InetSocketAddress("192.168.1.64",10086), 500);
                 socketClient.setTcpNoDelay(true);
                 socketClient.setSoLinger(true,30);
                 socketClient.setSendBufferSize(10240);
@@ -107,13 +103,8 @@ public class CameraTcpProtocolServer implements CameraControl{
                 send = socketClient.getOutputStream();
                 socketClient.setOOBInline(true);
 
-                int count;
-                //byte[] readBuff = new byte[4096];
-
                 connected = true;
-                //setChanged();
-                //Log.d(tag,"已连接服务器");
-                //notifyObservers(new LogFormat("已连接服务器"));
+                windDirection = (int) data.getWindDirection();
                 int direction = windDirection+directionOffset;
                 if(direction >=360){
                     direction -= 360;
@@ -135,19 +126,7 @@ public class CameraTcpProtocolServer implements CameraControl{
                 //Log.d(tag, tools.bytesToHexString(currentFrame, currentFrame.length));
                 send.flush();
 
-                /*while (connected){
-                    if (socketClient.isConnected()&&(!socketClient.isClosed())){
-                        while ((count = receive.read(readBuff))!=-1 && connected){
-                            Log.d(tag, tools.bytesToHexString(readBuff,count));
 
-                        }
-                        connected = false;
-                        break;
-                    }else {
-                        connected = false;
-                    }
-                    Log.d(tag,"one turn");
-                }*/
             } catch (IOException e) {
                 connected = false;
                 Log.d(tag,"找不到服务器");
@@ -162,8 +141,6 @@ public class CameraTcpProtocolServer implements CameraControl{
                     e.printStackTrace();
                 }
             }
-            //setChanged();
-            //notifyObservers(new LogFormat("中断网络链接"));
         }
     }
 }

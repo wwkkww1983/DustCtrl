@@ -2,7 +2,6 @@ package com;
 
 import android.util.Log;
 
-import com.grean.dustctrl.CtrlCommunication;
 import com.serial.SerialPort;
 
 import java.io.File;

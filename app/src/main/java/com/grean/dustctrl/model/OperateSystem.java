@@ -10,21 +10,24 @@ import android.os.Environment;
 import android.os.Process;
 import android.util.Log;
 
-import com.grean.dustctrl.CameraCommunication;
-import com.grean.dustctrl.CtrlCommunication;
+
 import com.grean.dustctrl.NoiseCalibrationListener;
-import com.grean.dustctrl.NoiseCommunication;
 import com.grean.dustctrl.R;
-import com.grean.dustctrl.SystemConfig;
+import com.grean.dustctrl.ReadWriteConfig;
 import com.grean.dustctrl.UploadingProtocol.ProtocolTcpServer;
-import com.grean.dustctrl.hardware.MainBoardLibs;
+import com.grean.dustctrl.device.DevicesManage;
+import com.grean.dustctrl.device.DustMeterControl;
 import com.grean.dustctrl.myApplication;
 import com.grean.dustctrl.presenter.NotifyOperateInfo;
 import com.grean.dustctrl.presenter.NotifyProcessDialogInfo;
 import com.grean.dustctrl.presenter.UpDateProcessFragment;
 import com.grean.dustctrl.process.ScanSensor;
+import com.grean.dustctrl.process.SensorData;
 import com.grean.dustctrl.protocol.GetProtocols;
 import com.tools;
+
+import org.json.JSONException;
+
 
 
 /**
@@ -33,91 +36,60 @@ import com.tools;
 
 public class OperateSystem {
     private static final String tag = "OperateSystem";
-    private CtrlCommunication com = CtrlCommunication.getInstance();
     private long interval = 24*3600000l,date;
     private CalibrationNoiseThread calibrationNoiseThread;
     private Context context;
-    public OperateSystem(Context context){
+    private ReadWriteConfig store;
+    public OperateSystem(Context context,ReadWriteConfig store){
         this.context = context;
-    }
-
-    public String[] getMainBoardNames(){
-        return MainBoardLibs.getInstance().getNames();
-    }
-
-    public int getMainBoardName(){
-        return MainBoardLibs.getInstance().getName();
-    }
-
-    public void setMainBoardName(int name){
-        SystemConfig.getInstance(context).saveConfig("MainBoardName",name);
-        MainBoardLibs.getInstance().setName(name);
-    }
-
-    public void setCameraDirectionEnable(boolean enable){
-        SystemConfig.getInstance(context).saveConfig("CameraDirectionFunction",enable);
-    }
-
-    public void setLedDisplayEnable(boolean enable){
-        SystemConfig.getInstance(context).saveConfig("LedDisplayFunction",enable);
-    }
-
-    public boolean isLedDisplayEnable(){
-        return SystemConfig.getInstance(context).getConfigBoolean("LedDisplayFunction");
+        this.store = store;
     }
 
     public void setCameraDirectionOffset(int offset){
-        SystemConfig.getInstance(context).saveConfig("CameraDirectionOffset",offset);
-        GetProtocols.getInstance().getCameraControl().setDirectionOffset(offset);
+        DevicesManage.getInstance().setCameraDirectionOffset(offset);
+        store.saveDeviceSetting(DevicesManage.getInstance());
     }
 
     public String getParaTempSlope(){
-        float slope = SystemConfig.getInstance(context).getConfigFloat("ParaTempSlope");
-        if(slope == 0f){
-            slope = 1;
-        }
-        return tools.float2String3(slope);
+        return String.valueOf(DevicesManage.getInstance().getData().getParaTempSlope());
 
     }
 
     public String getParaTempIntercept(){
-        return tools.float2String3((SystemConfig.getInstance(context).getConfigFloat("ParaTempIntercept")));
+        return String.valueOf(DevicesManage.getInstance().getData().getParaTempIntercept());
     }
 
     public String getParaHumiSlope(){
-        float slope = SystemConfig.getInstance(context).getConfigFloat("ParaHumiSlope");
-        if(slope == 0f){
-            slope = 1;
-        }
-        return tools.float2String3(slope);
+        return String.valueOf(DevicesManage.getInstance().getData().getParaHumiSlope());
     }
 
     public String[] getCameraNames(){
-        return GetProtocols.CAMERA_NAMES;
+        return DevicesManage.CameraNames;
     }
 
     public void saveTempHumiPara(float paraTempSlope,float paraTempIntercept,float paraHumiSlope,float paraHumiIntercept){
-        CtrlCommunication.getInstance().setTempHumiPara(paraTempSlope,paraTempIntercept,paraHumiSlope,paraHumiIntercept);
-        SystemConfig.getInstance(context).saveConfig("ParaTempSlope",paraTempSlope);
-        SystemConfig.getInstance(context).saveConfig("ParaTempIntercept",paraTempIntercept);
-        SystemConfig.getInstance(context).saveConfig("ParaHumiSlope",paraHumiSlope);
-        SystemConfig.getInstance(context).saveConfig("ParaHumiIntercept",paraHumiIntercept);
+        SensorData  data = DevicesManage.getInstance().getData();
+        data.setParaTempSlope(paraTempSlope);
+        data.setParaTempIntercept(paraTempIntercept);
+        data.setParaHumiSlope(paraHumiSlope);
+        data.setParaHumiIntercept(paraHumiIntercept);
+        store.saveConfig("temp_para_k ",paraTempSlope);
+        store.saveConfig("temp_para_b",paraTempIntercept);
+        store.saveConfig("humi_para_k",paraHumiSlope);
+        store.saveConfig("humi_para_b",paraHumiIntercept);
     }
 
     public String getParaHumiIntercept(){
-        return tools.float2String3(SystemConfig.getInstance(context).getConfigFloat("ParaHumiIntercept"));
+        return String.valueOf(DevicesManage.getInstance().getData().getParaHumiIntercept());
     }
 
     public int getCameraDirectionOffset(){
-        return SystemConfig.getInstance(context).getConfigInt("CameraDirectionOffset");
+        return DevicesManage.getInstance().getCameraOffset();
     }
 
-    public boolean getCameraDirectionEnable(){
-        return SystemConfig.getInstance(context).getConfigBoolean("CameraDirectionFunction");
-    }
 
     public void ctrlDo(int num,boolean key){
-        com.ctrlDo(num,key);
+        DevicesManage.getInstance().setDo(num,key);
     }
 
     public void startDownLoadSoftware(Context context,String url,NotifyProcessDialogInfo processDialogInfo,NotifyOperateInfo operateInfo){
@@ -130,11 +102,22 @@ public class OperateSystem {
     }
 
     public int getCameraName(){
-        return GetProtocols.getInstance().getCameraName();
+        Log.d(tag,"Camera Name = "+String.valueOf(DevicesManage.getInstance().getCameraName()));
+        return DevicesManage.getInstance().getCameraName();
     }
 
+    public int getLedDisplayName(){
+        return DevicesManage.getInstance().getLedDisplayName();
+    }
+
+    public int getNoiseName(){
+        return DevicesManage.getInstance().getNoiseName();
+    }
+
+
+
     public void saveCameraName(int name){
-        SystemConfig.getInstance(context).saveConfig("CameraName",name);
+        store.saveConfig("camera_name",name);
     }
 
     public int getClientName(){
@@ -195,7 +178,6 @@ public class OperateSystem {
                             cursor.close();
                         }
                     }
-
                 }
 
             }catch (Exception e){
@@ -236,7 +218,8 @@ public class OperateSystem {
 
     public void setAlarmDust(String alarmString){
         float alarm = Float.valueOf(alarmString);
-        SystemConfig.getInstance(context).saveConfig("AlarmDust",alarm);
+        store.saveConfig("dust_alarm",alarm);
+        DevicesManage.getInstance().getData().setDustAlarm(alarm);
         ScanSensor.getInstance().setAlarmDust(alarm);
     }
 
@@ -250,30 +233,43 @@ public class OperateSystem {
 
     public String getAutoCalNextTime(){
         String string;
-        date = SystemConfig.getInstance(context).getConfigLong("AutoCalTime");
+        date = store.getConfigLong("auto_calibration_date");
         string = tools.timestamp2string(date);
         return string;
     }
 
     public boolean getAutoCalibrationEnable(){
-        return SystemConfig.getInstance(context).getConfigBoolean("AutoCalibrationEnable");
+        return store.getConfigBoolean("auto_calibration_enable");
     }
 
     public void setAutoCalibrationEnable(boolean key){
-        SystemConfig.getInstance(context).saveConfig("AutoCalibrationEnable",key);
+        store.saveConfig("auto_calibration_enable",key);
     }
 
     public void setBackupServerEnable(boolean enable){
-        SystemConfig.getInstance(context).saveConfig("BackupServerEnable",enable);
+        ProtocolTcpServer.getInstance().getFormat().setBackupServerEnable(enable);
+        try {
+            store.saveUploadSetting(ProtocolTcpServer.getInstance().getFormat().getConfigString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void setSystemSetting(int dustName,int dustMeterName,int cameraName,int noiseName,int ledDisplayName){
+        store.saveConfig("dust_name",dustName);
+        store.saveConfig("dust_meter_name",dustMeterName);
+        store.saveConfig("led_display_name",ledDisplayName);
+        store.saveConfig("noise_name",noiseName);
+        store.saveConfig("camera_name",cameraName);
     }
 
     public boolean isBackupServerEnable(){
-        return SystemConfig.getInstance(context).getConfigBoolean("BackupServerEnable");
+        return ProtocolTcpServer.getInstance().getFormat().isBackupServerEnable();
     }
 
     public void setAutoTime(String string){
         date = tools.string2timestamp(string);
-        SystemConfig.getInstance(context).saveConfig("AutoCalTime",date);
+        store.saveConfig("auto_calibration_date",date);
     }
 
     public long getAutoTimeDate(){
@@ -282,7 +278,7 @@ public class OperateSystem {
 
     public String getAutoCalInterval(){
         String string;
-        interval = SystemConfig.getInstance(context).getConfigLong("AutoCalInterval");
+        interval = store.getConfigLong("auto_calibration_interval");
         string = String.valueOf(interval / 60000l);
         return  string;
     }
@@ -290,8 +286,10 @@ public class OperateSystem {
     public void setAutoCalInterval(String string){
         long l = Integer.valueOf(string)*60000l;
         interval = l;
-        SystemConfig.getInstance(context).saveConfig("AutoCalInterval",l);
+        store.saveConfig("auto_calibration_interval",l);
     }
+
+
 
     public String calNexTime(String string){
         Log.d(tag,string);
@@ -309,31 +307,30 @@ public class OperateSystem {
     }
 
     public int getMotorRounds(){
-        return com.getMotorRounds();
+        return DevicesManage.getInstance().getData().getMotorRounds();
     }
 
     public int getMotorTime(){
-        return com.getMotorTime();
+         return DevicesManage.getInstance().getData().getMotorTime();
     }
 
     public void setMotorSetting(int rounds,int time){
-        com.setMotorTime(time);
-        com.setMotorRounds(rounds);
-        SystemConfig.getInstance(context).saveConfig("MotorRounds",rounds);
-        SystemConfig.getInstance(context).saveConfig("MotorTime",time);
+        DevicesManage.getInstance().getData().setMotorTime(time);
+        DevicesManage.getInstance().getData().setMotorRounds(rounds);
+        store.saveConfig("motor_rounds",rounds);
+        store.saveConfig("motor_time",time);
     }
 
     public void testMotor(boolean forward){
         if(forward) {
-            com.setMotorSetting(CtrlCommunication.MotorForward);
+            DevicesManage.getInstance().setMotor(DustMeterControl.DustMeterMotorForward);
         }else{
-            com.setMotorSetting(CtrlCommunication.MotorBackward);
+            DevicesManage.getInstance().setMotor(DustMeterControl.DustMeterMotorBackward);
         }
     }
 
     public void calNoise(UpDateProcessFragment upDateProcessFragment){
         calibrationNoiseThread = new CalibrationNoiseThread(upDateProcessFragment);
-        NoiseCommunication.getInstance().sendCalibrationCmd(calibrationNoiseThread);
         calibrationNoiseThread.start();
     }
 
@@ -366,6 +363,7 @@ public class OperateSystem {
         public void run() {
             success = false;
             upDateProcessFragment.setContent("正在校准声级计");
+            DevicesManage.getInstance().calibrationNoise(this);
             for (int i=0;i<10;i++){
                 upDateProcessFragment.setProcess(i*10);
                 try {
@@ -391,10 +389,5 @@ public class OperateSystem {
             }
         }
     }
-
-    public void resetComFlag(){
-        com.resetComFlag();
-    }
-
 
 }

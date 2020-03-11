@@ -3,7 +3,6 @@ package com.grean.dustctrl.model;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.hardware.camera2.params.StreamConfigurationMap;
 import android.util.Log;
 
 import com.grean.dustctrl.DbTask;
@@ -11,12 +10,6 @@ import com.grean.dustctrl.presenter.InsertString;
 import com.grean.dustctrl.presenter.NotifyDataInfo;
 import com.grean.dustctrl.protocol.GetProtocols;
 import com.tools;
-
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
 
 /**
  * Created by Administrator on 2017/8/30.
@@ -46,7 +39,7 @@ public class SearchData {
             statement = "date >"+ String.valueOf(start)+" and date <"+String.valueOf(end);
         }
 
-        DbTask helperDbTask = new DbTask(context,3);
+        DbTask helperDbTask = new DbTask(context,4);
         SQLiteDatabase db = helperDbTask.getReadableDatabase();
         Cursor cursor;
         cursor = db.rawQuery("SELECT * FROM log WHERE "+statement+" ORDER BY date desc",new String[]{});
@@ -75,7 +68,7 @@ public class SearchData {
             statement = "date >"+ String.valueOf(start)+" and date <"+String.valueOf(end);
         }
 
-        DbTask helperDbTask = new DbTask(context,3);
+        DbTask helperDbTask = new DbTask(context,4);
         SQLiteDatabase db = helperDbTask.getReadableDatabase();
         Cursor cursor;
         cursor = db.rawQuery("SELECT * FROM result WHERE "+statement+" ORDER BY date desc",new String[]{});

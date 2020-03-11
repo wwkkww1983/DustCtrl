@@ -13,6 +13,7 @@ import java.util.HashMap;
 public class UploadingConfigFormat implements Cloneable {
     private String serverAddress,mnCode,password,alarmTarget,backupServerAddress,backupMnCode;
     private int serverPort,timeoutLimit,timeoutRepetition,realTimeInterval,warnTime,backupServerPort;
+    private boolean backupServerEnable;
     private double lng,lat;//经纬度
     private HashMap<String,Integer> factorMap = new HashMap<>();//因子，数据库位置
 
@@ -52,10 +53,12 @@ public class UploadingConfigFormat implements Cloneable {
         }else{
             alarmTarget = "3882566";
         }
+        backupServerEnable = object.getBoolean("BackupServerEnable");
     }
 
     public static String getDefaultConfig() throws JSONException {
         JSONObject object = new JSONObject();
+        object.put("BackupServerEnable",true);
         object.put("ServerAddress","39.107.94.109");
         object.put("MnCode","LJHJ0HZ0010005");
         object.put("Password","123456");
@@ -69,11 +72,13 @@ public class UploadingConfigFormat implements Cloneable {
         object.put("BackupServerAddress","117.149.30.221");
         object.put("BackupServerMnCode","3301000001");
         object.put("BackupServerPort",210);
+        object.put("TimeoutRepetition",3);
         return object.toString();
     }
 
     public String getConfigString() throws JSONException {
         JSONObject object = new JSONObject();
+        object.put("BackupServerEnable",backupServerEnable);
         object.put("ServerAddress",serverAddress);
         object.put("MnCode",mnCode);
         object.put("Password",password);
@@ -89,6 +94,14 @@ public class UploadingConfigFormat implements Cloneable {
         object.put("BackupServerMnCode",backupMnCode);
         object.put("BackupServerPort",backupServerPort);
         return object.toString();
+    }
+
+    public boolean isBackupServerEnable() {
+        return backupServerEnable;
+    }
+
+    public void setBackupServerEnable(boolean backupServerEnable) {
+        this.backupServerEnable = backupServerEnable;
     }
 
     public HashMap<String, Integer> getFactorMap() {

@@ -3,19 +3,16 @@ package com.grean.dustctrl.protocol;
 
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.SystemDateTime;
-import com.grean.dustctrl.CameraCommunication;
-import com.grean.dustctrl.CtrlCommunication;
 import com.grean.dustctrl.LogFormat;
 import com.grean.dustctrl.NoiseCalibrationListener;
-import com.grean.dustctrl.NoiseCommunication;
 import com.grean.dustctrl.ReadWriteConfig;
 import com.grean.dustctrl.UploadingProtocol.ProtocolTcpServer;
 import com.grean.dustctrl.UploadingProtocol.UploadingConfigFormat;
+import com.grean.dustctrl.device.DevicesManage;
+import com.grean.dustctrl.device.DustMeterControl;
 import com.grean.dustctrl.model.OperateDustMeter;
 import com.grean.dustctrl.myApplication;
 import com.grean.dustctrl.process.ScanSensor;
@@ -41,7 +38,6 @@ public class InformationProtocol extends Observable implements GeneralInfoProtoc
     private float paraK,paraB;
     private Context context;
     private ReadWriteConfig config;
-    private CtrlCommunication com = CtrlCommunication.getInstance();
 
     @Override
     public String getSystemState() {
@@ -86,14 +82,13 @@ public class InformationProtocol extends Observable implements GeneralInfoProtoc
 
     public void loadSetting(ReadWriteConfig config){
         this.config = config;
-        //serverIp = config.getConfigString("ServerIp");
-        //serverPort = config.getConfigInt("ServerPort");
-        autoCalEnable = config.getConfigBoolean("AutoCalibrationEnable");
-        autoCalTime = config.getConfigLong("AutoCalTime");
-        autoCalInterval = config.getConfigLong("AutoCalInterval");
-        paraK = config.getConfigFloat("DustParaK");
-        paraB = config.getConfigFloat("DustParaB");
-        //mnCode = config.getConfigString("MnCode");
+
+        autoCalEnable = config.getConfigBoolean("auto_calibration_enable");
+        autoCalTime = config.getConfigLong("auto_calibration_date");
+        autoCalInterval = config.getConfigLong("auto_calibration_interval");
+        paraK = config.getConfigFloat("dust_para_k");
+        paraB = config.getConfigFloat("dust_para_b");
+
         UploadingConfigFormat format = ProtocolTcpServer.getInstance().getFormat();
         serverIp = format.getServerAddress();
         serverPort = format.getServerPort();
@@ -121,7 +116,7 @@ public class InformationProtocol extends Observable implements GeneralInfoProtoc
                 format.setServerAddress(ip);
                 format.setServerPort(port);
                 try {
-                    config.saveConfig("UploadConfig",format.getConfigString());
+                    config.saveUploadSetting(format.getConfigString());
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -138,9 +133,9 @@ public class InformationProtocol extends Observable implements GeneralInfoProtoc
             autoCalEnable = enable;
             autoCalTime = date;
             if(config!=null){
-                config.saveConfig("AutoCalibrationEnable",enable);
-                config.saveConfig("AutoCalTime",date);
-                config.saveConfig("AutoCalInterval",interval);
+                config.saveConfig("auto_calibration_enable",enable);
+                config.saveConfig("auto_calibration_date",date);
+                config.saveConfig("auto_calibration_interval",interval);
 
             }
             getAvailableContext();
@@ -159,29 +154,29 @@ public class InformationProtocol extends Observable implements GeneralInfoProtoc
 
     @Override
     public void calDust(float target) {
-        float value = CtrlCommunication.getInstance().getData().getValue();
+        float value = DevicesManage.getInstance().getData().getValue();
         paraK = target / value;
-        CtrlCommunication.getInstance().getData().setParaK(paraK);
-        config.saveConfig("DustParaK",paraK);
+        DevicesManage.getInstance().getData().setParaK(paraK);
+        config.saveConfig("dust_para_k",paraK);
     }
 
     @Override
     public void setDustParaK(float paraK) {
         this.paraK = paraK;
-        CtrlCommunication.getInstance().getData().setParaK(paraK);
-        config.saveConfig("DustParaK",paraK);
+        DevicesManage.getInstance().getData().setParaK(paraK);
+        config.saveConfig("dust_para_k",paraK);
        // Log.d(tag,"记录数据");
-        setChanged();
         notifyObservers(new LogFormat("修改斜率为"+String.valueOf(paraK)));
+        setChanged();
     }
 
     @Override
     public void setDustParaB(float paraB) {
         this.paraB = paraB;
-        CtrlCommunication.getInstance().getData().setParaB(paraB);
-        config.saveConfig("DustParaB",paraB);
-        setChanged();
+        DevicesManage.getInstance().getData().setParaB(paraB);
+        config.saveConfig("dust_para_b",paraB);
         notifyObservers(new LogFormat("修改截距为"+String.valueOf(paraB)));
+        setChanged();
     }
 
     @Override
@@ -207,11 +202,6 @@ public class InformationProtocol extends Observable implements GeneralInfoProtoc
         return dustMeterCalSpanOk;
     }
 
-    @Override
-    public void inquireDustMeterInfo() {
-        ScanSensor.getInstance().stopScan(null);
-        ScanSensor.getInstance().inquireDustMeterInfo(null);
-    }
 
     @Override
     public void setDustMeterPumpTime(int pumpTime) {
@@ -299,7 +289,7 @@ public class InformationProtocol extends Observable implements GeneralInfoProtoc
         UploadingConfigFormat format = ProtocolTcpServer.getInstance().getFormat();
         format.setMnCode(code);
         try {
-            config.saveConfig("UploadConfig",format.getConfigString());
+            config.saveUploadSetting(format.getConfigString());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -349,17 +339,17 @@ public class InformationProtocol extends Observable implements GeneralInfoProtoc
 
     @Override
     public String[] getDustNames() {
-        return OperateDustMeter.DustNames;
+        return DevicesManage.DustNames;
     }
 
     @Override
     public int getDustName() {
-        return config.getConfigInt("DustName");
+        return config.getConfigInt("dust_name");
     }
 
     @Override
     public void setDustName(int name) {
-        config.saveConfig("DustName",name);
+        config.saveConfig("dust_name",name);
     }
 
     @Override
@@ -370,21 +360,19 @@ public class InformationProtocol extends Observable implements GeneralInfoProtoc
     @Override
     public void setAlarmDust(float alarm) {
         Log.d(tag,String.valueOf(alarm));
-        config.saveConfig("AlarmDust",alarm);
+        config.saveConfig("dust_alarm",alarm);
         ScanSensor.getInstance().setAlarmDust(alarm);
     }
 
     @Override
     public void setClientProtocol(int name) {
-        config.saveConfig("ClientProtocolName",name);
+        config.saveConfig("ClientProtocol ",name);
         GetProtocols.getInstance().setClientProtocol(name);
     }
 
     @Override
     public void calDustMeterZero() {
-        dustMeterCalProcess = 0;
-        ScanSensor.getInstance().stopScan(null);
-        ScanSensor.getInstance().calibrationDustMeterZeroWithMan(null,null);
+
     }
 
     @Override
@@ -415,82 +403,81 @@ public class InformationProtocol extends Observable implements GeneralInfoProtoc
 
     @Override
     public int getMotorTime() {
-        return com.getMotorTime()/100;
+        return DevicesManage.getInstance().getData().getMotorTime()/100;
     }
 
     @Override
     public int getMotorStep() {
-        return com.getMotorRounds();
+        return DevicesManage.getInstance().getData().getMotorRounds();
     }
 
     @Override
     public void setMotorTime(int time) {
-        config.saveConfig("MotorTime",time*100);
-        com.setMotorTime(time*100);
+        config.saveConfig("motor_time",time*100);
+        DevicesManage.getInstance().getData().setMotorTime(time*100);
     }
 
     @Override
     public void setMotorStep(int step) {
-        config.saveConfig("MotorRounds",step);
-        com.setMotorRounds(step);
+        config.saveConfig("motor_rounds",step);
+        DevicesManage.getInstance().getData().setMotorRounds(step);
     }
 
     @Override
     public void setRelay(int num, boolean key) {
-        com.ctrlDo(num,key);
+        DevicesManage.getInstance().setDo(num,key);
     }
 
     @Override
     public void ForwardTest() {
-        com.setMotorSetting(CtrlCommunication.MotorForward);
+        DevicesManage.getInstance().setMotor(DustMeterControl.DustMeterMotorForward);
     }
 
     @Override
     public void BackwardTest() {
-        com.setMotorSetting(CtrlCommunication.MotorBackward);
+        DevicesManage.getInstance().setMotor(DustMeterControl.DustMeterMotorBackward);
     }
 
     @Override
     public void ForwardStep() {
-        int time = com.getMotorTime();
-        int step = com.getMotorRounds();
-        com.setMotorTime(500);
-        com.setMotorRounds(100);
-        com.setMotorSetting(CtrlCommunication.MotorForward);
-        com.setMotorTime(time);
-        com.setMotorRounds(step);
+        DevicesManage manage = DevicesManage.getInstance();
+
+        int time = manage.getData().getMotorTime();
+        int step = manage.getData().getMotorRounds();
+        manage.getData().setMotorTime(500);
+        manage.getData().setMotorRounds(100);
+        manage.setMotor(DustMeterControl.DustMeterMotorForward);
+        manage.getData().setMotorTime(time);
+        manage.getData().setMotorRounds(step);
     }
 
     @Override
     public void BackwardStep() {
-        int time = com.getMotorTime();
-        int step = com.getMotorRounds();
-        com.setMotorTime(500);
-        com.setMotorRounds(100);
-        com.setMotorSetting(CtrlCommunication.MotorBackward);
-        com.setMotorTime(time);
-        com.setMotorRounds(step);
+        DevicesManage manage = DevicesManage.getInstance();
+
+        int time = manage.getData().getMotorTime();
+        int step = manage.getData().getMotorRounds();
+        manage.getData().setMotorTime(500);
+        manage.getData().setMotorRounds(100);
+        manage.setMotor(DustMeterControl.DustMeterMotorBackward);
+        manage.getData().setMotorTime(time);
+        manage.getData().setMotorRounds(step);
     }
 
     @Override
     public boolean isDustMeterRun() {
-        return com.isDustMeterRun();
+        return true;
     }
 
     @Override
     public void setDustMeterRun(boolean key) {
         //Log.d(tag,"dustMeterRun = "+String.valueOf(true));
-        if(key){
-            com.SendFrame(CtrlCommunication.DustMeterRun);
-        }else{
-            com.SendFrame(CtrlCommunication.DustMeterStop);
-        }
     }
 
     @Override
     public void calibrationNoise() {
         calibrationNoiseSate = 0;
-        NoiseCommunication.getInstance().sendCalibrationCmd(this);
+        DevicesManage.getInstance().calibrationNoise(this);
     }
 
     @Override
@@ -500,43 +487,49 @@ public class InformationProtocol extends Observable implements GeneralInfoProtoc
 
     @Override
     public String[] getDustMeterNames() {
-        return OperateDustMeter.DustMeters;
+        return DevicesManage.DustMeterNames;
     }
 
     @Override
     public int getDustMeter() {
-        return config.getConfigInt("DustMeter");
+        return DevicesManage.getInstance().getDustMeterName();
     }
 
     @Override
     public void setDustMeter(int name) {
-        config.saveConfig("DustMeter",name);
+        config.saveConfig("dust_meter_name",name);
     }
 
     @Override
     public int getCameraOffset() {
-        return config.getConfigInt("CameraDirectionOffset");
+        return DevicesManage.getInstance().getCameraOffset();
     }
 
     @Override
     public void setCameraOffset(int offset) {
-        config.saveConfig("CameraDirectionOffset",offset);
-        CameraCommunication.getInstance().setDirectionOffset(offset);
+        DevicesManage.getInstance().setCameraDirectionOffset(offset);
+        config.saveDeviceSetting(DevicesManage.getInstance());
     }
 
     @Override
     public boolean isCameraEnable() {
-        return config.getConfigBoolean("CameraDirectionFunction");
+        if(config.getConfigInt("camera_name")==3){
+            return false;
+        }else{
+            return true;
+        }
     }
 
     @Override
     public void setCameraEnable(boolean enable) {
-        config.saveConfig("CameraDirectionFunction",enable);
+        if(!enable) {
+            config.saveConfig("camera_name", 2);
+        }
     }
 
     @Override
     public void saveUploadingConfig(String configString) {
-        config.saveConfig("UploadConfig",configString);
+        config.saveUploadSetting(configString);
     }
 
 

@@ -1,12 +1,7 @@
-package com.grean.dustctrl.UploadingProtocol;
+package com.grean.dustctrl.device;
 
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.util.Log;
 
-import com.grean.dustctrl.LogFormat;
-import com.grean.dustctrl.SystemConfig;
 import com.grean.dustctrl.process.SensorData;
 import com.tools;
 
@@ -16,35 +11,23 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.util.Observable;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
- * Created by weifeng on 2019/5/29.
+ * 使用灵信 T2显示卡
+ * Created by weifeng on 2020/3/3.
  */
 
-public class LedTcpProtocolServer extends Observable implements NotifyScanSensorOnLedDisplay{
-    private static String tag = "LedTcpProtocolServer";
-    private static LedTcpProtocolServer instance = new LedTcpProtocolServer();
+public class LedDisplayListenVisionT2 implements LedDisplayControl{
+    private static String tag = "LedDisplayListenVisionT2";
     private boolean connected =false,run = false;
     private ConnectThread connectThread;
     private ReceiverThread receiverThread;
     private Socket socketClient;
     private InputStream receive;
     private OutputStream send;
-    private String ip;
-    private int port;
     private byte [] currentFrame = new byte[0];
 
-    //private ConcurrentLinkedQueue<byte[]> sendBuff = new ConcurrentLinkedQueue<>();
 
-    public static LedTcpProtocolServer getInstance() {
-        return instance;
-    }
-
-    private LedTcpProtocolServer (){
-
-    }
 
     private static byte[] addFrame(byte[] region1,byte[] region2){
         byte [] head = {0x55, (byte) 0xaa,0x00,0x00,
@@ -94,16 +77,6 @@ public class LedTcpProtocolServer extends Observable implements NotifyScanSensor
         length += end.length;
         //Log.d(tag,"send = "+ tools.bytesToHexString(frame,length));
         return frame;
-    }
-
-    public void connectServer(String ip,int port){
-        if(!run){
-            this.ip = ip;
-            this.port = port;
-            connectThread = new ConnectThread();
-            connectThread.start();
-
-        }
     }
 
     private static byte[] addRegionFrame(int regionNum,String string){
@@ -170,6 +143,15 @@ public class LedTcpProtocolServer extends Observable implements NotifyScanSensor
         showDataOnLedDisplay(data);
     }
 
+    @Override
+    public void startServer() {
+        if(!run){
+            connectThread = new ConnectThread();
+            connectThread.start();
+
+        }
+    }
+
     private class ConnectThread extends Thread{
 
         public ConnectThread(){
@@ -182,22 +164,7 @@ public class LedTcpProtocolServer extends Observable implements NotifyScanSensor
 
             while ((!interrupted())&&run){
                 if (connected){//已连接服务器
-                    /*try {
-                        if(!sendBuff.isEmpty()){
-                            socketClient.sendUrgentData(0xFF);
-                            send.write(sendBuff.poll());
-                            send.flush();
-                            //Log.d(tag,"send buff rest size "+String.valueOf(sendBuff.size()));
-                        }
-                    } catch (IOException e) {
-                        Log.d(tag,"发送失败");
-                        try {
-                            socketClient.close();
-                        } catch (IOException e1) {
-                            e1.printStackTrace();
-                        }
-                        e.printStackTrace();
-                    }*/
+
                 }else{
                     socketClient = new Socket();
                     receiverThread = new ReceiverThread();
@@ -217,8 +184,6 @@ public class LedTcpProtocolServer extends Observable implements NotifyScanSensor
                 }
             }
         }
-
-
     }
 
     private void handleBuffer(byte[] buff,int count){
@@ -230,7 +195,7 @@ public class LedTcpProtocolServer extends Observable implements NotifyScanSensor
         public void run() {
             super.run();
             try {
-                socketClient.connect(new InetSocketAddress(ip, port), 5000);
+                socketClient.connect(new InetSocketAddress("192.168.1.99",10000), 5000);
                 socketClient.setTcpNoDelay(true);
                 socketClient.setSoLinger(true,30);
                 socketClient.setSendBufferSize(10240);
@@ -283,4 +248,7 @@ public class LedTcpProtocolServer extends Observable implements NotifyScanSensor
             //notifyObservers(new LogFormat("中断网络链接"));
         }
     }
+
+
+
 }

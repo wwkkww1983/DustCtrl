@@ -18,14 +18,11 @@ import java.util.HashMap;
  */
 
 public class myApplication extends Application {
-    private static final String appVersion = "1.0.1";
     private static  final String tag = "myApplication";
     private static myApplication instance;
     private HashMap<String,Object> config = new HashMap<String,Object>();
 
     public myApplication(){
-        //CtrlCommunication.getInstance();//.setDustParaK(getConfigFloat("DustParaK"));
-        //NoiseCommunication.getInstance();
         Log.d(tag,"开机");
     }
 
@@ -90,10 +87,6 @@ public class myApplication extends Application {
         return config;
     }
 
-    public void setConfig(HashMap<String, Object> config) {
-        this.config = config;
-    }
-
     public static myApplication getInstance() {
         return instance;
     }
@@ -107,86 +100,4 @@ public class myApplication extends Application {
         Log.d(tag,"start");
     }
 
-   /* private void loadConfig(){
-        SharedPreferences sp = getSharedPreferences("config",MODE_PRIVATE);
-        SharedPreferences.Editor editor = sp.edit();
-        if(!sp.getBoolean("FactorySetting",false)){
-            editor.putBoolean("FactorySetting",true);
-            editor.putInt("MainBoardName",1);
-            editor.putInt("DustMeterName",0);
-            editor.putFloat("DustParaK",1f);
-            editor.putInt("MotorRounds",1400);
-            editor.putInt("MotorTime",2000);
-            editor.putLong("AutoCalTime",1483200000000l);
-            editor.putLong("AutoCalInterval",86400000l);
-            editor.putBoolean("AutoCalibrationEnable",true);
-            editor.putString("ServerIp","117.149.30.221");
-            editor.putInt("ServerPort",203);
-            editor.putString("MnCode","3301000005");
-            editor.putInt("ClientProtocolName",0);
-            editor.putFloat("AlarmDust",50f);
-            editor.commit();
-        }
-
-    }*/
-
-    /*public void saveConfig(String key,float data){
-        SharedPreferences sp = getSharedPreferences("config",MODE_PRIVATE);
-        SharedPreferences.Editor editor = sp.edit();
-        editor.putFloat(key,data);
-        editor.apply();
-    }
-
-    public void saveConfig(String key,long data){
-        SharedPreferences sp = getSharedPreferences("config",MODE_PRIVATE);
-        SharedPreferences.Editor editor = sp.edit();
-        editor.putLong(key,data);
-        editor.apply();
-    }
-
-    public void saveConfig(String key,int data){
-        SharedPreferences sp = getSharedPreferences("config",MODE_PRIVATE);
-        SharedPreferences.Editor editor = sp.edit();
-        editor.putInt(key,data);
-        editor.apply();
-    }
-
-    public void saveConfig(String key,String data){
-        SharedPreferences sp = getSharedPreferences("config",MODE_PRIVATE);
-        SharedPreferences.Editor editor = sp.edit();
-        editor.putString(key,data);
-        editor.apply();
-    }
-
-    public void saveConfig(String key,boolean data){
-        SharedPreferences sp = getSharedPreferences("config",MODE_PRIVATE);
-        SharedPreferences.Editor editor = sp.edit();
-        editor.putBoolean(key,data);
-        editor.apply();
-    }
-
-    public boolean getConfigBoolean(String key){
-        SharedPreferences sp = getSharedPreferences("config",MODE_PRIVATE);
-        return sp.getBoolean(key,false);
-    }
-
-    public float getConfigFloat(String key){
-        SharedPreferences sp = getSharedPreferences("config",MODE_PRIVATE);
-        return sp.getFloat(key,0f);
-    }
-
-    public int getConfigInt(String key){
-        SharedPreferences sp = getSharedPreferences("config",MODE_PRIVATE);
-        return sp.getInt(key,0);
-    }
-
-    public long getConfigLong(String key){
-        SharedPreferences sp = getSharedPreferences("config",MODE_PRIVATE);
-        return sp.getLong(key,0);
-    }
-
-    public String getConfigString(String key){
-        SharedPreferences sp = getSharedPreferences("config",MODE_PRIVATE);
-        return sp.getString(key," ");
-    }*/
 }

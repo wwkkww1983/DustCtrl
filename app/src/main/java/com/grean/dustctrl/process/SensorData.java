@@ -20,9 +20,68 @@ public class SensorData {
     private float hiTemp,loTemp,hiHumidity,loHumidity,pipeTemp;
     private int heatPwm,motorState,motorRounds,motorTime;
     private float hiDewPoint,loDewPoint;
+    private int pumpTime,laserTime;
+    private boolean bgOk,spanOk;
+    private float dustAlarm,flow,innerTemp;
 
     public SensorData(){
 
+    }
+
+    public float getInnerTemp() {
+        return innerTemp;
+    }
+
+    public void setInnerTemp(float innerTemp) {
+        this.innerTemp = innerTemp;
+    }
+
+    public float getFlow() {
+        return flow;
+    }
+
+    public void setFlow(float flow) {
+        this.flow = flow;
+    }
+
+    public float getDustAlarm() {
+        return dustAlarm;
+    }
+
+    public void setDustAlarm(float dustAlarm) {
+        this.dustAlarm = dustAlarm;
+    }
+
+    public int getPumpTime() {
+        return pumpTime;
+    }
+
+    public void setPumpTime(int pumpTime) {
+        this.pumpTime = pumpTime;
+    }
+
+    public int getLaserTime() {
+        return laserTime;
+    }
+
+    public void setLaserTime(int laserTime) {
+        this.laserTime = laserTime;
+    }
+
+    public boolean isBgOk() {
+        return bgOk;
+    }
+
+    public void setBgOk(boolean bgOk) {
+        this.bgOk = bgOk;
+    }
+
+    public boolean isSpanOk() {
+        return spanOk;
+    }
+
+    public void setSpanOk(boolean spanOk) {
+        this.spanOk = spanOk;
     }
 
     public float getParaTempSlope() {

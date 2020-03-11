@@ -1,15 +1,13 @@
 package com.grean.dustctrl.model;
 
-import android.content.Context;
 
-import com.grean.dustctrl.CtrlCommunication;
-import com.grean.dustctrl.SystemConfig;
-import com.grean.dustctrl.dust.DustMeterLibs;
-import com.grean.dustctrl.myApplication;
+import com.grean.dustctrl.ReadWriteConfig;
+import com.grean.dustctrl.device.DevicesManage;
 import com.grean.dustctrl.presenter.NotifyOperateInfo;
 import com.grean.dustctrl.presenter.NotifyProcessDialogInfo;
 import com.grean.dustctrl.process.NotifyScanEnd;
 import com.grean.dustctrl.process.ScanSensor;
+
 
 /**
  * 操作粉尘仪
@@ -18,40 +16,17 @@ import com.grean.dustctrl.process.ScanSensor;
 
 public class OperateDustMeter implements NotifyScanEnd{
     private static final String tag = "OperateDustMeter";
-    private CtrlCommunication com = CtrlCommunication.getInstance();
-    private boolean dustMeterRun;
     private NotifyOperateInfo info;
     private NotifyProcessDialogInfo dialogInfo;
-    public static final String[] DustNames = {"TSP","PM10","PM2.5"};
-    public static final String[] DustMeters = {"LD-8-G","LD-8-J","GR-1001"};
-    public static final int TSP=0,PM10=1,PM2_5=2;
-    private int dustName,dustMeter;
-    private Context context;
+    private ReadWriteConfig config;
 
-    public OperateDustMeter(NotifyOperateInfo info, Context context){
-        dustMeterRun = com.isDustMeterRun();
+    public OperateDustMeter(NotifyOperateInfo info, ReadWriteConfig config){
         this.info = info;
-        this.context = context;
-        dustName = SystemConfig.getInstance(context).getConfigInt("DustName");
-    }
-
-    public boolean isDustMeterRun() {
-        return dustMeterRun;
-    }
-
-    public void inquireDustMeter(NotifyProcessDialogInfo notifyProcessDialogInfo){
-        this.dialogInfo = notifyProcessDialogInfo;
-        dialogInfo.showInfo("停止测量");
-        ScanSensor.getInstance().stopScan(this);
-        ScanSensor.getInstance().inquireDustMeterInfo(info);
+        this.config = config;
     }
 
     public void switchDustMeter(boolean key){
-        if (key){
-            com.SendFrame(CtrlCommunication.DustMeterRun);
-        }else {
-            com.SendFrame(CtrlCommunication.DustMeterStop);
-        }
+        DevicesManage.getInstance().setDustMeterRun(key);
     }
 
     public void calibrationDustMeter(NotifyProcessDialogInfo notifyProcessDialogInfo){
@@ -60,18 +35,10 @@ public class OperateDustMeter implements NotifyScanEnd{
         ScanSensor scan = ScanSensor.getInstance();
         scan.stopScan(this);
         scan.calibrationDustMeterWithMan(info,dialogInfo);
-        /*CalibrationDustMeterThread thread = new CalibrationDustMeterThread();
-        thread.start();*/
     }
 
-    public void calibrationDustMeterZero(NotifyProcessDialogInfo notifyProcessDialogInfo){
-        this.dialogInfo = notifyProcessDialogInfo;
-        dialogInfo.showInfo("停止测量");
-        ScanSensor scan = ScanSensor.getInstance();
-        scan.stopScan(this);
-        scan.calibrationDustMeterZeroWithMan(info,dialogInfo);
-        /*CalibrationDustMeterThread thread = new CalibrationDustMeterThread();
-        thread.start();*/
+    public boolean isDustMeterRun(){
+        return DevicesManage.getInstance().isDustMeterRun();
     }
 
     @Override
@@ -81,60 +48,48 @@ public class OperateDustMeter implements NotifyScanEnd{
         }
     }
 
-    public String calcParaK (String target){
-        float t = Float.valueOf(target);
-        float k = t / com.getData().getValue();
-        com.getData().setParaK(k);
-        SystemConfig.getInstance(context).saveConfig("DustParaK",k);
-        return String.valueOf(k);
-    }
 
     public void setParaK(String paraK){
         float k = Float.valueOf(paraK);
-        com.getData().setParaK(k);
-        SystemConfig.getInstance(context).saveConfig("DustParaK",k);
+        DevicesManage.getInstance().getData().setParaK(k);
+        config.saveConfig("dust_para_k",k);
     }
 
     public void setParaB(String paraB){
         float b = Float.valueOf(paraB);
-        com.getData().setParaB(b);
-        SystemConfig.getInstance(context).saveConfig("DustParaB",b);
+        DevicesManage.getInstance().getData().setParaB(b);
+        config.saveConfig("dust_para_b",b);
     }
 
     public int getDustName(){
-        return SystemConfig.getInstance(context).getConfigInt("DustName");
+        return DevicesManage.getInstance().getDustName();
     }
 
     public int getDustMeter(){
-        return SystemConfig.getInstance(context).getConfigInt("DustMeter");
+        return DevicesManage.getInstance().getDustMeterName();
     }
 
     public void setDustName(int name){
-        if(name <DustNames.length){
-            dustName = name;
-            SystemConfig.getInstance(context).saveConfig("DustName",name);
-        }
+        config.saveConfig("dust_name",name);
     }
 
     public void setDustMeter(int name){
-        if(name <DustMeters.length){
-            DustMeterLibs.getInstance().setDustMeterName(name);
-            SystemConfig.getInstance(context).saveConfig("DustMeter",name);
-        }
+        config.saveConfig("dust_meter_name",name);
+
     }
 
     public String getParaKString(){
-        float k = com.getData().getParaK();
+        float k = DevicesManage.getInstance().getData().getParaK();
         return String.valueOf(k);
     }
 
     public String getParaBString(){
-        float b=com.getData().getParaB();
+        float b=DevicesManage.getInstance().getData().getParaB();
         return String.valueOf(b);
     }
 
     public boolean getCtrlDo(int num){
-        return com.getData().getCtrlDo(num);
+        return DevicesManage.getInstance().getData().getCtrlDo(num);
     }
 
 

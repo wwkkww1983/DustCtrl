@@ -1,23 +1,18 @@
 package com.grean.dustctrl.protocol;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.grean.dustctrl.DbTask;
-import com.grean.dustctrl.SystemConfig;
-import com.grean.dustctrl.myApplication;
 import com.tools;
-
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
-
 import jxl.Workbook;
 import jxl.write.Label;
 import jxl.write.WritableSheet;
@@ -47,7 +42,7 @@ public class TcpDataBase implements GeneralDataBaseProtocol{
         }else{
             statement = "date >="+ String.valueOf(start)+" and date <"+String.valueOf(end);
         }
-        DbTask helperDbTask = new DbTask(context,3);
+        DbTask helperDbTask = new DbTask(context,4);
         SQLiteDatabase db = helperDbTask.getReadableDatabase();
         Cursor cursor;
         if(tableName == ResultHour) {
@@ -84,7 +79,7 @@ public class TcpDataBase implements GeneralDataBaseProtocol{
         }else{
             statement = "date >="+ String.valueOf(start)+" and date <"+String.valueOf(end);
         }
-        DbTask helperDbTask = new DbTask(context,3);
+        DbTask helperDbTask = new DbTask(context,4);
         SQLiteDatabase db = helperDbTask.getReadableDatabase();
         Cursor cursor;
         cursor = db.rawQuery("SELECT * FROM result WHERE "+statement+" ORDER BY date desc",new String[]{});
@@ -241,40 +236,6 @@ public class TcpDataBase implements GeneralDataBaseProtocol{
             exportDataResult = false;
         }
         return exportDataResult;
-
-        /*String fileName = "数据"+tools.nowTime2FileString()+"导出.txt";
-        File path = new File(pathName);
-        File file = new File(pathName + fileName);
-        try {
-            if (!path.exists()) {
-                //Log.d("TestFile", "Create the path:" + pathName);
-                path.mkdir();
-            }
-            if (!file.exists()) {
-                // Log.d("TestFile", "Create the file:" + fileName);
-                file.createNewFile();
-            }
-            if(listener!=null) {
-                listener.setProcess(10);
-            }
-            // 导出日志
-            BufferedWriter bw = new BufferedWriter(new FileWriter(file,false)); // true// 是添加在后面// false// 是每次写新的
-            bw.write("历史数据 \r\n");
-            ArrayList<String> list = exportDataBase(start,end);
-            for (String tmp : list) {
-                bw.write(tmp + "\r\n");
-                //Log.d("写入SD", tmp);
-            }
-            bw.flush();
-            bw.close();
-            if(listener!=null) {
-                listener.setProcess(80);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            exportDataResult = false;
-        }
-        return exportDataResult;*/
     }
 
     @Override
@@ -282,7 +243,7 @@ public class TcpDataBase implements GeneralDataBaseProtocol{
         GeneralHistoryDataFormat format = new GeneralHistoryDataFormat();
         String statement;
         statement = "date >"+ String.valueOf(dateStart)+" and date <="+String.valueOf(dateEnd);
-        DbTask helperDbTask = new DbTask(context,3);
+        DbTask helperDbTask = new DbTask(context,4);
         SQLiteDatabase db = helperDbTask.getReadableDatabase();
         Cursor cursor;
         cursor = db.rawQuery("SELECT * FROM result_hour WHERE "+statement+" ORDER BY date asc",new String[]{});
@@ -313,7 +274,7 @@ public class TcpDataBase implements GeneralDataBaseProtocol{
         String statement;
         statement = "date >="+ String.valueOf(endDate - 3600000l*24)+" and date <="+String.valueOf(endDate);
 
-        DbTask helperDbTask = new DbTask(context,3);
+        DbTask helperDbTask = new DbTask(context,4);
         SQLiteDatabase db = helperDbTask.getReadableDatabase();
         Cursor cursor;
         cursor = db.rawQuery("SELECT * FROM log WHERE "+statement+" ORDER BY date desc",new String[]{});
@@ -333,7 +294,7 @@ public class TcpDataBase implements GeneralDataBaseProtocol{
         GeneralHistoryDataFormat format = new GeneralHistoryDataFormat();
         String statement;
         statement = "date >"+ String.valueOf(start)+" and date <="+String.valueOf(end);
-        DbTask helperDbTask = new DbTask(context,3);
+        DbTask helperDbTask = new DbTask(context,4);
         SQLiteDatabase db = helperDbTask.getReadableDatabase();
         Cursor cursor;
         cursor = db.rawQuery("SELECT * FROM result WHERE "+statement+" ORDER BY date asc",new String[]{});
@@ -364,7 +325,7 @@ public class TcpDataBase implements GeneralDataBaseProtocol{
         String statement;
         statement = "date >"+ String.valueOf(start)+" and date <="+String.valueOf(end);
 
-        DbTask helperDbTask = new DbTask(context,3);
+        DbTask helperDbTask = new DbTask(context,4);
         SQLiteDatabase db = helperDbTask.getReadableDatabase();
         Cursor cursor;
         cursor = db.rawQuery("SELECT * FROM log WHERE "+statement+" ORDER BY date desc",new String[]{});
@@ -392,7 +353,21 @@ public class TcpDataBase implements GeneralDataBaseProtocol{
     @Override
     public void setMinDataInterval(long min) {
         this.minInterval = min;
-        SystemConfig.getInstance(context).saveConfig("MinInterval",min);
+        DbTask helper = new DbTask(context,4);
+        SQLiteDatabase db = helper.getReadableDatabase();
+        ContentValues values= new ContentValues();
+        values.put("min_interval ",min);
+        db.beginTransaction();
+        try {
+            db.update("upload_setting", values,"factory_setting=?",new String[]{String.valueOf(1)});
+            db.setTransactionSuccessful();
+        } catch (Exception e) {
+
+        } finally {
+            db.endTransaction();
+        }
+        db.close();
+        helper.close();
     }
 
     @Override
@@ -409,49 +384,78 @@ public class TcpDataBase implements GeneralDataBaseProtocol{
     public long calcNextHourDate(long now) {
         lastHourDate = nextHourDate;
         nextHourDate = tools.calcNextTime(now,lastHourDate,60*60000l);
-        //myApplication.getInstance().saveConfig("LastHourDate",lastHourDate);
         Log.d(tag,"calcNextHourDate"+tools.timestamp2string(nextHourDate));
         return nextHourDate;
     }
 
     @Override
     public long calcNextMinDate(long now) {
-       // Log.d(tag,"now="+tools.timestamp2string(now)+";plan="+tools.timestamp2string(lastMinDate)+";interval = "+String.valueOf(minInterval/1000l));
         lastMinDate = nextMinDate;
         nextMinDate = tools.calcNextTime(now,lastMinDate,minInterval);
-        //myApplication.getInstance().saveConfig("LastMinDate",lastMinDate);
         return nextMinDate;
     }
 
     @Override
     public void loadMinDate() {
-        SystemConfig config = SystemConfig.getInstance(context);
-        lastMinDate = config.getConfigLong("LastMinDate");
-        minInterval = config.getConfigLong("MinInterval");
-        lastHourDate = config.getConfigLong("LastHourDate");
-        if(lastMinDate == 0l){
+        DbTask helperDbTask = new DbTask(context,4);
+        SQLiteDatabase db = helperDbTask.getReadableDatabase();
+        Cursor cursor;
+        cursor = db.rawQuery("SELECT * FROM upload_setting",new String[]{});
+        if(cursor.getCount() == 0){//无数据，写入默认数据
             lastMinDate = 1505923200000l;
-        }
-        if(lastHourDate == 0l){
             lastHourDate = 1505923200000l;
-        }
-        if(minInterval == 0l){
             minInterval = 300000l;
+            Log.d(tag,"upload_setting 无数据");
+        }else{
+            cursor.moveToLast();
+            lastMinDate = cursor.getLong(1);
+            lastHourDate = cursor.getLong(2);
+            minInterval = cursor.getLong(3);
         }
-        nextMinDate = lastMinDate + minInterval;
-        nextHourDate = lastHourDate + 3600000l;
+        cursor.close();
+        db.close();
+        helperDbTask.close();
+
         Log.d(tag,"nextHourDate"+tools.timestamp2string(nextHourDate));
        // Log.d(tag,"next ="+tools.timestamp2string(nextMinDate)+";plan="+tools.timestamp2string(lastMinDate)+";interval = "+String.valueOf(minInterval/1000l));
     }
 
     @Override
     public void saveMinDate() {
-        SystemConfig.getInstance(context).saveConfig("LastMinDate",lastMinDate);
+        DbTask helper = new DbTask(context,4);
+        SQLiteDatabase db = helper.getReadableDatabase();
+        ContentValues values= new ContentValues();
+        values.put("last_min_date",lastMinDate);
+        db.beginTransaction();
+        try {
+            db.update("upload_setting", values,"factory_setting=?",new String[]{String.valueOf(1)});
+            db.setTransactionSuccessful();
+        } catch (Exception e) {
+
+        } finally {
+            db.endTransaction();
+        }
+        db.close();
+        helper.close();
     }
 
     @Override
     public void saveHourDate() {
-        SystemConfig.getInstance(context).saveConfig("LastHourDate",lastHourDate);
+        DbTask helper = new DbTask(context,4);
+        SQLiteDatabase db = helper.getReadableDatabase();
+        ContentValues values= new ContentValues();
+        values.put("last_hour_date",lastHourDate);
+        db.beginTransaction();
+        try {
+            db.update("upload_setting", values,"factory_setting=?",new String[]{String.valueOf(1)});
+            db.setTransactionSuccessful();
+        } catch (Exception e) {
+
+        } finally {
+            db.endTransaction();
+        }
+        db.close();
+        helper.close();
     }
 
     @Override
@@ -460,7 +464,7 @@ public class TcpDataBase implements GeneralDataBaseProtocol{
         String statement;
         statement = "date >"+ String.valueOf(begin)+" and date <="+String.valueOf(end);
 
-        DbTask helperDbTask = new DbTask(context,3);
+        DbTask helperDbTask = new DbTask(context,4);
         SQLiteDatabase db = helperDbTask.getReadableDatabase();
         Cursor cursor;
         cursor = db.rawQuery("SELECT * FROM log WHERE "+statement+" ORDER BY date desc",new String[]{});

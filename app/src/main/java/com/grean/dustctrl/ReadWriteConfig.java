@@ -1,5 +1,7 @@
 package com.grean.dustctrl;
 
+import com.grean.dustctrl.device.DevicesManage;
+
 /**
  * Created by weifeng on 2017/9/8.
  */
@@ -15,4 +17,6 @@ public interface ReadWriteConfig {
     String getConfigString(String key);
     long getConfigLong(String key);
     int getConfigInt(String key);
+    void saveUploadSetting(String key);
+    void saveDeviceSetting(DevicesManage manage);
 }

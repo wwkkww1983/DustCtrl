@@ -1,67 +1,35 @@
-package com.grean.dustctrl;
+package com.grean.dustctrl.device;
 
 import android.util.Log;
 
-import com.SerialCommunication;
+import com.grean.dustctrl.ComReceiveProtocol;
+import com.grean.dustctrl.NoiseCalibrationListener;
+import com.grean.dustctrl.SerialCommunicationController;
+import com.grean.dustctrl.process.SensorData;
 
 /**
- * 噪声仪通讯
- * Created by Administrator on 2017/8/24.
+ * Created by weifeng on 2020/3/3.
  */
 
-public class NoiseCommunication extends SerialCommunication{
-    private static final String tag = "NoiseCommunication";
+public class NoiseAwa5636_7 implements ComReceiveProtocol,NoiseControl{
+    private static final String tag = "NoiseAwa5636_7";
     private float noiseData;
+    private SensorData data;
+    private SerialCommunicationController com;
     private boolean calOk;
     private NoiseCalibrationListener calibrationListener;
-    public static final int NoiseRealTimeData = 1,
-            Other = 0;
     private static final byte[] cmdNoiseRealTimeData={'A','W','A','0'};
     private static final byte[] cmdAutoCal={'A','W','A','O','1'};
     private String calInfo = "Error";
 
-    private static NoiseCommunication instance = new NoiseCommunication();
 
+    public NoiseAwa5636_7(SerialCommunicationController com,SensorData data){
+        this.com = com;
+        this.data = data;
+        this.com.setComReceiveProtocol(this);
 
-    private NoiseCommunication(){
-        super(1,9600,0);
     }
 
-    public static NoiseCommunication getInstance() {
-        return instance;
-    }
-
-    @Override
-    protected boolean checkRecBuff() {
-        return true;
-    }
-
-    @Override
-    protected void communicationProtocol(byte[] rec, int size,int state) {
-        //Log.d(tag,new String(rec,0,size));
-        if(checkSum(rec,size)){
-            String[] content = new String(rec,0,size).split(",");
-            String cmd = content[0];
-            if(cmd.equals("AWAA")) {
-                String recString = content[1].substring(0,content[1].indexOf("d"));
-                noiseData = Float.valueOf(recString);
-                //Log.d(tag,"cmd = "+new String(rec, 0, size)+"data = "+String.valueOf(noiseData));
-            }else if(cmd.equals("AWAV")){
-                /*calInfo = new String(rec,0,size);
-                if(calibrationListener!=null) {
-                    calibrationListener.onResult(calInfo);
-                }
-                Log.d(tag,calInfo);*/
-            }else{
-
-            }
-
-        }
-    }
-
-    public float getNoiseData() {
-        return noiseData;
-    }
 
     /**
      * 检查校验和
@@ -96,9 +64,34 @@ public class NoiseCommunication extends SerialCommunication{
         }
     }
 
+
     @Override
-    protected void asyncCommunicationProtocol(byte[] rec, int size) {
-       // Log.d(tag,new String(rec,0,size));
+    public void receiveProtocol(byte[] rec, int size, int state) {
+        //Log.d(tag,new String(rec,0,size));
+        if(checkSum(rec,size)){
+            String[] content = new String(rec,0,size).split(",");
+            String cmd = content[0];
+            if(cmd.equals("AWAA")) {
+                String recString = content[1].substring(0,content[1].indexOf("d"));
+                noiseData = Float.valueOf(recString);
+                data.setNoise(noiseData);
+                //Log.d(tag,"cmd = "+new String(rec, 0, size)+"data = "+String.valueOf(noiseData));
+            }else if(cmd.equals("AWAV")){
+                /*calInfo = new String(rec,0,size);
+                if(calibrationListener!=null) {
+                    calibrationListener.onResult(calInfo);
+                }
+                Log.d(tag,calInfo);*/
+            }else{
+
+            }
+
+        }
+    }
+
+    @Override
+    public void receiveAsyncProtocol(byte[] rec, int size) {
+        // Log.d(tag,new String(rec,0,size));
         String cmd = new String(rec,0,4);
         String cmdRsTech = new String(rec,0,2);
         if(cmd.equals("AWAV")){
@@ -117,7 +110,7 @@ public class NoiseCommunication extends SerialCommunication{
                     calibrationListener.onResult(calInfo,calOk);
                 }
             }
-           // Log.d(tag,calInfo);
+            // Log.d(tag,calInfo);
         }else if(cmdRsTech.equals("aa")&&(size==6)) {//支持北京瑞森新谱声级计
             try {
                 noiseData = Float.valueOf(new String(rec,2,4))/10f;
@@ -129,25 +122,16 @@ public class NoiseCommunication extends SerialCommunication{
         }
     }
 
-    public void sendCalibrationCmd(NoiseCalibrationListener listener){
+    @Override
+    public void inquire() {
+        com.send(cmdNoiseRealTimeData,NoiseGetRealTimeData);
+    }
+
+    @Override
+    public void calibrationNoise(NoiseCalibrationListener listener) {
         this.calibrationListener = listener;
-        addSendBuff(cmdAutoCal,Other);
+        com.send(cmdAutoCal,NoiseCalibration);
         calOk = false;
         calInfo = "Error";
     }
-
-    public void sendFrame(int cmd){
-        switch (cmd){
-            case NoiseRealTimeData:
-                addSendBuff(cmdNoiseRealTimeData,cmd);
-                break;
-            case Other:
-
-                break;
-            default:
-
-                break;
-        }
-    }
-
 }

@@ -61,7 +61,6 @@ public interface GeneralInfoProtocol {
 
     boolean getDustMeterBg();
     boolean getDustMeterSpan();
-    void inquireDustMeterInfo();
     void setDustMeterPumpTime(int pumpTime);
     void setDustMeterLaserTime(int laserTime);
     int getDustMeterPumpTime();

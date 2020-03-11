@@ -1,14 +1,10 @@
 package com.grean.dustctrl.model;
 
 import android.content.Context;
-
-import com.grean.dustctrl.SystemConfig;
+import com.grean.dustctrl.SystemSettingStore;
 import com.grean.dustctrl.UploadingProtocol.ProtocolTcpServer;
 import com.grean.dustctrl.UploadingProtocol.UploadingConfigFormat;
-import com.grean.dustctrl.myApplication;
-import com.grean.dustctrl.presenter.NotifyOperateInfo;
 import com.grean.dustctrl.presenter.NotifyProcessDialogInfo;
-import com.grean.dustctrl.protocol.GetProtocols;
 
 import org.json.JSONException;
 
@@ -17,30 +13,27 @@ import org.json.JSONException;
  */
 
 public class OperateTcp {
-    NotifyProcessDialogInfo notifyProcessDialogInfo;
-    private NotifyOperateInfo info;
 
-    public OperateTcp(NotifyOperateInfo info){
-        this.info= info;
+
+    public OperateTcp(){
     }
 
     public String getLocalIpAddress(){
         return ProtocolTcpServer.getIpAddressString();
     }
 
-    public void setTcpSocketClient(Context context, String ip, int port, String mnCode, NotifyProcessDialogInfo notifyProcessDialogInfo, int clientProtocolName){
+    public void setTcpSocketClient(Context context, String ip, int port, String mnCode,int clientProtocolName){
         UploadingConfigFormat format = ProtocolTcpServer.getInstance().getFormat();
         format.setMnCode(mnCode);
         format.setServerAddress(ip);
         format.setServerPort(port);
+        SystemSettingStore store = new SystemSettingStore(context);
         try {
-            SystemConfig.getInstance(context).saveConfig("UploadConfig",format.getConfigString());//固化
+            store.saveUploadSetting(format.getConfigString());
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        SystemConfig.getInstance(context).saveConfig("ClientProtocol",clientProtocolName);
-        GetProtocols.getInstance().setClientProtocol(clientProtocolName);
-        ProtocolTcpServer.getInstance().reconnectServer(context,info,notifyProcessDialogInfo);
+        store.saveConfig("ClientProtocol",clientProtocolName);
     }
 
     public void setBackupTcpSocketClient(Context context,String ip,int port,String mnCode){
@@ -48,8 +41,9 @@ public class OperateTcp {
         format.setBackupMnCode(mnCode);
         format.setBackupServerAddress(ip);
         format.setBackupServerPort(port);
+        SystemSettingStore store = new SystemSettingStore(context);
         try {
-            SystemConfig.getInstance(context).saveConfig("UploadConfig",format.getConfigString());//固化
+            store.saveUploadSetting(format.getConfigString());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -88,8 +82,9 @@ public class OperateTcp {
         UploadingConfigFormat format = ProtocolTcpServer.getInstance().getFormat();
         format.setLat(lat);
         format.setLng(lng);
+        SystemSettingStore store = new SystemSettingStore(context);
         try {
-            SystemConfig.getInstance(context).saveConfig("UploadConfig",format.getConfigString());//固化
+            store.saveUploadSetting(format.getConfigString());
         } catch (JSONException e) {
             e.printStackTrace();
         }

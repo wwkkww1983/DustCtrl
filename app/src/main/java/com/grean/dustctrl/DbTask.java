@@ -27,6 +27,14 @@ public class DbTask extends SQLiteOpenHelper{
         //V0.0-->V1.0 sqLiteDatabase.execSQL("CREATE TABLE result (date LONG,dust FLOAT,value FLOAT,temperature FLOAT,humidity FLOAT,pressure FLOAT,windforce FLOAT,winddirection FLOAT,noise FLOAT)");//结果
         sqLiteDatabase.execSQL("CREATE TABLE detail (date LONG ,acin BOOLEAN,batterylow BOOLEAN,hitemp FLOAT,lotemp FLOAT,hihumidity FLOAT,lohumidity FLOAT,pwm INTEGER)");//辅助参数
         sqLiteDatabase.execSQL("CREATE TABLE log(id INTEGER PRIMARY KEY AUTOINCREMENT,date LONG,content TEXT)");//日志
+        //V0.0-->V4.0
+        sqLiteDatabase.execSQL("CREATE TABLE device_setting(factory_setting INTEGER,camera_name INTEGER ,dust_meter_name INTEGER ,led_display_name INTEGER,noise_name INTEGER,peripheral_name INTEGER,weather_name INTEGER," +
+                "dust_name INTEGER,dust_para_k FLOAT,dust_para_b FLOAT,dust_alarm FLOAT,motor_rounds INTEGER,motor_time INTEGER," +
+                "temp_para_k FLOAT,temp_para_b FLOAT,humi_para_k FLOAT,humi_para_b FLOAT,auto_calibration_enable INTEGER,auto_calibration_date LONG,auto_calibration_interval LONG," +
+                "ClientProtocol INTEGER, content TEXT)");//设置
+        sqLiteDatabase.execSQL("CREATE TABLE upload_setting(factory_setting INTEGER,last_min_date LONG ,last_hour_date LONG ,min_interval LONG," +
+                "content TEXT)");//网络设置
+
     }
 
     @Override
@@ -60,7 +68,16 @@ public class DbTask extends SQLiteOpenHelper{
                     "dust_1 FLOAT,value_1 FLOAT,dust_2 FLOAT,value_2 FLOAT)");
             Log.d("DbTask","数据库升级v1->v3");
         }
-    }
 
+        if(i1==4){
+            sqLiteDatabase.execSQL("CREATE TABLE device_setting(factory_setting INTEGER,camera_name INTEGER ,dust_meter_name INTEGER ,led_display_name INTEGER,noise_name INTEGER,peripheral_name INTEGER,weather_name INTEGER," +
+                    "dust_name INTEGER,dust_para_k FLOAT,dust_para_b FLOAT,dust_alarm FLOAT,motor_rounds INTEGER,motor_time INTEGER," +
+                    "temp_para_k FLOAT,temp_para_b FLOAT,humi_para_k FLOAT,humi_para_b FLOAT,auto_calibration_enable INTEGER,auto_calibration_date LONG,auto_calibration_interval LONG," +
+                    "ClientProtocol INTEGER, content TEXT)");//设置
+            sqLiteDatabase.execSQL("CREATE TABLE upload_setting(factory_setting INTEGER,last_min_date LONG ,last_hour_date LONG ,min_interval LONG," +
+                    "content TEXT)");//网络设置
+            Log.d("DbTask","数据库升级v1,2,3->v4");
+        }
+    }
 
 }

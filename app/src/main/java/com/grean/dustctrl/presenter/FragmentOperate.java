@@ -24,6 +24,8 @@ import android.widget.Toast;
 
 import com.grean.dustctrl.NoiseCalibrationListener;
 import com.grean.dustctrl.R;
+import com.grean.dustctrl.SystemSettingStore;
+import com.grean.dustctrl.device.DevicesManage;
 import com.grean.dustctrl.model.OperateDustMeter;
 import com.grean.dustctrl.model.OperateSystem;
 import com.grean.dustctrl.model.OperateTcp;
@@ -45,19 +47,16 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
     private ProcessDialogFragment dialogFragment;
     private ProcessFragment processFragment;
     private String dustMeterInfo,autoCalTime,toastString,NoiseCalibrationInfo;
-    private Button btnDustMeterManCal,btnDustMeterInquire,btnMotorSet,btnSaveAutoCal,
-            btnSaveServer,btnUpdateSoftware,btnCalcParaK,btnSetAlarm,
-            btnDustMeterManCalZero,btnMotorTestUp,btnMotorTestDown,btnUpdateSetting,
-            btnSetParaK,btnNoiseCal,btnResetResetCom,btnSaveLocation;
-    private TextView tvDustMeterInfo,tvNextAutoCalTime,tvLocalIp,tvSoftwareVersion;//tvParaK
+    private Button btnSaveAutoCal,btnMotorTestUp,btnMotorTestDown,btnNoiseCal;
+    private TextView tvDustMeterInfo,tvNextAutoCalTime,tvLocalIp,tvSoftwareVersion;
     private EditText etMotorRounds,etMotorTime,etAutoCalInterval,etServerIp,
-            etServerPort,etUpdateSoftwareUrl,etTargetValue,etMnCode,etAlarm,etSetParaK,
+            etServerPort,etUpdateSoftwareUrl,etMnCode,etAlarm,etSetParaK,
             etSetParaB,etLng,etLat,etCameraDirectionOffset,etTempSlope,etTempIntercept,
             etHumiSlope,etHumiIntercept,etBackupServerAddress,etBackupServerPort,etBackupMnCode;
     private Switch swDustMeterRun,swValve,swFan,swExt1,swExt2,swBackup,
-            swAutoCalibrationEnable,swCameraDirectionEnable,swLedDisplayEnable,swBackupServer;
-    private Spinner spProtocol,spDustName,spDustMeter,spMainBoard,spCameraName;
-    private int clientProtocolName,mainBoardName,cameraName;
+            swAutoCalibrationEnable,swBackupServer;
+    private Spinner spProtocol,spDustName,spDustMeter,spCameraName,spNoiseName,spLedDisplayName;
+    private int clientProtocolName,dustName,dustMeterName,noiseName,ledDisplayName,cameraName;
 
 
 
@@ -98,9 +97,9 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         View messageLayout = inflater.inflate(R.layout.fragment_operate,container,false);
         initView(messageLayout);
-        dustMeter = new OperateDustMeter(this,getActivity());
-        system = new OperateSystem(getActivity());
-        operateTcp = new OperateTcp(this);
+        dustMeter = new OperateDustMeter(this,new SystemSettingStore(getActivity()));
+        system = new OperateSystem(getActivity(),new SystemSettingStore(getActivity()));
+        operateTcp = new OperateTcp();
         onShow();
         return messageLayout;
     }
@@ -116,7 +115,6 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
         autoCalTime = system.getAutoCalNextTime();
         tvNextAutoCalTime.setText(autoCalTime);
         tvLocalIp.setText(operateTcp.getLocalIpAddress()+":8888");
-        //tvParaK.setText(dustMeter.getParaKString());
         etSetParaK.setText(dustMeter.getParaKString());
         etSetParaB.setText(dustMeter.getParaBString());
         etMnCode.setText(operateTcp.getTcpMnCode());
@@ -135,28 +133,36 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
         clientProtocolName = system.getClientName();
         spProtocol.setSelection(clientProtocolName);
 
-        ArrayAdapter<String>CameraNames = new ArrayAdapter<String>(getActivity(),R.layout.my_spnner,system.getCameraNames());
-        spCameraName.setOnItemSelectedListener(this);
-        spCameraName.setAdapter(CameraNames);
-        cameraName = system.getCameraName();
-        spCameraName.setSelection(cameraName);
-
-        ArrayAdapter<String>dustNames = new ArrayAdapter<String>(getActivity(),R.layout.my_spnner,dustMeter.DustNames);
+        ArrayAdapter<String>dustNames = new ArrayAdapter<String>(getActivity(),R.layout.my_spnner,DevicesManage.DustNames);
         spDustName.setOnItemSelectedListener(this);
         spDustName.setAdapter(dustNames);
-        spDustName.setSelection(dustMeter.getDustName(),true);
+        dustName = dustMeter.getDustName();
+        spDustName.setSelection(dustName,true);
 
-        ArrayAdapter<String>dustMeters = new ArrayAdapter<String>(getActivity(),R.layout.my_spnner,dustMeter.DustMeters);
+
+        ArrayAdapter<String>dustMeters = new ArrayAdapter<String>(getActivity(),R.layout.my_spnner,DevicesManage.DustMeterNames);
         spDustMeter.setOnItemSelectedListener(this);
-        //spDustMeter.setOnItemClickListener(this);
         spDustMeter.setAdapter(dustMeters);
-        spDustMeter.setSelection(dustMeter.getDustMeter(),true);
+        dustMeterName = dustMeter.getDustMeter();
+        spDustMeter.setSelection(dustMeterName,true);
 
-        ArrayAdapter<String>mainBoards = new ArrayAdapter<String>(getActivity(),R.layout.my_spnner,system.getMainBoardNames());
-        spMainBoard.setOnItemSelectedListener(this);
-        spMainBoard.setAdapter(mainBoards);
-        mainBoardName = system.getMainBoardName();
-        spMainBoard.setSelection(mainBoardName);
+        ArrayAdapter<String>cameraNames = new ArrayAdapter<String>(getActivity(),R.layout.my_spnner,DevicesManage.CameraNames);
+        spCameraName.setOnItemSelectedListener(this);
+        spCameraName.setAdapter(cameraNames);
+        cameraName = system.getCameraName();
+        spCameraName.setSelection(cameraName,true);
+
+        ArrayAdapter<String>ledDisplayNames = new ArrayAdapter<String>(getActivity(),R.layout.my_spnner,DevicesManage.LedDisplayNames);
+        spLedDisplayName.setOnItemSelectedListener(this);
+        spLedDisplayName.setAdapter(ledDisplayNames);
+        ledDisplayName = system.getLedDisplayName();
+        spLedDisplayName.setSelection(ledDisplayName,true);
+
+        ArrayAdapter<String>noiseNames = new ArrayAdapter<String>(getActivity(),R.layout.my_spnner,DevicesManage.NoiseNames);
+        spNoiseName.setOnItemSelectedListener(this);
+        spNoiseName.setAdapter(noiseNames);
+        noiseName = system.getNoiseName();
+        spNoiseName.setSelection(noiseName,true);
 
         etAlarm.setText(system.getAlarmDust());
         swValve.setChecked(dustMeter.getCtrlDo(0));
@@ -167,15 +173,12 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
 
         etLng.setText(operateTcp.getLng());
         etLat.setText(operateTcp.getLat());
-        swCameraDirectionEnable.setChecked(system.getCameraDirectionEnable());
         etCameraDirectionOffset.setText(String.valueOf(system.getCameraDirectionOffset()));
 
         etHumiIntercept.setText(system.getParaHumiIntercept());
         etHumiSlope.setText(system.getParaHumiSlope());
         etTempIntercept.setText(system.getParaTempIntercept());
         etTempSlope.setText(system.getParaTempSlope());
-
-        swLedDisplayEnable.setChecked(system.isLedDisplayEnable());
 
         etBackupServerPort.setText(operateTcp.getBackupServerPort());
         etBackupServerAddress.setText(operateTcp.getBackupServerAddress());
@@ -186,9 +189,10 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
     private void initView(View v){
         spDustMeter = v.findViewById(R.id.spOperateDustMeter);
         spDustName = v.findViewById(R.id.spOperateDust);
-        spMainBoard = v.findViewById(R.id.spMainBoardType);
-        btnDustMeterInquire = v.findViewById(R.id.btnOperateInquireDuster);
-        btnDustMeterManCal = v.findViewById(R.id.btnOperateManCal);
+        spCameraName = v.findViewById(R.id.spOperateCamera);
+        spNoiseName = v.findViewById(R.id.spOperateNoise);
+        spLedDisplayName = v.findViewById(R.id.spOperateLedDisplay);
+        v.findViewById(R.id.btnOperateManCal).setOnClickListener(this);
         tvDustMeterInfo = v.findViewById(R.id.tvOperateDusterInfo);
         swDustMeterRun = v.findViewById(R.id.swOperateDusterSwitch);
         swValve = v.findViewById(R.id.swOperateSystemDo1);
@@ -196,66 +200,50 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
         swExt1 = v.findViewById(R.id.swOperateSystemDo3);
         swExt2 = v.findViewById(R.id.swOperateSystemDo4);
         swBackup = v.findViewById(R.id.swOperateSystemDo5);
-        btnMotorSet = v.findViewById(R.id.btnOperateMotorSet);
+        v.findViewById(R.id.btnOperateMotorSet).setOnClickListener(this);
         etMotorRounds = v.findViewById(R.id.etOperateMotorRounds);
         etMotorTime = v.findViewById(R.id.etOperateMotorTime);
         tvNextAutoCalTime = v.findViewById(R.id.tvOperateNextAutoCal);
         etAutoCalInterval = v.findViewById(R.id.etOperateAutoCalInterval);
         btnSaveAutoCal = v.findViewById(R.id.btnOperateSaveAutoCal);
         swAutoCalibrationEnable = v.findViewById(R.id.swAutoCaliration);
-        swCameraDirectionEnable = v.findViewById(R.id.swCameraDirection);
         etServerIp = v.findViewById(R.id.etOperateServerIP);
         etServerPort = v.findViewById(R.id.etOperateServerPort);
         etUpdateSoftwareUrl = v.findViewById(R.id.etOperateUpdateUrl);
-        btnSaveServer = v.findViewById(R.id.btnOperateSaveServer);
-        btnUpdateSoftware = v.findViewById(R.id.btnOperateUpdateSoftware);
+        v.findViewById(R.id.btnOperateSaveServer).setOnClickListener(this);
+        v.findViewById(R.id.btnOperateUpdateSoftware).setOnClickListener(this);
         tvLocalIp = v.findViewById(R.id.tvOperateLocalIp);
-        //tvParaK = v.findViewById(R.id.tvOperateParaK);
         etSetParaK = v.findViewById(R.id.etOperateParaK);
         etSetParaB = v.findViewById(R.id.etOperateParaB);
-        btnSetParaK = v.findViewById(R.id.btnOperateSetParaK);
-        etTargetValue = v.findViewById(R.id.etOperateTargetValue);
-        btnCalcParaK = v.findViewById(R.id.btnOperateCalcPraraK);
+        v.findViewById(R.id.btnOperateSetParaK).setOnClickListener(this);
         etMnCode = v.findViewById(R.id.etOperateMnCode);
         tvSoftwareVersion = v.findViewById(R.id.tvOperateSoftwareVerison);
-        btnSetAlarm = v.findViewById(R.id.btnOperateSaveAlarm);
+        v.findViewById(R.id.btnOperateSaveAlarm).setOnClickListener(this);
         spProtocol = v.findViewById(R.id.spOperateProtocol);
-        btnDustMeterManCalZero = v.findViewById(R.id.btnOperateCalZero);
         etAlarm = v.findViewById(R.id.etOperateAlarm);
-        btnUpdateSetting = v.findViewById(R.id.btnOperateUpdateSetting);
+        v.findViewById(R.id.btnOperateUpdateSetting).setOnClickListener(this);
         btnMotorTestDown = v.findViewById(R.id.btnOperateTestDown);
         btnMotorTestUp = v.findViewById(R.id.btnOperateTestUp);
         btnNoiseCal = v.findViewById(R.id.btnOperateNoiseCal);
         etLng = v.findViewById(R.id.etOperateLng);
         etLat = v.findViewById(R.id.etoperateLat);
-        btnResetResetCom = v.findViewById(R.id.btnOperateResetCom);
-        btnSaveLocation = v.findViewById(R.id.btnOperateSaveLocation);
+        v.findViewById(R.id.btnOperateSaveLocation).setOnClickListener(this);
+        v.findViewById(R.id.btnOperateSaveSetting).setOnClickListener(this);
+
         etCameraDirectionOffset = v.findViewById(R.id.etCameraDirectionOffset);
-        btnSaveLocation.setOnClickListener(this);
-        btnResetResetCom.setOnClickListener(this);
         btnNoiseCal.setOnClickListener(this);
         btnMotorTestDown.setOnClickListener(this);
         btnMotorTestUp.setOnClickListener(this);
-        btnDustMeterManCalZero.setOnClickListener(this);
-        btnSetAlarm.setOnClickListener(this);
-        btnCalcParaK.setOnClickListener(this);
-        btnSaveServer.setOnClickListener(this);
-        btnUpdateSoftware.setOnClickListener(this);
         swAutoCalibrationEnable.setOnClickListener(this);
         tvNextAutoCalTime.setOnClickListener(this);
         btnSaveAutoCal.setOnClickListener(this);
-        btnDustMeterManCal.setOnClickListener(this);
-        btnDustMeterInquire.setOnClickListener(this);
         swDustMeterRun.setOnClickListener(this);
         swBackup.setOnClickListener(this);
         swFan.setOnClickListener(this);
         swValve.setOnClickListener(this);
         swExt2.setOnClickListener(this);
         swExt1.setOnClickListener(this);
-        btnMotorSet.setOnClickListener(this);
-        btnUpdateSetting.setOnClickListener(this);
-        btnSetParaK.setOnClickListener(this);
-        swCameraDirectionEnable.setOnClickListener(this);
+
         v.findViewById(R.id.btnCameraDirectionOffset).setOnClickListener(this);
 
         etTempIntercept = v.findViewById(R.id.etTempIntercept);
@@ -264,18 +252,11 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
         etHumiSlope = v.findViewById(R.id.etHumiSlope);
         v.findViewById(R.id.btnSaveHumiTempPara).setOnClickListener(this);
 
-        swLedDisplayEnable = v.findViewById(R.id.swLedDisplayEnable);
-        swLedDisplayEnable.setOnClickListener(this);
-
-
         etBackupMnCode = v.findViewById(R.id.etOperateBackupMnCode);
         etBackupServerAddress = v.findViewById(R.id.etOperateBackupServerIp);
         etBackupServerPort = v.findViewById(R.id.etOperateBackupServerPort);
-        v.findViewById(R.id.btnOperateSaveBackupServer).setOnClickListener(this);
         swBackupServer = v.findViewById(R.id.swBackupServerEnable);
         swBackupServer.setOnClickListener(this);
-
-        spCameraName = v.findViewById(R.id.spCameraName);
     }
 
 
@@ -305,12 +286,6 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
                 dialogFragment.setCancelable(false);
                 dialogFragment.show(getFragmentManager(),"Calibration");
                 dustMeter.calibrationDustMeter(dialogFragment);
-                break;
-            case R.id.btnOperateInquireDuster:
-                dialogFragment = new ProcessDialogFragment();
-                dialogFragment.setCancelable(false);
-                dialogFragment.show(getFragmentManager(),"InquireDustMeterInfo");
-                dustMeter.inquireDustMeter(dialogFragment);
                 break;
             case R.id.swOperateDusterSwitch:
                 dustMeter.switchDustMeter(swDustMeterRun.isChecked());
@@ -369,14 +344,12 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
                 getActivity().sendBroadcast(intent);
                 break;
             case R.id.btnOperateSaveServer:
-                dialogFragment = new ProcessDialogFragment();
-                dialogFragment.setCancelable(true);
-                dialogFragment.show(getFragmentManager(),"TcpSocket");
-                operateTcp.setTcpSocketClient(getActivity(),etServerIp.getText().toString(),Integer.valueOf(etServerPort.getText().toString()),etMnCode.getText().toString(),dialogFragment,clientProtocolName);
-                Toast.makeText(getActivity(),"设置成功，重启生效",Toast.LENGTH_LONG).show();
-                break;
-            case R.id.btnOperateSaveBackupServer:
-                operateTcp.setBackupTcpSocketClient(getActivity(),etBackupServerAddress.getText().toString(),Integer.valueOf(etBackupServerPort.getText().toString()),etBackupMnCode.getText().toString());
+                operateTcp.setTcpSocketClient(getActivity(),etServerIp.getText().toString(),
+                        Integer.valueOf(etServerPort.getText().toString()),
+                        etMnCode.getText().toString(),clientProtocolName);
+                operateTcp.setBackupTcpSocketClient(getActivity(),etBackupServerAddress.getText().toString(),
+                        Integer.valueOf(etBackupServerPort.getText().toString()),
+                        etBackupMnCode.getText().toString());
                 Toast.makeText(getActivity(),"设置成功，重启生效",Toast.LENGTH_LONG).show();
                 break;
             case R.id.btnOperateUpdateSoftware:
@@ -386,19 +359,8 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
                 dialogFragment.show(getFragmentManager(),"DownLoadSoftware");
                 system.startDownLoadSoftware(getActivity(),etUpdateSoftwareUrl.getText().toString(),dialogFragment,this);
                 break;
-            case R.id.btnOperateCalcPraraK:
-                String string = dustMeter.calcParaK(etTargetValue.getText().toString());
-                //tvParaK.setText(string);
-                etSetParaK.setText(string);
-                break;
             case R.id.btnOperateSaveAlarm:
                 system.setAlarmDust(etAlarm.getText().toString());
-                break;
-            case R.id.btnOperateCalZero:
-                dialogFragment = new ProcessDialogFragment();
-                dialogFragment.setCancelable(false);
-                dialogFragment.show(getFragmentManager(),"Calibration");
-                dustMeter.calibrationDustMeterZero(dialogFragment);
                 break;
             case R.id.btnOperateTestDown:
                 system.testMotor(false);
@@ -412,7 +374,6 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
             case R.id.btnOperateSetParaK:
                 dustMeter.setParaK(etSetParaK.getText().toString());
                 dustMeter.setParaB(etSetParaB.getText().toString());
-                //system.setMainBoardName(mainBoardName);
                 break;
             case R.id.btnOperateNoiseCal:
                 processFragment = new ProcessFragment();
@@ -420,15 +381,8 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
                 processFragment.show(getFragmentManager(),"calibration noise");
                 system.calNoise(this);
                 break;
-            case R.id.btnOperateResetCom:
-                system.resetComFlag();
-                break;
             case R.id.btnOperateSaveLocation:
                 operateTcp.setLocation(getActivity(),etLng.getText().toString(),etLat.getText().toString());
-                break;
-            case R.id.swCameraDirection:
-                system.setCameraDirectionEnable(swCameraDirectionEnable.isChecked());
-                Toast.makeText(getActivity(),"设置成功，重启生效",Toast.LENGTH_LONG).show();
                 break;
             case R.id.btnCameraDirectionOffset:
                 int offset = Integer.valueOf(etCameraDirectionOffset.getText().toString());
@@ -447,13 +401,16 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
                         Float.valueOf(etHumiSlope.getText().toString()),Float.valueOf(etHumiIntercept.getText().toString()));
                         Toast.makeText(getActivity(),"设置成功",Toast.LENGTH_LONG).show();
                 break;
-            case R.id.swLedDisplayEnable:
-                system.setLedDisplayEnable(swLedDisplayEnable.isChecked());
-                Toast.makeText(getActivity(),"设置成功,重启生效！",Toast.LENGTH_LONG).show();
-                break;
             case R.id.swBackupServerEnable:
                 system.setBackupServerEnable(swBackupServer.isChecked());
                 Toast.makeText(getActivity(),"设置成功,重启生效！",Toast.LENGTH_LONG).show();
+                break;
+            case R.id.btnOperateSaveSetting:
+                system.setSystemSetting(dustName,dustMeterName,cameraName,noiseName,ledDisplayName);
+                Intent intent2 = new Intent();
+                intent2.setAction("changeDustName");
+                intent2.putExtra("name", DevicesManage.DustNames[dustName]);
+                getActivity().sendBroadcast(intent2);
                 break;
             default:
                 break;
@@ -474,22 +431,19 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
                 clientProtocolName = i;
                 break;
             case R.id.spOperateDust:
-                dustMeter.setDustName(i);
-                //Toast.makeText(getActivity(),"当前扬尘参数为 "+dustMeter.DustNames[i],Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent();
-                intent.setAction("changeDustName");
-                intent.putExtra("name",dustMeter.DustNames[i]);
-                getActivity().sendBroadcast(intent);
+                dustName = i;
                 break;
             case R.id.spOperateDustMeter:
-                dustMeter.setDustMeter(i);
+                dustMeterName = i;
                 break;
-            case R.id.spMainBoardType:
-                mainBoardName = i;
-                system.setMainBoardName(mainBoardName);
-                break;
-            case R.id.spCameraName:
+            case R.id.spOperateCamera:
                 cameraName = i;
+                break;
+            case R.id.spOperateLedDisplay:
+                ledDisplayName = i;
+                break;
+            case R.id.spOperateNoise:
+                noiseName = i;
                 break;
             default:
 

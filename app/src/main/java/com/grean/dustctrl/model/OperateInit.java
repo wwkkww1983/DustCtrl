@@ -2,9 +2,8 @@ package com.grean.dustctrl.model;
 
 import android.content.Context;
 import android.content.Intent;
-
-import com.grean.dustctrl.SystemConfig;
-import com.grean.dustctrl.myApplication;
+import com.grean.dustctrl.ReadWriteConfig;
+import com.grean.dustctrl.device.DevicesManage;
 import com.tools;
 
 /**
@@ -15,13 +14,13 @@ public class OperateInit {
     private long nextCalTime,interval;
     private boolean autoCalEnable;
     private Context context;
+    private ReadWriteConfig config;
     private String dustName = "TSP:";
 
     public String getAutoNextTime(){
-        SystemConfig config = SystemConfig.getInstance(context);
-        autoCalEnable = config.getConfigBoolean("AutoCalibrationEnable");
-        nextCalTime = config.getConfigLong("AutoCalTime");
-        interval = config.getConfigLong("AutoCalInterval");
+        autoCalEnable = config.getConfigBoolean("auto_calibration_enable");
+        nextCalTime = config.getConfigLong("auto_calibration_date");
+        interval = config.getConfigLong("auto_calibration_interval");
         if (autoCalEnable){
             return "下次自动校准时间:"+ tools.timestamp2string(nextCalTime);
 
@@ -35,10 +34,10 @@ public class OperateInit {
         return dustName;
     }
 
-    public OperateInit (Context context){
+    public OperateInit (Context context,ReadWriteConfig config){
         this.context = context;
-        int name = SystemConfig.getInstance(context).getConfigInt("DustName");
-        dustName = OperateDustMeter.DustNames[name]+":";
+        this.config = config;
+        dustName = DevicesManage.DustNames[DevicesManage.getInstance().getDustName()]+":";
     }
 
     public void setAutoCalTime(){
@@ -46,7 +45,7 @@ public class OperateInit {
             long now = tools.nowtime2timestamp();
             long next = tools.calcNextTime(now,nextCalTime,interval);
             nextCalTime = next;
-            SystemConfig.getInstance(context).saveConfig("AutoCalTime",next);
+            config.saveConfig("auto_calibration_date",next);
             Intent intent = new Intent();
             intent.setAction("autoCalibration");
             intent.putExtra("enable",autoCalEnable);

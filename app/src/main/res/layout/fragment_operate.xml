@@ -1,234 +1,151 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="1">
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" >
+            android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/textView6"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="粉尘仪"
-                android:textSize="30sp" />
-
-            <LinearLayout
+            <android.support.constraint.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="horizontal">
+                android:layout_weight="1">
 
-                <Spinner
-                    android:id="@+id/spMainBoardType"
+                <TextView
+                    android:id="@+id/textView6"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1" />
-
-                <Spinner
-                    android:id="@+id/spOperateDustMeter"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
-
-                <Spinner
-                    android:id="@+id/spOperateDust"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_weight="1"
+                    android:text="基本设置"
+                    android:textSize="36sp"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
                     android:id="@+id/textView37"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="当前斜率"
-                    android:textSize="18sp" />
+                    android:layout_marginTop="24dp"
+                    android:text="当前斜率:"
+                    android:textSize="24sp"
+                    app:layout_constraintTop_toBottomOf="@+id/textView6"
+                    tools:layout_editor_absoluteX="0dp" />
 
                 <EditText
                     android:id="@+id/etOperateParaK"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginStart="8dp"
                     android:layout_weight="1"
-                    android:ems="5"
-                    android:inputType="numberDecimal" />
+                    android:ems="4"
+                    android:inputType="numberDecimal"
+                    android:textSize="24sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView37"
+                    app:layout_constraintLeft_toRightOf="@+id/textView37" />
 
                 <TextView
                     android:id="@+id/textView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
                     android:layout_weight="1"
-                    android:text="截距" />
+                    android:text="截距:"
+                    android:textSize="24sp"
+                    app:layout_constraintLeft_toRightOf="@+id/etOperateParaK"
+                    app:layout_constraintTop_toTopOf="@+id/textView37"
+                    android:layout_marginStart="8dp" />
 
                 <EditText
                     android:id="@+id/etOperateParaB"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginStart="8dp"
                     android:layout_weight="1"
-                    android:ems="5"
-                    android:inputType="numberSigned|numberDecimal" />
+                    android:ems="4"
+                    android:inputType="numberSigned|numberDecimal"
+                    android:textSize="24sp"
+                    app:layout_constraintLeft_toRightOf="@+id/textView"
+                    app:layout_constraintTop_toTopOf="@+id/etOperateParaK" />
 
                 <Button
                     android:id="@+id/btnOperateSetParaK"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="保存"
-                    android:textSize="18sp" />
-
-                <TextView
-                    android:id="@+id/textView39"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="测量值"
-                    android:textSize="18sp"
-                    android:visibility="invisible" />
-
-                <EditText
-                    android:id="@+id/etOperateTargetValue"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:ems="10"
-                    android:inputType="numberDecimal"
-                    android:text="10"
-                    android:textSize="18sp"
-                    android:visibility="invisible" />
-
-                <Button
-                    android:id="@+id/btnOperateCalcPraraK"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="确定"
-                    android:textSize="18sp"
-                    android:visibility="invisible" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="horizontal">
-
-                <Switch
-                    android:id="@+id/swOperateDusterSwitch"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="粉尘仪开关"
-                    android:textSize="24sp" />
-
-                <Button
-                    android:id="@+id/btnOperateCalZero"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="手动校零"
-                    android:textSize="24sp" />
+                    android:layout_marginLeft="8dp"
+                    android:text="保存系数"
+                    android:textSize="24sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/etOperateParaB"
+                    app:layout_constraintLeft_toRightOf="@+id/etOperateParaB"
+                    android:layout_marginStart="8dp" />
 
                 <Button
                     android:id="@+id/btnOperateManCal"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginLeft="16dp"
                     android:layout_weight="1"
-                    android:text="手动校零校跨"
-                    android:textSize="24sp" />
+                    android:text="手动校准"
+                    android:textSize="24sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/btnOperateSetParaK"
+                    app:layout_constraintLeft_toRightOf="@+id/btnOperateSetParaK"
+                    android:layout_marginStart="16dp" />
+
+                <TextView
+                    android:id="@+id/textView43"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_weight="1"
+                    android:text="报警:"
+                    android:textSize="24sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/btnOperateManCal"
+                    app:layout_constraintLeft_toRightOf="@+id/btnOperateManCal"
+                    android:layout_marginStart="8dp" />
+
+                <EditText
+                    android:id="@+id/etOperateAlarm"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ems="4"
+                    android:inputType="numberDecimal"
+                    android:textSize="24sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView43"
+                    app:layout_constraintLeft_toRightOf="@+id/textView43" />
 
                 <Button
-                    android:id="@+id/btnOperateInquireDuster"
+                    android:id="@+id/btnOperateSaveAlarm"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="查询信息"
-                    android:textSize="24sp" />
-            </LinearLayout>
-
-            <TextView
-                android:id="@+id/tvOperateDusterInfo"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="泵累计运行时间:-h;激光累计运行时间:-h;"
-                android:textSize="24sp" />
-
-            <TextView
-                android:id="@+id/textView9"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="系统"
-                android:textSize="30sp" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="horizontal">
-
-                <Switch
-                    android:id="@+id/swOperateSystemDo1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="球阀"
-                    android:textSize="24sp" />
-
-                <Switch
-                    android:id="@+id/swOperateSystemDo2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="风扇"
-                    android:textSize="24sp" />
-
-                <Switch
-                    android:id="@+id/swOperateSystemDo3"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="EXT1"
-                    android:textSize="24sp" />
-
-                <Switch
-                    android:id="@+id/swOperateSystemDo4"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="EXT2"
-                    android:textSize="24sp" />
-
-                <Switch
-                    android:id="@+id/swOperateSystemDo5"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="BackUp"
-                    android:textSize="24sp" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="horizontal">
+                    android:text="保存报警值"
+                    android:textSize="24sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/etOperateAlarm"
+                    app:layout_constraintLeft_toRightOf="@+id/etOperateAlarm" />
 
                 <Switch
                     android:id="@+id/swAutoCaliration"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
                     android:layout_weight="1"
                     android:text="自动校准"
-                    android:textSize="24sp" />
+                    android:textSize="24sp"
+                    app:layout_constraintLeft_toLeftOf="@+id/swBackupServerEnable"
+                    app:layout_constraintTop_toBottomOf="@+id/swBackupServerEnable" />
 
                 <TextView
                     android:id="@+id/textView30"
@@ -236,7 +153,11 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="下次自动校准时间:"
-                    android:textSize="24sp" />
+                    android:textSize="24sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/swAutoCaliration"
+                    app:layout_constraintLeft_toRightOf="@+id/swAutoCaliration"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginStart="8dp" />
 
                 <TextView
                     android:id="@+id/tvOperateNextAutoCal"
@@ -244,172 +165,79 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="2017-01-01 00:00"
-                    android:textSize="24sp" />
+                    android:textSize="24sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView30"
+                    app:layout_constraintLeft_toRightOf="@+id/textView30"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginStart="8dp" />
 
                 <TextView
                     android:id="@+id/textView32"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginStart="8dp"
                     android:layout_weight="1"
-                    android:text="自动校准间隔:"
-                    android:textSize="24sp" />
+                    android:text="校准间隔:"
+                    android:textSize="24sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/tvOperateNextAutoCal"
+                    app:layout_constraintLeft_toRightOf="@+id/tvOperateNextAutoCal" />
 
                 <EditText
                     android:id="@+id/etOperateAutoCalInterval"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:ems="10"
+                    android:ems="3"
                     android:inputType="numberDecimal"
-                    android:text="24" />
+                    android:text="1440"
+                    android:textSize="24sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView32"
+                    app:layout_constraintLeft_toRightOf="@+id/textView32" />
 
                 <TextView
                     android:id="@+id/textView8"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="min"
-                    android:textSize="24sp" />
+                    android:textSize="24sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/etOperateAutoCalInterval"
+                    app:layout_constraintLeft_toRightOf="@+id/etOperateAutoCalInterval" />
 
                 <Button
                     android:id="@+id/btnOperateSaveAutoCal"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="保存"
-                    android:textSize="24sp" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/textView12"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="电机参数:角度"
-                    android:textSize="24sp" />
-
-                <EditText
-                    android:id="@+id/etOperateMotorRounds"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:ems="10"
-                    android:inputType="number"
-                    android:maxLength="4"
-                    android:text="100" />
-
-                <TextView
-                    android:id="@+id/textView15"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="步(1.8°);时间:"
-                    android:textSize="24sp" />
-
-                <EditText
-                    android:id="@+id/etOperateMotorTime"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:ems="10"
-                    android:inputType="numberDecimal"
-                    android:maxLength="4"
-                    android:text="20" />
-
-                <TextView
-                    android:id="@+id/textView18"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="S"
-                    android:textSize="24sp" />
-
-                <Button
-                    android:id="@+id/btnOperateMotorSet"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="确定"
-                    android:textSize="24sp" />
-
-                <Button
-                    android:id="@+id/btnOperateTestUp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="正转测试"
-                    android:textSize="18sp" />
-
-                <Button
-                    android:id="@+id/btnOperateTestDown"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="反转测试"
-                    android:textSize="18sp" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/textView43"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="报警数据:"
-                    android:textSize="24sp" />
-
-                <EditText
-                    android:id="@+id/etOperateAlarm"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:ems="10"
-                    android:inputType="numberDecimal"
-                    android:textSize="18sp" />
-
-                <Button
-                    android:id="@+id/btnOperateSaveAlarm"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="保存"
-                    android:textSize="24sp" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="horizontal">
+                    android:text="保存自动校准"
+                    android:textSize="24sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView8"
+                    android:layout_marginBottom="0dp"
+                    app:layout_constraintLeft_toRightOf="@+id/textView8"
+                    android:layout_marginLeft="8dp" />
 
                 <TextView
                     android:id="@+id/textView31"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
                     android:layout_weight="1"
                     android:text="服务器地址:"
-                    android:textSize="24sp" />
+                    android:textSize="24sp"
+                    app:layout_constraintLeft_toLeftOf="@+id/textView37"
+                    app:layout_constraintTop_toBottomOf="@+id/textView37" />
 
                 <EditText
                     android:id="@+id/etOperateServerIP"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:ems="10"
+                    android:ems="8"
                     android:inputType="textPersonName"
-                    android:text="192.168.168.134" />
+                    android:text="192.168.168.134"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView31"
+                    app:layout_constraintLeft_toRightOf="@+id/textView31" />
 
                 <TextView
                     android:id="@+id/textView34"
@@ -417,16 +245,20 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="端口:"
-                    android:textSize="24sp" />
+                    android:textSize="24sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/etOperateServerIP"
+                    app:layout_constraintLeft_toRightOf="@+id/etOperateServerIP" />
 
                 <EditText
                     android:id="@+id/etOperateServerPort"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:ems="10"
+                    android:ems="4"
                     android:inputType="number"
-                    android:text="12803" />
+                    android:text="12803"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView34"
+                    app:layout_constraintLeft_toRightOf="@+id/textView34" />
 
                 <TextView
                     android:id="@+id/textView41"
@@ -434,7 +266,9 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="地区码:"
-                    android:textSize="18sp" />
+                    android:textSize="24sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/etOperateServerPort"
+                    app:layout_constraintLeft_toRightOf="@+id/etOperateServerPort" />
 
                 <EditText
                     android:id="@+id/etOperateMnCode"
@@ -443,30 +277,18 @@
                     android:layout_weight="1"
                     android:ems="10"
                     android:inputType="textPersonName"
-                    android:text="Name" />
+                    android:text="Name"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView41"
+                    app:layout_constraintLeft_toRightOf="@+id/textView41" />
 
                 <Spinner
                     android:id="@+id/spOperateProtocol"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:spinnerMode="dialog" />
-
-                <Button
-                    android:id="@+id/btnOperateSaveServer"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="保存"
-                    android:textSize="24sp" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="horizontal">
+                    android:spinnerMode="dialog"
+                    app:layout_constraintBottom_toBottomOf="@+id/etOperateMnCode"
+                    app:layout_constraintLeft_toRightOf="@+id/etOperateMnCode" />
 
                 <Switch
                     android:id="@+id/swBackupServerEnable"
@@ -474,24 +296,31 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="后备服务"
-                    android:textSize="24sp" />
+                    android:textSize="24sp"
+                    app:layout_constraintLeft_toLeftOf="@+id/textView31"
+                    app:layout_constraintTop_toBottomOf="@+id/textView31"
+                    android:layout_marginTop="24dp" />
 
                 <TextView
                     android:id="@+id/textView60"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="后备服务器地址:"
-                    android:textSize="24sp" />
+                    android:text="地址:"
+                    android:textSize="24sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/swBackupServerEnable"
+                    app:layout_constraintLeft_toRightOf="@+id/swBackupServerEnable" />
 
                 <EditText
                     android:id="@+id/etOperateBackupServerIp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:ems="10"
+                    android:ems="8"
                     android:inputType="textPersonName"
-                    android:text="117.147.30.221" />
+                    android:text="117.147.30.221"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView60"
+                    app:layout_constraintLeft_toRightOf="@+id/textView60" />
 
                 <TextView
                     android:id="@+id/textView59"
@@ -499,24 +328,30 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="端口:"
-                    android:textSize="24sp" />
+                    android:textSize="24sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/etOperateBackupServerIp"
+                    app:layout_constraintLeft_toRightOf="@+id/etOperateBackupServerIp" />
 
                 <EditText
                     android:id="@+id/etOperateBackupServerPort"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:ems="6"
+                    android:ems="4"
                     android:inputType="number"
-                    android:text="210" />
+                    android:text="210"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView59"
+                    app:layout_constraintLeft_toRightOf="@+id/textView59" />
 
                 <TextView
                     android:id="@+id/textView58"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="MN码:"
-                    android:textSize="24sp" />
+                    android:text="地区码:"
+                    android:textSize="24sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/etOperateBackupServerPort"
+                    app:layout_constraintLeft_toRightOf="@+id/etOperateBackupServerPort" />
 
                 <EditText
                     android:id="@+id/etOperateBackupMnCode"
@@ -525,149 +360,85 @@
                     android:layout_weight="1"
                     android:ems="10"
                     android:inputType="textPersonName"
-                    android:text="Name" />
+                    android:text="Name"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView58"
+                    app:layout_constraintLeft_toRightOf="@+id/textView58" />
 
                 <Button
-                    android:id="@+id/btnOperateSaveBackupServer"
+                    android:id="@+id/btnOperateSaveServer"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="保存"
-                    android:textSize="24sp" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="horizontal">
+                    android:text="保存网络"
+                    android:textSize="24sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/etOperateBackupMnCode"
+                    android:layout_marginBottom="0dp"
+                    app:layout_constraintLeft_toRightOf="@+id/etOperateBackupMnCode"
+                    android:layout_marginLeft="8dp" />
 
                 <TextView
-                    android:id="@+id/tvOperateSoftwareVerison"
+                    android:id="@+id/textView50"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
                     android:layout_weight="1"
-                    android:text="当前软件版本:"
-                    android:textSize="24sp" />
-
-                <TextView
-                    android:id="@+id/textView35"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="软件升级url:"
-                    android:textSize="24sp" />
+                    android:text="地理信息:东经"
+                    android:textSize="24sp"
+                    app:layout_constraintLeft_toLeftOf="@+id/swAutoCaliration"
+                    app:layout_constraintTop_toBottomOf="@+id/swAutoCaliration" />
 
                 <EditText
-                    android:id="@+id/etOperateUpdateUrl"
+                    android:id="@+id/etOperateLng"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:ems="10"
-                    android:inputType="textPersonName"
-                    android:text="http://115.236.64.130:12599/DustCtrl.apk"
-                    android:textSize="24sp" />
-
-                <Button
-                    android:id="@+id/btnOperateUpdateSoftware"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="升级"
-                    android:textSize="24sp" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="horizontal">
+                    android:ems="5"
+                    android:inputType="numberSigned|numberDecimal"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView50"
+                    app:layout_constraintLeft_toRightOf="@+id/textView50" />
 
                 <TextView
-                    android:id="@+id/textView36"
+                    android:id="@+id/textView51"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="本地服务IP:"
-                    android:textSize="24sp" />
+                    android:text="北纬"
+                    android:textSize="24sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/etOperateLng"
+                    app:layout_constraintLeft_toRightOf="@+id/etOperateLng" />
 
-                <TextView
-                    android:id="@+id/tvOperateLocalIp"
+                <EditText
+                    android:id="@+id/etoperateLat"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="192.168.192.168:8888"
-                    android:textSize="24sp" />
+                    android:ems="5"
+                    android:inputType="numberSigned|numberDecimal"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView51"
+                    app:layout_constraintLeft_toRightOf="@+id/textView51" />
 
                 <Button
-                    android:id="@+id/btnOperateUpdateSetting"
+                    android:id="@+id/btnOperateSaveLocation"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="更新设置"
-                    android:textSize="24sp" />
-
-                <Button
-                    android:id="@+id/btnOperateResetCom"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="重置COM口"
-                    android:textSize="24sp" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/textView21"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="噪声仪"
-                    android:textSize="30sp" />
-
-                <Button
-                    android:id="@+id/btnOperateNoiseCal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="手动校准"
-                    android:textSize="24sp" />
-            </LinearLayout>
-
-            <TextView
-                android:id="@+id/textView24"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="风力风速仪"
-                android:textSize="30sp" />
-
-            <TextView
-                android:id="@+id/textView29"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="温湿度大气压计"
-                android:textSize="30sp" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="horizontal">
+                    android:text="保存地理信息"
+                    android:textSize="24sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/etoperateLat"
+                    android:layout_marginBottom="0dp"
+                    app:layout_constraintLeft_toRightOf="@+id/etoperateLat"
+                    android:layout_marginLeft="8dp" />
 
                 <TextView
                     android:id="@+id/textView57"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
                     android:layout_weight="1"
-                    android:text="温度:斜率"
-                    android:textSize="24sp" />
+                    android:text="温度斜率:"
+                    android:textSize="24sp"
+                    app:layout_constraintLeft_toLeftOf="@+id/textView50"
+                    app:layout_constraintTop_toBottomOf="@+id/textView50" />
 
                 <EditText
                     android:id="@+id/etTempSlope"
@@ -675,7 +446,9 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:ems="5"
-                    android:inputType="numberDecimal" />
+                    android:inputType="numberDecimal"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView57"
+                    app:layout_constraintLeft_toRightOf="@+id/textView57" />
 
                 <TextView
                     android:id="@+id/textView56"
@@ -683,7 +456,9 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="截距:"
-                    android:textSize="24sp" />
+                    android:textSize="24sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView57"
+                    app:layout_constraintLeft_toRightOf="@+id/etTempSlope" />
 
                 <EditText
                     android:id="@+id/etTempIntercept"
@@ -691,15 +466,19 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:ems="5"
-                    android:inputType="numberSigned|numberDecimal" />
+                    android:inputType="numberSigned|numberDecimal"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView57"
+                    app:layout_constraintLeft_toRightOf="@+id/textView56" />
 
                 <TextView
                     android:id="@+id/textView55"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="湿度:斜率"
-                    android:textSize="24sp" />
+                    android:text="湿度斜率:"
+                    android:textSize="24sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView57"
+                    app:layout_constraintLeft_toRightOf="@+id/etTempIntercept" />
 
                 <EditText
                     android:id="@+id/etHumiSlope"
@@ -707,15 +486,19 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:ems="5"
-                    android:inputType="numberDecimal" />
+                    android:inputType="numberDecimal"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView57"
+                    app:layout_constraintLeft_toRightOf="@+id/textView55" />
 
                 <TextView
                     android:id="@+id/textView54"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="截距"
-                    android:textSize="24sp" />
+                    android:text="截距:"
+                    android:textSize="24sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView57"
+                    app:layout_constraintLeft_toRightOf="@+id/etHumiSlope" />
 
                 <EditText
                     android:id="@+id/etHumiIntercept"
@@ -723,67 +506,223 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:ems="5"
-                    android:inputType="numberSigned|numberDecimal" />
+                    android:inputType="numberSigned|numberDecimal"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView54"
+                    app:layout_constraintLeft_toRightOf="@+id/textView54" />
 
                 <Button
                     android:id="@+id/btnSaveHumiTempPara"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="保存系数" />
-            </LinearLayout>
+                    android:text="保存温湿度"
+                    android:textSize="24sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/etHumiIntercept"
+                    android:layout_marginBottom="0dp"
+                    app:layout_constraintLeft_toRightOf="@+id/etHumiIntercept"
+                    android:layout_marginLeft="8dp" />
 
-            <TextView
-                android:id="@+id/textView27"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="其他"
-                android:textSize="30sp" />
+                <TextView
+                    android:id="@+id/textView24"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="粉尘仪"
+                    android:textSize="30sp"
+                    app:layout_constraintLeft_toLeftOf="@+id/textView57"
+                    app:layout_constraintTop_toBottomOf="@+id/textView57"
+                    android:layout_marginTop="16dp" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="horizontal">
+                <TextView
+                    android:id="@+id/tvOperateDusterInfo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="泵累计运行时间:-h;激光累计运行时间:-h;"
+                    android:textSize="24sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView24"
+                    app:layout_constraintLeft_toRightOf="@+id/textView24"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginStart="16dp" />
+
+                <Switch
+                    android:id="@+id/swOperateDusterSwitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="粉尘仪开关"
+                    android:textSize="24sp"
+                    app:layout_constraintLeft_toLeftOf="@+id/textView24"
+                    app:layout_constraintTop_toBottomOf="@+id/textView24"
+                    android:layout_marginTop="16dp" />
+
+                <Switch
+                    android:id="@+id/swOperateSystemDo1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="球阀"
+                    android:textSize="24sp"
+                    app:layout_constraintLeft_toRightOf="@+id/swOperateDusterSwitch"
+                    app:layout_constraintTop_toBottomOf="@+id/textView24"
+                    android:layout_marginTop="16dp" />
+
+                <Switch
+                    android:id="@+id/swOperateSystemDo2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="风扇"
+                    android:textSize="24sp"
+                    app:layout_constraintLeft_toRightOf="@+id/swOperateSystemDo1"
+                    app:layout_constraintTop_toBottomOf="@+id/textView24"
+                    android:layout_marginTop="16dp" />
+
+                <Switch
+                    android:id="@+id/swOperateSystemDo3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="EXT1"
+                    android:textSize="24sp"
+                    app:layout_constraintLeft_toRightOf="@+id/swOperateSystemDo2"
+                    app:layout_constraintTop_toBottomOf="@+id/textView24"
+                    android:layout_marginTop="16dp" />
+
+                <Switch
+                    android:id="@+id/swOperateSystemDo4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="EXT2"
+                    android:textSize="24sp"
+                    app:layout_constraintLeft_toRightOf="@+id/swOperateSystemDo3"
+                    app:layout_constraintTop_toBottomOf="@+id/textView24"
+                    android:layout_marginTop="16dp" />
+
+                <Switch
+                    android:id="@+id/swOperateSystemDo5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="BackUp"
+                    android:textSize="24sp"
+                    app:layout_constraintLeft_toRightOf="@+id/swOperateSystemDo4"
+                    app:layout_constraintTop_toBottomOf="@+id/textView24"
+                    android:layout_marginTop="16dp" />
+
+                <Button
+                    android:id="@+id/btnOperateTestUp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_weight="1"
+                    android:text="正转测试"
+                    android:textSize="24sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/btnOperateMotorSet"
+                    app:layout_constraintLeft_toRightOf="@+id/btnOperateMotorSet" />
+
+                <Button
+                    android:id="@+id/btnOperateTestDown"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_weight="1"
+                    android:text="反转测试"
+                    android:textSize="24sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/btnOperateMotorSet"
+                    app:layout_constraintLeft_toRightOf="@+id/btnOperateTestUp" />
+
+                <TextView
+                    android:id="@+id/textView12"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="电机参数 角度:"
+                    android:textSize="24sp"
+                    app:layout_constraintLeft_toLeftOf="@+id/textView24"
+                    app:layout_constraintTop_toBottomOf="@+id/swOperateDusterSwitch"
+                    android:layout_marginTop="32dp" />
+
+                <EditText
+                    android:id="@+id/etOperateMotorRounds"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ems="4"
+                    android:inputType="number"
+                    android:maxLength="4"
+                    android:text="100"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView12"
+                    app:layout_constraintLeft_toRightOf="@+id/textView12" />
+
+                <TextView
+                    android:id="@+id/textView15"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="步(1.8°);时间:"
+                    android:textSize="24sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/etOperateMotorRounds"
+                    app:layout_constraintLeft_toRightOf="@+id/etOperateMotorRounds" />
+
+                <EditText
+                    android:id="@+id/etOperateMotorTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ems="5"
+                    android:inputType="numberDecimal"
+                    android:maxLength="4"
+                    android:text="20"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView15"
+                    app:layout_constraintLeft_toRightOf="@+id/textView15" />
+
+                <TextView
+                    android:id="@+id/textView18"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="S"
+                    android:textSize="24sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/etOperateMotorTime"
+                    app:layout_constraintLeft_toRightOf="@+id/etOperateMotorTime" />
+
+                <Button
+                    android:id="@+id/btnOperateMotorSet"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="保存电机参数"
+                    android:textSize="24sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView18"
+                    app:layout_constraintLeft_toRightOf="@+id/textView18"
+                    android:layout_marginLeft="8dp" />
 
                 <TextView
                     android:id="@+id/textView47"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
                     android:layout_weight="1"
-                    android:text="附加功能"
-                    android:textSize="30sp" />
-
-                <Switch
-                    android:id="@+id/swCameraDirection"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="风向联动功能" />
-
-                <TextView
-                    android:id="@+id/textView61"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="摄像头型号"
-                    android:textSize="24sp" />
-
-                <Spinner
-                    android:id="@+id/spCameraName"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:spinnerMode="dialog" />
+                    android:text="摄像头"
+                    android:textSize="30sp"
+                    app:layout_constraintLeft_toLeftOf="@+id/textView12"
+                    app:layout_constraintTop_toBottomOf="@+id/textView12" />
 
                 <TextView
                     android:id="@+id/textView53"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="方向偏移"
-                    android:textSize="24sp" />
+                    android:text="风向联动偏移角度:"
+                    android:textSize="24sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView47"
+                    app:layout_constraintLeft_toRightOf="@+id/textView47"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginStart="16dp" />
 
                 <EditText
                     android:id="@+id/etCameraDirectionOffset"
@@ -794,66 +733,185 @@
                     android:inputType="numberSigned"
                     android:maxEms="4"
                     android:maxLength="4"
-                    android:text="0" />
+                    android:text="0"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView53"
+                    app:layout_constraintLeft_toRightOf="@+id/textView53" />
 
                 <Button
                     android:id="@+id/btnCameraDirectionOffset"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="保存" />
-
-                <Switch
-                    android:id="@+id/swLedDisplayEnable"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="LED显示屏功能" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="horizontal">
+                    android:text="保存偏移角度"
+                    android:textSize="24sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/etCameraDirectionOffset"
+                    android:layout_marginBottom="0dp"
+                    app:layout_constraintLeft_toRightOf="@+id/etCameraDirectionOffset"
+                    android:layout_marginLeft="8dp" />
 
                 <TextView
-                    android:id="@+id/textView50"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/textView21"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="经度" />
-
-                <EditText
-                    android:id="@+id/etOperateLng"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:ems="10"
-                    android:inputType="numberSigned|numberDecimal" />
-
-                <TextView
-                    android:id="@+id/textView51"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="纬度" />
-
-                <EditText
-                    android:id="@+id/etoperateLat"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:ems="10"
-                    android:inputType="numberSigned|numberDecimal" />
+                    android:text="声级计"
+                    android:textSize="30sp"
+                    app:layout_constraintLeft_toLeftOf="@+id/textView47"
+                    app:layout_constraintTop_toBottomOf="@+id/textView47"
+                    android:layout_marginTop="24dp" />
 
                 <Button
-                    android:id="@+id/btnOperateSaveLocation"
+                    android:id="@+id/btnOperateNoiseCal"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="保存" />
-            </LinearLayout>
+                    android:text="手动校准"
+                    android:textSize="24sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView21"
+                    android:layout_marginBottom="0dp"
+                    app:layout_constraintLeft_toRightOf="@+id/textView21"
+                    android:layout_marginLeft="8dp" />
+
+                <TextView
+                    android:id="@+id/textView9"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:layout_weight="1"
+                    android:text="系统配置"
+                    android:textSize="36sp"
+                    app:layout_constraintLeft_toLeftOf="@+id/textView50"
+                    app:layout_constraintTop_toBottomOf="@+id/textView21" />
+
+                <Spinner
+                    android:id="@+id/spOperateDust"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView9"
+                    app:layout_constraintLeft_toRightOf="@+id/textView9" />
+
+                <Spinner
+                    android:id="@+id/spOperateDustMeter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    app:layout_constraintBottom_toBottomOf="@+id/spOperateDust"
+                    app:layout_constraintLeft_toRightOf="@+id/spOperateDust" />
+
+                <Spinner
+                    android:id="@+id/spOperateCamera"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    app:layout_constraintBottom_toBottomOf="@+id/spOperateDustMeter"
+                    app:layout_constraintLeft_toRightOf="@+id/spOperateDustMeter" />
+
+                <Spinner
+                    android:id="@+id/spOperateLedDisplay"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    app:layout_constraintBottom_toBottomOf="@+id/spOperateCamera"
+                    app:layout_constraintLeft_toRightOf="@+id/spOperateCamera" />
+
+                <Spinner
+                    android:id="@+id/spOperateNoise"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="@+id/spOperateLedDisplay"
+                    app:layout_constraintLeft_toRightOf="@+id/spOperateLedDisplay"
+                    tools:layout_editor_absoluteX="8dp"
+                    tools:layout_editor_absoluteY="73dp" />
+
+                <Button
+                    android:id="@+id/btnOperateUpdateSetting"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="刷新系统设置"
+                    android:textSize="24sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView9"
+                    app:layout_constraintLeft_toRightOf="@+id/spOperateNoise"
+                    android:layout_marginLeft="8dp" />
+
+                <Button
+                    android:id="@+id/btnOperateSaveSetting"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="保存系统配置"
+                    android:textSize="24sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/spOperateLedDisplay"
+                    android:layout_marginBottom="0dp"
+                    app:layout_constraintLeft_toRightOf="@+id/btnOperateUpdateSetting"
+                    android:layout_marginLeft="8dp" />
+
+                <TextView
+                    android:id="@+id/textView36"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:layout_weight="1"
+                    android:text="数采仪IP:"
+                    android:textSize="24sp"
+                    app:layout_constraintLeft_toLeftOf="@+id/textView9"
+                    app:layout_constraintTop_toBottomOf="@+id/textView9" />
+
+                <TextView
+                    android:id="@+id/tvOperateLocalIp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="192.168.192.168:8888"
+                    android:textSize="24sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView36"
+                    app:layout_constraintLeft_toRightOf="@+id/textView36" />
+
+                <TextView
+                    android:id="@+id/tvOperateSoftwareVerison"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="当前软件版本:"
+                    android:textSize="24sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/tvOperateLocalIp"
+                    app:layout_constraintLeft_toRightOf="@+id/tvOperateLocalIp" />
+
+                <TextView
+                    android:id="@+id/textView35"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="软件升级url:"
+                    android:textSize="24sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/tvOperateSoftwareVerison"
+                    app:layout_constraintLeft_toRightOf="@+id/tvOperateSoftwareVerison" />
+
+                <EditText
+                    android:id="@+id/etOperateUpdateUrl"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ems="8"
+                    android:inputType="textPersonName"
+                    android:text="http://115.236.64.130:12599/DustCtrl.apk"
+                    android:textSize="24sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/tvOperateSoftwareVerison"
+                    app:layout_constraintLeft_toRightOf="@+id/textView35" />
+
+                <Button
+                    android:id="@+id/btnOperateUpdateSoftware"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="0dp"
+                    android:layout_weight="1"
+                    android:text="升级软件"
+                    android:textSize="24sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/etOperateUpdateUrl"
+                    app:layout_constraintLeft_toRightOf="@+id/etOperateUpdateUrl"
+                    tools:layout_editor_absoluteX="832dp" />
+
+            </android.support.constraint.ConstraintLayout>
 
         </LinearLayout>
     </ScrollView>

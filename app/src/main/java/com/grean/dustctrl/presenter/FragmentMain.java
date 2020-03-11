@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.grean.dustctrl.R;
+import com.grean.dustctrl.SystemSettingStore;
 import com.grean.dustctrl.model.OperateInit;
 import com.grean.dustctrl.myApplication;
 import com.grean.dustctrl.process.NotifyScanSensor;
@@ -150,7 +151,7 @@ public class FragmentMain extends Fragment implements NotifyScanSensor{
         intentFilter.addAction("autoCalNextString");
         intentFilter.addAction("changeDustName");
         getActivity().registerReceiver(broadcastReceiver,intentFilter);
-        operateInit = new OperateInit(getActivity());
+        operateInit = new OperateInit(getActivity(),new SystemSettingStore(getActivity()));
         tvDustName.setText(operateInit.getDustName());
         tvNextCal.setText(operateInit.getAutoNextTime());
         operateInit.setAutoCalTime();

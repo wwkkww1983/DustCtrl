@@ -15,15 +15,15 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="TSP:"
-            android:textSize="30sp" />
+            android:textSize="60sp" />
 
         <TextView
             android:id="@+id/tvMainDust"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="10.0"
-            android:textSize="30sp" />
+            android:text="-"
+            android:textSize="60sp" />
 
         <TextView
             android:id="@+id/textView10"
@@ -31,7 +31,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="mg/m³"
-            android:textSize="30sp" />
+            android:textSize="42sp" />
 
         <TextView
             android:id="@+id/textView14"
@@ -39,15 +39,15 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="温度:"
-            android:textSize="30sp" />
+            android:textSize="60sp" />
 
         <TextView
             android:id="@+id/tvMainTemperature"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="10.0"
-            android:textSize="30sp" />
+            android:text="-"
+            android:textSize="60sp" />
 
         <TextView
             android:id="@+id/textView16"
@@ -63,15 +63,15 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="湿度:"
-            android:textSize="30sp" />
+            android:textSize="60sp" />
 
         <TextView
             android:id="@+id/tvMainHumidity"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="10.0"
-            android:textSize="30sp" />
+            android:text="-"
+            android:textSize="60sp" />
 
         <TextView
             android:id="@+id/textView13"
@@ -79,7 +79,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="%"
-            android:textSize="30sp" />
+            android:textSize="42sp" />
     </LinearLayout>
 
     <LinearLayout
@@ -93,15 +93,15 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="大气压:"
-            android:textSize="30sp" />
+            android:textSize="60sp" />
 
         <TextView
             android:id="@+id/tvMainPressure"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="10.0"
-            android:textSize="30sp" />
+            android:text="-"
+            android:textSize="60sp" />
 
         <TextView
             android:id="@+id/textView19"
@@ -109,7 +109,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="hPa"
-            android:textSize="30sp" />
+            android:textSize="42sp" />
 
         <TextView
             android:id="@+id/textView20"
@@ -117,15 +117,15 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="风速:"
-            android:textSize="30sp" />
+            android:textSize="60sp" />
 
         <TextView
             android:id="@+id/tvMainWindForce"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="10.0"
-            android:textSize="30sp" />
+            android:text="-"
+            android:textSize="60sp" />
 
         <TextView
             android:id="@+id/textView22"
@@ -133,7 +133,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="m/s"
-            android:textSize="30sp" />
+            android:textSize="42sp" />
 
         <TextView
             android:id="@+id/textView23"
@@ -141,15 +141,15 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="风向:"
-            android:textSize="30sp" />
+            android:textSize="60sp" />
 
         <TextView
             android:id="@+id/tvMainWindDirection"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="10.0"
-            android:textSize="30sp" />
+            android:text="-"
+            android:textSize="60sp" />
 
         <TextView
             android:id="@+id/textView25"
@@ -157,7 +157,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="°"
-            android:textSize="30sp" />
+            android:textSize="42sp" />
     </LinearLayout>
 
     <LinearLayout
@@ -171,15 +171,15 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="噪声:"
-            android:textSize="30sp" />
+            android:textSize="60sp" />
 
         <TextView
             android:id="@+id/tvMainNoise"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="10.0"
-            android:textSize="30sp" />
+            android:text="-"
+            android:textSize="60sp" />
 
         <TextView
             android:id="@+id/textView28"
@@ -187,7 +187,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="dB"
-            android:textSize="30sp" />
+            android:textSize="42sp" />
 
         <TextView
             android:id="@+id/textView38"
@@ -195,15 +195,15 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="相对粉尘浓度:"
-            android:textSize="30sp" />
+            android:textSize="60sp" />
 
         <TextView
             android:id="@+id/tvMainValue"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="100"
-            android:textSize="30sp" />
+            android:text="-"
+            android:textSize="60sp" />
 
     </LinearLayout>
 
@@ -218,14 +218,14 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="采样管温度:"
-            android:textSize="30sp" />
+            android:textSize="36sp" />
 
         <TextView
             android:id="@+id/tvMainHitemperature"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="30"
+            android:text="-"
             android:textSize="30sp" />
 
         <TextView
@@ -234,15 +234,15 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="℃ 采样管出口温度:"
-            android:textSize="30sp" />
+            android:textSize="36sp" />
 
         <TextView
             android:id="@+id/tvMainLoTemperature"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="30"
-            android:textSize="30sp" />
+            android:text="-"
+            android:textSize="36sp" />
 
         <TextView
             android:id="@+id/textView44"
@@ -250,15 +250,15 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="℃ 采样管控制温度:"
-            android:textSize="30sp" />
+            android:textSize="36sp" />
 
         <TextView
             android:id="@+id/tvMainHiHumidity"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="30"
-            android:textSize="30sp" />
+            android:text="-"
+            android:textSize="36sp" />
 
         <TextView
             android:id="@+id/textView46"
@@ -266,15 +266,15 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="℃ 采样管出口湿度:"
-            android:textSize="30sp" />
+            android:textSize="36sp" />
 
         <TextView
             android:id="@+id/tvMainLoHumidity"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="30"
-            android:textSize="30sp" />
+            android:text="-"
+            android:textSize="36sp" />
 
         <TextView
             android:id="@+id/textView52"
@@ -282,7 +282,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="%"
-            android:textSize="30sp" />
+            android:textSize="36sp" />
 
     </LinearLayout>
 
@@ -297,15 +297,15 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="进口露点"
-            android:textSize="30sp" />
+            android:textSize="36sp" />
 
         <TextView
             android:id="@+id/tvMainHiDewPoint"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="10"
-            android:textSize="30sp" />
+            android:text="-"
+            android:textSize="36sp" />
 
         <TextView
             android:id="@+id/textView49"
@@ -313,15 +313,15 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="出口露点"
-            android:textSize="30sp" />
+            android:textSize="36sp" />
 
         <TextView
             android:id="@+id/tvMainLoDewPoint"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="10"
-            android:textSize="30sp" />
+            android:text="-"
+            android:textSize="36sp" />
 
         <TextView
             android:id="@+id/textView48"
@@ -329,15 +329,15 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="加热系数:"
-            android:textSize="30sp" />
+            android:textSize="36sp" />
 
         <TextView
             android:id="@+id/tvMainPwm"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="30"
-            android:textSize="30sp" />
+            android:text="-"
+            android:textSize="36sp" />
 
         <TextView
             android:id="@+id/tvMainBatteryOk"
@@ -345,7 +345,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="限位-"
-            android:textSize="30sp" />
+            android:textSize="36sp" />
 
         <TextView
             android:id="@+id/tvMainPowerIn"
@@ -353,7 +353,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="电源-"
-            android:textSize="30sp" />
+            android:textSize="36sp" />
 
     </LinearLayout>
 
@@ -368,7 +368,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="下次自动校准时间:"
-            android:textSize="30sp" />
+            android:textSize="36sp" />
 
         <TextView
             android:id="@+id/tvMainAlarm"
@@ -376,7 +376,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="报警:无"
-            android:textSize="30sp" />
+            android:textSize="36sp" />
 
         <TextView
             android:id="@+id/tvMainOnline"
@@ -384,7 +384,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="未连接服务器"
-            android:textSize="30sp" />
+            android:textSize="36sp" />
 
         <TextClock
             android:id="@+id/textClock"
@@ -392,7 +392,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:format24Hour="yyyy-MM-dd HH:mm"
-            android:textSize="30sp" />
+            android:textSize="36sp" />
 
     </LinearLayout>
 </LinearLayout>
