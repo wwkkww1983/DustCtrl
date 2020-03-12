@@ -115,6 +115,17 @@ public class OperateSystem {
     }
 
 
+    public boolean isDustMeterSibataLd8(){
+        return DevicesManage.getInstance().isSibataLd8();
+    }
+
+    public boolean isWindDirLinkageEnable(){
+        return DevicesManage.getInstance().isWindDirLinkageEnable();
+    }
+
+    public boolean isNoiseMeterEnable(){
+        return DevicesManage.getInstance().isNoiseMeterEnable();
+    }
 
     public void saveCameraName(int name){
         store.saveConfig("camera_name",name);

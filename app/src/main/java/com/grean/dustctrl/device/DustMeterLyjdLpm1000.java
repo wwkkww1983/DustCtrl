@@ -1,5 +1,7 @@
 package com.grean.dustctrl.device;
 
+import android.util.Log;
+
 import com.grean.dustctrl.ComReceiveProtocol;
 import com.grean.dustctrl.SerialCommunicationController;
 import com.grean.dustctrl.presenter.NotifyProcessDialogInfo;
@@ -36,13 +38,16 @@ public class DustMeterLyjdLpm1000 implements ComReceiveProtocol,DustMeterControl
             switch (state) {
                 case Inquire:
                     f = tools.getFloat(rec,6);//环境湿度
-                    data.setHiHumidity(f);
+                    data.setLoHumidity(f);
                     f = tools.getFloat(rec,10);//环境温度
-                    data.setHiTemp(f);
+                    data.setLoTemp(f);
                     f = tools.getFloat(rec,14);//加热管温度
                     data.setPipeTemp(f);
+                    data.setHiHumidity(f);//主界面显示 加热管温度
                     f = tools.getFloat(rec,22);//加热管PWM
                     data.setHeatPwm((int) f);
+                    //Log.d(tag,"inquire = "+String.valueOf(data.getLoHumidity())+";"+String.valueOf(data.getLoTemp()+";"+
+                    //String.valueOf(data.getPipeTemp())+";"+String.valueOf(data.getHeatPwm())));
                     break;
                 case DustCpm:
                     f = tools.getFloat(rec,6);//实时值
@@ -53,6 +58,7 @@ public class DustMeterLyjdLpm1000 implements ComReceiveProtocol,DustMeterControl
                     data.setInnerTemp(f);
                     break;
                 case DustMeterCalibrationState:
+                    //Log.d(tag,"DustMeterCalibrationState="+tools.bytesToHexString(rec,size));
                     if(rec[4] == 0x00){//测量状态
                         measuring  =true;
                     }else{
@@ -112,7 +118,7 @@ public class DustMeterLyjdLpm1000 implements ComReceiveProtocol,DustMeterControl
         notifyMainFragment.sendMainFragmentString("停止测量,开始校准");
         infoProtocol.setDustCalMeterProcess(0);
         try {
-            Thread.sleep(1000);
+            Thread.sleep(5000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -123,6 +129,11 @@ public class DustMeterLyjdLpm1000 implements ComReceiveProtocol,DustMeterControl
             dialogInfo.showInfo("正在校准...0%");
         }
         notifyMainFragment.sendMainFragmentString("正在校准");
+        try {
+            Thread.sleep(12000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         for(int i=0;i<100;i++){//预计4分钟
             com.send(cmdCalibrationState,DustMeterCalibrationState);
             infoProtocol.setDustCalMeterProcess(i);
@@ -134,7 +145,7 @@ public class DustMeterLyjdLpm1000 implements ComReceiveProtocol,DustMeterControl
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            if(!measuring){
+            if(measuring){
                 break;
             }
         }

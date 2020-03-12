@@ -35,6 +35,7 @@ public class FragmentVideo extends Fragment {
                 getActivity().startActivity(getActivity().getPackageManager().getLaunchIntentForPackage("com.mcu.iVMSHD"));
             }
         });
+        btnVideo.setEnabled(false);
         btnSetting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

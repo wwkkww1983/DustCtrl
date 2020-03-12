@@ -55,6 +55,13 @@ public class OperateDustMeter implements NotifyScanEnd{
         config.saveConfig("dust_para_k",k);
     }
 
+    public String getDustMeterWorkedInfo(){
+        return  "泵运行累计时间:"+String.valueOf(DevicesManage.getInstance().getData().getPumpTime())
+                +"h;激光运行累计时间:"+String.valueOf(DevicesManage.getInstance().getData().getLaserTime())
+                +"h;激光运行累计时间:"+String.valueOf(DevicesManage.getInstance().getData().getLaserTime())
+                +"h;";
+    }
+
     public void setParaB(String paraB){
         float b = Float.valueOf(paraB);
         DevicesManage.getInstance().getData().setParaB(b);

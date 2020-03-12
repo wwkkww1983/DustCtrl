@@ -236,6 +236,7 @@ public class ScanSensor extends Observable implements ClientDataBaseCtrl,NotifyM
         public void run() {
             super.run();
             Log.d(tag,"开始校准");
+            run = false;
             DevicesManage.getInstance().calibrationDustMeter(GetProtocols.getInstance().getInfoProtocol(),
                     instance,dialogInfo,instance);
 

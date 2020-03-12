@@ -105,6 +105,7 @@ public class DevicesManage {
             }else if(dustMeterName == 1){
                 dustMeterControl = new DustMeterLyjdLpm1000(ComFourCommunication.getInstance(),data);
                 weatherControl = new WeatherMiniUltrasonic(ComThreeCommunication.getInstance(),data);
+                peripheralControl = new PeripheralModBusIo(ComOneCommunication.getInstance(),data);
             }else {
                 dustMeterControl = new DustMeterSibataLd8(data, ComOneCommunication.getInstance());
                 weatherControl = null;

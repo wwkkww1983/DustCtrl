@@ -636,7 +636,7 @@
                     app:layout_constraintLeft_toRightOf="@+id/btnOperateTestUp" />
 
                 <TextView
-                    android:id="@+id/textView12"
+                    android:id="@+id/tvMotorSettingTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -655,11 +655,11 @@
                     android:inputType="number"
                     android:maxLength="4"
                     android:text="100"
-                    app:layout_constraintBottom_toBottomOf="@+id/textView12"
-                    app:layout_constraintLeft_toRightOf="@+id/textView12" />
+                    app:layout_constraintBottom_toBottomOf="@+id/tvMotorSettingTitle"
+                    app:layout_constraintLeft_toRightOf="@+id/tvMotorSettingTitle" />
 
                 <TextView
-                    android:id="@+id/textView15"
+                    android:id="@+id/tvMotorSettingContent1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -677,11 +677,11 @@
                     android:inputType="numberDecimal"
                     android:maxLength="4"
                     android:text="20"
-                    app:layout_constraintBottom_toBottomOf="@+id/textView15"
-                    app:layout_constraintLeft_toRightOf="@+id/textView15" />
+                    app:layout_constraintBottom_toBottomOf="@+id/tvMotorSettingContent1"
+                    app:layout_constraintLeft_toRightOf="@+id/tvMotorSettingContent1" />
 
                 <TextView
-                    android:id="@+id/textView18"
+                    android:id="@+id/tvMotorSettingContent2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -697,8 +697,8 @@
                     android:layout_weight="1"
                     android:text="保存电机参数"
                     android:textSize="24sp"
-                    app:layout_constraintBottom_toBottomOf="@+id/textView18"
-                    app:layout_constraintLeft_toRightOf="@+id/textView18"
+                    app:layout_constraintBottom_toBottomOf="@+id/tvMotorSettingContent2"
+                    app:layout_constraintLeft_toRightOf="@+id/tvMotorSettingContent2"
                     android:layout_marginLeft="8dp" />
 
                 <TextView
@@ -709,11 +709,11 @@
                     android:layout_weight="1"
                     android:text="摄像头"
                     android:textSize="30sp"
-                    app:layout_constraintLeft_toLeftOf="@+id/textView12"
-                    app:layout_constraintTop_toBottomOf="@+id/textView12" />
+                    app:layout_constraintLeft_toLeftOf="@+id/tvMotorSettingTitle"
+                    app:layout_constraintTop_toBottomOf="@+id/tvMotorSettingTitle" />
 
                 <TextView
-                    android:id="@+id/textView53"
+                    android:id="@+id/tvCameraTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -734,8 +734,8 @@
                     android:maxEms="4"
                     android:maxLength="4"
                     android:text="0"
-                    app:layout_constraintBottom_toBottomOf="@+id/textView53"
-                    app:layout_constraintLeft_toRightOf="@+id/textView53" />
+                    app:layout_constraintBottom_toBottomOf="@+id/tvCameraTitle"
+                    app:layout_constraintLeft_toRightOf="@+id/tvCameraTitle" />
 
                 <Button
                     android:id="@+id/btnCameraDirectionOffset"
