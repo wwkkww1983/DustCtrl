@@ -231,7 +231,7 @@ public class DevicesManage {
         }
 
         if(peripheralControl!=null){
-            peripheralControl.controlRelays(num,key);
+            peripheralControl.controlRelays(num-1,key);
         }
     }
 
