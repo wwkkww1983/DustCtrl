@@ -17,7 +17,7 @@ import com.tools;
 
 public class SearchData {
     private static final String tag = "SearchData";
-    private static final String[] name ={"时间","扬尘 mg/Lm/m³","温度 ℃","湿度 %","大气压 hPa","风速 m/s","风向 °","噪声 dB"};
+    private static final String[] name ={"时间","扬尘 mg/m³","温度 ℃","湿度 %","大气压 hPa","风速 m/s","风向 °","噪声 dB"};
     private InsertString insert;
     private Context context;
 
