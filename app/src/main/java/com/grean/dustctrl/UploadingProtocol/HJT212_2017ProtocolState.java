@@ -129,11 +129,13 @@ public class HJT212_2017ProtocolState implements ProtocolState{
             case 3021:
             //case 3040:
             case 3041:
-            //case 3042:
+            case 3042:
             case 9013:
             case 9014:
+            case 3093:
                 return true;
             default:
+                Log.d(tag,"cn err = "+String.valueOf(num));
                 return false;
         }
     }
@@ -406,6 +408,28 @@ public class HJT212_2017ProtocolState implements ProtocolState{
                     command.executeSendTask(frameBuilder.setQn(qnReceived).setSt("21")
                             .setPw(format.getPassword()).setMn(format.getMnCode()).setFlag("8")
                             .insertOneFrame().getBytes());
+                    sendExeRtn(qnReceived);
+                    break;
+                case 3042://校准仪器
+                    hashMap = getCode(string);
+                    if(hashMap.get("RunMode")!=null){
+                        if(hashMap.get("RunMode").equals("0")) {
+                            GetProtocols.getInstance().getInfoProtocol().calDustMeter();
+
+                        }
+                        sendQnRtn(qnReceived);
+                        sendExeRtn(qnReceived);
+                    }
+
+                    break;
+                case 3093://零点质控
+                    hashMap = getCode(string);
+                    if(hashMap.get("PolId")!=null){
+                        if(hashMap.get("PolId").equals("a01010")) {//粉尘仪质控
+                            GetProtocols.getInstance().getInfoProtocol().calDustMeter();
+                        }
+                    }
+                    sendQnRtn(qnReceived);
                     sendExeRtn(qnReceived);
                     break;
                 default:

@@ -55,8 +55,10 @@ public class WeatherMiniUltrasonic implements WeatherControl,ComReceiveProtocol{
                     }
                     i = tools.byte2int(rec,5);//
                     if(i != 0x07ff){//有效值
-                        f = (float) i;
-                        data.setWindDirection(f);
+                        if(data.getWindForce() != 0f){//仅风速有变化时改变风向，风速为0时风向不变
+                            f = (float) i;
+                            data.setWindDirection(f);
+                        }
                     }
                     i = tools.byte2int(rec,7);//温度
                     if(i != 0x07ff){//有效值
