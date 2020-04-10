@@ -50,12 +50,13 @@ public class DustMeterLyjdLpm1000 implements ComReceiveProtocol,DustMeterControl
                     //String.valueOf(data.getPipeTemp())+";"+String.valueOf(data.getHeatPwm())));
                     break;
                 case DustCpm:
-                    f = tools.getFloat(rec,6);//实时值
+                    f = tools.getFloat(rec,10);//分钟值
                     data.setValue(f);
                     f = tools.getFloat(rec,14);//流量
                     data.setFlow(f);
                     f = tools.getFloat(rec,22);//仪器内部温度
                     data.setInnerTemp(f);
+                    //Log.d(tag,"DustCpm="+tools.bytesToHexString(rec,size));
                     break;
                 case DustMeterCalibrationState:
                     //Log.d(tag,"DustMeterCalibrationState="+tools.bytesToHexString(rec,size));

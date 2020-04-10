@@ -24,7 +24,7 @@ public class CameraWhite implements CameraControl{
     private ReceiverThread receiverThread;
     private ConnectThread connectThread;
     private Socket socketClient;
-    private InputStream receive;
+    //private InputStream receive;
     private OutputStream send;
     private boolean connected =false,run = false;
     private int directionOffset;
@@ -98,8 +98,8 @@ public class CameraWhite implements CameraControl{
                 socketClient.setTcpNoDelay(true);
                 socketClient.setSoLinger(true,30);
                 socketClient.setSendBufferSize(10240);
-                socketClient.setKeepAlive(true);
-                receive = socketClient.getInputStream();
+                socketClient.setKeepAlive(false);
+                //receive = socketClient.getInputStream();
                 send = socketClient.getOutputStream();
                 socketClient.setOOBInline(true);
 

@@ -23,7 +23,7 @@ public class DevicesManage {
     private static DevicesManage instance = new DevicesManage();
     private SensorData data = new SensorData();
     private final String tag = "DevicesManage";
-    public static final String[] DustMeterNames ={"LD-8-G","LPM-1000"};
+    public static final String[] DustMeterNames ={"LD-8-G","LPM-1000 V517.a","LPM-1000 V519.a"};
     public static final String[] DustNames = {"TSP","PM10","PM2.5"};
     public static final String[] CameraNames ={"DS-2DF8225IH-黑光","iDS-2DE7223-白光","Other"};
     public static final String[] NoiseNames = {"None","AWA5636-7"};
@@ -105,6 +105,10 @@ public class DevicesManage {
             }else if(dustMeterName == 1){
                 dustMeterControl = new DustMeterLyjdLpm1000(ComFourCommunication.getInstance(),data);
                 weatherControl = new WeatherMiniUltrasonic(ComThreeCommunication.getInstance(),data);
+                peripheralControl = new PeripheralModBusIo(ComOneCommunication.getInstance(),data);
+            }else if(dustMeterName == 2){
+                dustMeterControl = new DustMeterLyjdLpm1000(ComFourCommunication.getInstance(),data);
+                weatherControl = new WeatherWs5pUltrasonic(ComThreeCommunication.getInstance(),data);
                 peripheralControl = new PeripheralModBusIo(ComOneCommunication.getInstance(),data);
             }else {
                 dustMeterControl = new DustMeterSibataLd8(data, ComOneCommunication.getInstance());

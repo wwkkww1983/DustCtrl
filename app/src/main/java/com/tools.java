@@ -381,6 +381,18 @@ import android.annotation.SuppressLint;
 		l |= ((long) b[index - 3] << 24);
 		return Float.intBitsToFloat(l);
 	}
+
+	public static float getFloatReversedOder(byte[] b,int index){
+		int l;
+		l = b[index - 2];
+		l &= 0xff;
+		l |= ((long) b[index - 3] << 8);
+		l &= 0xffff;
+		l |= ((long) b[index] << 16);
+		l &= 0xffffff;
+		l |= ((long) b[index - 1] << 24);
+		return Float.intBitsToFloat(l);
+	}
 	
 	public static byte[] float2byte (float data) {
 		int res = Float.floatToIntBits(data);
