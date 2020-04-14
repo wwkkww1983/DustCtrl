@@ -22,8 +22,8 @@ public class DustMeterLyjdLpm1000 implements ComReceiveProtocol,DustMeterControl
     private static final byte[] cmdCalibration = {0x01,0x06,0x00,0x1E,0x00,0x03, (byte) 0xA9, (byte) 0xCD};
     private static final byte[] cmdCalibrationState = {0x01,0x03,0x00, (byte) 0xE4,0x00,0x01, (byte) 0xC4,0x3D  };
     private static final String tag=  "DustMeterLyjdLpm1000";
-    private boolean measuring = true;
-    private SensorData data;
+    protected boolean measuring = true;
+    protected SensorData data;
     private SerialCommunicationController com;
     public DustMeterLyjdLpm1000 (SerialCommunicationController com,SensorData data){
         this.data = data;
@@ -50,7 +50,7 @@ public class DustMeterLyjdLpm1000 implements ComReceiveProtocol,DustMeterControl
                     //String.valueOf(data.getPipeTemp())+";"+String.valueOf(data.getHeatPwm())));
                     break;
                 case DustCpm:
-                    f = tools.getFloat(rec,10);//分钟值
+                    f = tools.getFloat(rec,6);//分钟值
                     data.setValue(f);
                     f = tools.getFloat(rec,14);//流量
                     data.setFlow(f);
