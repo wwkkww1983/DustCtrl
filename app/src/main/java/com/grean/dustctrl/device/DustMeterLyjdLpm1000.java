@@ -135,19 +135,33 @@ public class DustMeterLyjdLpm1000 implements ComReceiveProtocol,DustMeterControl
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        for(int i=0;i<100;i++){//预计4分钟
+        for(int i=0;i<60;i++){//预计4分钟 60%进度
             com.send(cmdCalibrationState,DustMeterCalibrationState);
             infoProtocol.setDustCalMeterProcess(i);
             if (dialogInfo!=null) {
                 dialogInfo.showInfo("正在校准..."+String.valueOf(i)+"%");
             }
             try {
-                Thread.sleep(2400);
+                Thread.sleep(4000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
             if(measuring){
                 break;
+            }
+        }
+
+        //等待数据平稳160s 60~99%
+        for(int i=0;i<40;i++){
+            infoProtocol.setDustCalMeterProcess(i+60);
+            if (dialogInfo!=null) {
+                dialogInfo.showInfo("正在校准..."+String.valueOf(i+60)+"%");
+            }
+
+            try {
+                Thread.sleep(4000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
         infoProtocol.setDustCalMeterProcess(100);
