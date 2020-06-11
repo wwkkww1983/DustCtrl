@@ -333,6 +333,14 @@ public class InformationProtocol extends Observable implements GeneralInfoProtoc
     }
 
     @Override
+    public void setRhCorrectionEnable(boolean enable) {
+        DevicesManage.getInstance().getData().setRhCorrectionEnable(enable);
+        config.saveDeviceSetting(DevicesManage.getInstance());
+        notifyObservers(new LogFormat("湿度补偿修改为"+String.valueOf(enable)));
+        setChanged();
+    }
+
+    @Override
     public int getClientProtocolName() {
         return GetProtocols.getInstance().getClientProtocolName();
     }

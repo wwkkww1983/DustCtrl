@@ -387,7 +387,19 @@ public class HJT212_2017ProtocolState implements ProtocolState{
                                     sendQnRtn(qnReceived);
                                     sendExeRtn(qnReceived);
                                 }
-                            }else {
+                            }else if(infoId.equals("i13102")){
+                                if(hashMap.get("i13102-Info")!=null) {
+                                    float para = Float.valueOf(hashMap.get("i13102-Info"));
+                                    Log.d(tag,"设置湿度补偿"+String.valueOf(para));
+                                    if(para==0f){
+                                        GetProtocols.getInstance().getInfoProtocol().setRhCorrectionEnable(false);
+                                    }else{
+                                        GetProtocols.getInstance().getInfoProtocol().setRhCorrectionEnable(true);
+                                    }
+                                    sendQnRtn(qnReceived);
+                                    sendExeRtn(qnReceived);
+                                }
+                            }else{
 
                             }
 

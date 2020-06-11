@@ -96,6 +96,8 @@ public interface GeneralInfoProtocol {
      */
     String[] getClientProtocolNames();
 
+    void setRhCorrectionEnable(boolean enable);
+
     /**
      * 获取当前协议编号 0~
      * @return

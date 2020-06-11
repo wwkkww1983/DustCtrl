@@ -23,9 +23,18 @@ public class SensorData {
     private int pumpTime,laserTime;
     private boolean bgOk,spanOk;
     private float dustAlarm,flow,innerTemp;
+    private boolean rhCorrectionEnable=false;
 
     public SensorData(){
 
+    }
+
+    public boolean isRhCorrectionEnable() {
+        return rhCorrectionEnable;
+    }
+
+    public void setRhCorrectionEnable(boolean rhCorrectionEnable) {
+        this.rhCorrectionEnable = rhCorrectionEnable;
     }
 
     public float getInnerTemp() {
@@ -129,7 +138,21 @@ public class SensorData {
     }
 
     public void setValue(float value) {
-        dust = paraK * value+paraB;
+        if (!rhCorrectionEnable) {
+            dust = paraK * value + paraB;
+        }else{
+            if(airHumidity > 60){
+                float rh = airHumidity / 100f;
+                if(rh>= 0.95f){
+                    rh = 0.95f;
+                }
+                float cf = 1+0.25f*rh*rh/(1-rh);
+                //Log.d(tag,"Correction="+String.valueOf(cf));
+                dust = (paraK *value)/cf + paraB;
+            }else{
+                dust = paraK * value + paraB;
+            }
+        }
         this.value = value;
     }
 

@@ -50,6 +50,11 @@ public class OperateSystem {
         store.saveDeviceSetting(DevicesManage.getInstance());
     }
 
+    public void setRhCorrectionEnable(boolean enable){
+        DevicesManage.getInstance().setRhCorrectionEnable(enable);
+        store.saveDeviceSetting(DevicesManage.getInstance());
+    }
+
     public String getParaTempSlope(){
         return String.valueOf(DevicesManage.getInstance().getData().getParaTempSlope());
 
@@ -87,6 +92,9 @@ public class OperateSystem {
         return DevicesManage.getInstance().getCameraOffset();
     }
 
+    public boolean isRhCorrectionEnable(){
+        return DevicesManage.getInstance().isRhCorrectionEnable();
+    }
 
     public void ctrlDo(int num,boolean key){
         DevicesManage.getInstance().setDo(num,key);

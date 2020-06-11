@@ -50,6 +50,14 @@ public class DevicesManage {
         }
     }
 
+    public void setRhCorrectionEnable(boolean enable){
+        data.setRhCorrectionEnable(enable);
+    }
+
+    public boolean isRhCorrectionEnable(){
+        return data.isRhCorrectionEnable();
+    }
+
     public void setLedDisplayName(int ledDisplayName) {
         this.ledDisplayName = ledDisplayName;
     }

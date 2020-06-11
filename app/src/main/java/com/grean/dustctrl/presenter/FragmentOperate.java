@@ -56,7 +56,7 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
             etSetParaB,etLng,etLat,etCameraDirectionOffset,etTempSlope,etTempIntercept,
             etHumiSlope,etHumiIntercept,etBackupServerAddress,etBackupServerPort,etBackupMnCode;
     private Switch swDustMeterRun,swValve,swFan,swExt1,swExt2,swBackup,
-            swAutoCalibrationEnable,swBackupServer;
+            swAutoCalibrationEnable,swBackupServer,swRhCorrectionEnable;
     private Spinner spProtocol,spDustName,spDustMeter,spCameraName,spNoiseName,spLedDisplayName;
     private int clientProtocolName,dustName,dustMeterName,noiseName,ledDisplayName,cameraName;
 
@@ -186,7 +186,7 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
         etBackupServerAddress.setText(operateTcp.getBackupServerAddress());
         etBackupMnCode.setText(operateTcp.getBackTcpMnCode());
         swBackupServer.setChecked(system.isBackupServerEnable());
-
+        swRhCorrectionEnable.setChecked(system.isRhCorrectionEnable());
         tvDustMeterInfo.setText(dustMeter.getDustMeterWorkedInfo());
 
 
@@ -277,7 +277,7 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
         tvMotorSettingTitle = v.findViewById(R.id.tvMotorSettingTitle);
         tvMotorSettingContent1 = v.findViewById(R.id.tvMotorSettingContent1);
         tvMotorSettingContent2 = v.findViewById(R.id.tvMotorSettingContent2);
-
+        swRhCorrectionEnable = v.findViewById(R.id.swRhCorrectionEnable);
         etCameraDirectionOffset = v.findViewById(R.id.etCameraDirectionOffset);
         btnNoiseCal.setOnClickListener(this);
         btnMotorTestDown.setOnClickListener(this);
@@ -291,6 +291,7 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
         swValve.setOnClickListener(this);
         swExt2.setOnClickListener(this);
         swExt1.setOnClickListener(this);
+        swRhCorrectionEnable.setOnClickListener(this);
 
         btnSetCameraOffset = v.findViewById(R.id.btnCameraDirectionOffset);
         btnSetCameraOffset.setOnClickListener(this);
@@ -464,6 +465,9 @@ public class FragmentOperate extends Fragment implements NotifyOperateInfo ,View
                 intent2.putExtra("name", DevicesManage.DustNames[dustName]);
                 getActivity().sendBroadcast(intent2);
                 Toast.makeText(getActivity(),"设置成功，重启生效",Toast.LENGTH_LONG).show();
+                break;
+            case R.id.swRhCorrectionEnable:
+                system.setRhCorrectionEnable(swRhCorrectionEnable.isChecked());
                 break;
             default:
                 break;

@@ -44,7 +44,11 @@ public class SystemSettingStore implements ReadWriteConfig{
         try {
             JSONObject object  = new JSONObject(string);
             manage.setCameraDirectionOffset(object.getInt("camera_offset"));
-
+            if(object.has("rh_correction_enable")) {
+                manage.setRhCorrectionEnable(object.getBoolean("rh_correction_enable"));
+            }else{
+                manage.setRhCorrectionEnable(false);
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -54,6 +58,7 @@ public class SystemSettingStore implements ReadWriteConfig{
         JSONObject object = new JSONObject();
         try {
             object.put("camera_offset",manage.getCameraOffset());
+            object.put("rh_correction_enable",manage.isRhCorrectionEnable());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -64,6 +69,7 @@ public class SystemSettingStore implements ReadWriteConfig{
         JSONObject object = new JSONObject();
         try {
             object.put("camera_offset",0);
+            object.put("rh_correction_enable",false);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -82,7 +88,7 @@ public class SystemSettingStore implements ReadWriteConfig{
             values.put("peripheral_name",0);
             values.put("weather_name",0);
             values.put("dust_name",0);
-            values.put("dust_para_k",0.0012f);
+            values.put("dust_para_k",0.001f);
             values.put("dust_para_b",0f);
             values.put("dust_alarm",0.3f);
             values.put("motor_rounds",1600);
@@ -112,7 +118,7 @@ public class SystemSettingStore implements ReadWriteConfig{
             manage.setDustName(0);
             setDeviceSettingContent(manage,getDefaultDeviceSettingContent());
             SensorData data = manage.getData();
-            data.setParaK(0.0012f);
+            data.setParaK(0.001f);
             data.setParaB(0f);
             data.setDustAlarm(0.3f);
             data.setMotorRounds(1600);
@@ -121,6 +127,7 @@ public class SystemSettingStore implements ReadWriteConfig{
             data.setParaTempIntercept(0f);
             data.setParaHumiSlope(1f);
             data.setParaHumiIntercept(0f);
+            data.setRhCorrectionEnable(false);
         }else{
             cursor.moveToLast();
             manage.setCameraName(cursor.getInt(cursor.getColumnIndex("camera_name")));
