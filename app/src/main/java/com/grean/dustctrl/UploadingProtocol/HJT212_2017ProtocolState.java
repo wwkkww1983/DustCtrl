@@ -400,7 +400,8 @@ public class HJT212_2017ProtocolState implements ProtocolState{
                                     sendExeRtn(qnReceived);
                                 }
                             }else{
-
+                                sendQnRtn(qnReceived);
+                                sendExeRtn(qnReceived);
                             }
 
                         }
